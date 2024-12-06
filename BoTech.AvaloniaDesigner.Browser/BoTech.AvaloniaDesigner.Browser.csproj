@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Browser" Version="11.2.2" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
   </ItemGroup>
 
   <ItemGroup>

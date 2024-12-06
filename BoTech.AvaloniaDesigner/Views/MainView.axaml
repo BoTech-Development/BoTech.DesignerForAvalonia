@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:BoTech.AvaloniaDesigner.ViewModels"
+             xmlns:viewsEditor="clr-namespace:BoTech.AvaloniaDesigner.Views.Editor"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="BoTech.AvaloniaDesigner.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -11,6 +12,12 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+  <Grid ColumnDefinitions="Auto, Auto">
+      <ContentControl Grid.Column="0" Content="{Binding ItemsView}"></ContentControl>
+      <ContentControl Grid.Column="1" Content="{Binding PreviewView}"></ContentControl>
+     
+  </Grid>
+    
+    
+  
 </UserControl>
