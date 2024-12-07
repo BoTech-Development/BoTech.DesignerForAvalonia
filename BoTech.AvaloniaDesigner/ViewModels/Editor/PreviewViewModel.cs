@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Avalonia.Controls;
@@ -7,36 +8,54 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 using BoTech.AvaloniaDesigner.Models.Editor;
+using BoTech.AvaloniaDesigner.Services.Avalonia;
 using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
 
-public class PreviewViewModel : ViewModelBase
+public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
 {
-    private Grid _previewContent;
 
+    /// <summary>
+    /// Event will be called if the Preview changed
+    /// </summary>
+    public event EventHandler<Grid>? PreviewContentChanged;
+    protected virtual void OnPreviewContentChanged(Grid previewContent)
+    {
+        EventHandler<Grid>? handler = PreviewContentChanged;
+        if (handler != null)
+        {
+            handler(this, previewContent);
+        }
+    }
     public Grid PreviewContent
     {
-        get => _previewContent;
-        set => this.RaiseAndSetIfChanged(ref _previewContent, value);
+        get => PreviewContent;
+        set
+        {
+            // Call the Event.
+            OnPreviewContentChanged(value);
+            PreviewContent = value;
+        }
     }
 
-    private Grid OriginalContent { get; set; }
+
 
     /// <summary>
     /// Will be injected.
     /// </summary>
-    private DragAndDropController _dragAndDropController;
+    private PreviewController _previewController;
 
-    public PreviewViewModel(DragAndDropController dragAndDropController)
+    public PreviewViewModel(PreviewController PreviewController)
     {
         TextBlock pleaseWait = new TextBlock()
         {
             Text = "Please wait while initialisation...",
         };
-        _previewContent = new Grid();
-        _previewContent.Children.Add(pleaseWait);
-        _dragAndDropController = dragAndDropController;
+        PreviewContent = new Grid();
+        PreviewContent.Children.Add(pleaseWait);
+        _previewController = PreviewController;
+        _previewController.PreviewViewModel = this;
         //Init();
     }
 
@@ -49,10 +68,10 @@ public class PreviewViewModel : ViewModelBase
     // Events:
     public void OnPointerMoved(PointerEventArgs e)
     {
-        if (_dragAndDropController.Operation == EDragAndDropOperation.DropObjectToPreview &&
-            _dragAndDropController.CurrentControl != null)
+        if (_previewController.Operation == EDragAndDropOperation.DropObjectToPreview &&
+            _previewController.CurrentControl != null)
         {
-            if(_dragAndDropController.CurrentControl != null) TryToRemoveExistingControl(_dragAndDropController.CurrentControl, PreviewContent);
+            if(_previewController.CurrentControl != null) TryToRemoveExistingControl(_previewController.CurrentControl, PreviewContent);
 
             string error = "";
             if (!PlaceControlByPointerPosition(out error))
@@ -68,16 +87,16 @@ public class PreviewViewModel : ViewModelBase
     /// <param name="e"></param>
     public void OnPointerExited(PointerEventArgs e)
     {
-        if (_dragAndDropController.Operation == EDragAndDropOperation.DropObjectToPreview)
+        if (_previewController.Operation == EDragAndDropOperation.DropObjectToPreview)
         {
-            _dragAndDropController.DraggingPaused();
+            _previewController.DraggingPaused();
         }
     }
     public void OnPointerPressed(PointerEventArgs e)
     {
-        if (_dragAndDropController.Operation == EDragAndDropOperation.DropObjectToPreview)
+        if (_previewController.Operation == EDragAndDropOperation.DropObjectToPreview)
         {
-            _dragAndDropController.EndDrag();
+            _previewController.EndDrag();
         }
     }
     /// <summary>
@@ -86,10 +105,10 @@ public class PreviewViewModel : ViewModelBase
     /// <param name="control">The new Control</param>
     private void TryToRemoveExistingControl(Control control, Control previewControl)
     {
-        if (IsLayoutControl(previewControl))
+        if (TypeCastingService.IsLayoutControl(previewControl))
         {
             Controls? children;
-            if ((children = GetChildControlsOfLayoutControl(previewControl)) != null)
+            if ((children = TypeCastingService.GetChildControlsOfLayoutControl(previewControl)) != null)
             {
                 if (children.Contains(control))
                 {
@@ -110,7 +129,7 @@ public class PreviewViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Tries to add the selected Control (located in the Drag and Drop Controller <see cref="DragAndDropController"/>), to the current Preview Context.<br/>
+    /// Tries to add the selected Control (located in the Drag and Drop Controller <see cref="PreviewController"/>), to the current Preview Context.<br/>
     ///  Method adds the Control to the Control or in the Layout Control where the Pointer points to.
     /// </summary>
     /// <param name="error">Can be used to get the error string, when the system can not place the Control there</param>
@@ -129,65 +148,65 @@ public class PreviewViewModel : ViewModelBase
 
         if (control.IsPointerOver)
         {
-            if (IsLayoutControl(control))
+            if (TypeCastingService.IsLayoutControl(control))
             {
-                if (_dragAndDropController.CurrentControl != null)
+                if (_previewController.CurrentControl != null)
                 {
                     switch (control.GetType().Name)
                     {
                         case "Border":
-                            ((Border)control).Child = _dragAndDropController.CurrentControl;
+                            ((Border)control).Child = _previewController.CurrentControl;
                             placed = true;
                             break;
                         case "Canvas":
-                            ((Canvas)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((Canvas)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
                         case "DockPanel":
-                            ((DockPanel)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((DockPanel)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
                         case "Expander":
-                            ((Expander)control).Content = _dragAndDropController.CurrentControl;
+                            ((Expander)control).Content = _previewController.CurrentControl;
                             placed = true;
                             break;
                         case "Grid":
-                            ((Grid)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((Grid)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
                         case "GridSplitter":
                             throw new NotSupportedException(
                                 "The Control Grid Splitter is not supported in this Version");
-                            //  ((GridSplitter)control)..Add(_dragAndDropController.CurrentControl); 
+                            //  ((GridSplitter)control)..Add(_PreviewController.CurrentControl); 
                             break;
                         case "Panel":
-                            ((Panel)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((Panel)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
                         case "RelativePanel":
-                            ((RelativePanel)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((RelativePanel)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
                         case "ScrollViewer":
-                            ((ScrollViewer)control).Content = _dragAndDropController.CurrentControl;
+                            ((ScrollViewer)control).Content = _previewController.CurrentControl;
                             placed = true;
                             break;
                         case "SplitView":
                             throw new NotSupportedException("The Control SplitView is not supported in this Version");
                             // TODO: Add MessageBox to let the user decide if he wants to place the new Object in the Content or Pane side.
-                            // ((SplitView)control)..Add(_dragAndDropController.CurrentControl); 
+                            // ((SplitView)control)..Add(_PreviewController.CurrentControl); 
                             break;
                         case "TabControl":
                             throw new NotSupportedException("The Control TabControl is not supported in this Version");
                             // TODO: Implement the TabControl
-                            // ((TabControl)control)..Add(_dragAndDropController.CurrentControl); 
+                            // ((TabControl)control)..Add(_PreviewController.CurrentControl); 
                             break;
                         case "UniformGrid":
-                            ((UniformGrid)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((UniformGrid)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
                         case "WrapPanel":
-                            ((WrapPanel)control).Children.Add(_dragAndDropController.CurrentControl);
+                            ((WrapPanel)control).Children.Add(_previewController.CurrentControl);
                             placed = true;
                             break;
 
@@ -205,7 +224,7 @@ public class PreviewViewModel : ViewModelBase
         {
             // When the User does not point to it
             Controls? children;
-            if ((children = GetChildControlsOfLayoutControl(control)) != null)
+            if ((children = TypeCastingService.GetChildControlsOfLayoutControl(control)) != null)
             {
                 // Go deeper in the Visual Tree
                 foreach (Control child in children)
@@ -217,44 +236,12 @@ public class PreviewViewModel : ViewModelBase
 
         // When the System could not find any Children
         // place it into the Grid:
-        if(!placed) if(_dragAndDropController.CurrentControl != null) PreviewContent.Children.Add(_dragAndDropController.CurrentControl);
+        if(!placed) if(_previewController.CurrentControl != null) PreviewContent.Children.Add(_previewController.CurrentControl);
         return false;
     }
 
 
-    /// <summary>
-    /// Checks if the given Control is a Layout Control ("Border", "Canvas", "DockPanel", "Expander", "Grid", "GridSplitter", "Panel", "RelativePanel", "ScrollViewer", "SplitView", "StackPanel", "TabControl", "UniformGrid", "WrapPanel") and has the <b>Childs</b> Property.
-    /// </summary>
-    /// <param name="control"></param>
-    /// <returns></returns>
-    private bool IsLayoutControl(Control control)
-    {
-        // Possible Layout Types
-        string[] layoutControlNames = ["Border", "Canvas", "DockPanel", "Expander", "Grid", "GridSplitter", "Panel", "RelativePanel", "ScrollViewer", "SplitView", "StackPanel", "TabControl", "UniformGrid", "WrapPanel"];
-        if (layoutControlNames.Contains(control.GetType().Name)) return true; //control.GetType().GetField("Childs") != null;
-        return false;
-    }
+   
 
-    private Controls? GetChildControlsOfLayoutControl(Control control)
-    {
-        if (IsLayoutControl(control))
-        {
-            // Try Different Names for the Same Attribute:
-            PropertyInfo[] propertyInfos = control.GetType().GetProperties();
-            PropertyInfo? info = propertyInfos.Where(p => p.Name == "Children").FirstOrDefault();
-            
-            if (info == null) info = propertyInfos.Where(p => p.Name == "Child").FirstOrDefault();
-            if (info == null) info = propertyInfos.Where(p => p.Name == "Content").FirstOrDefault();
-            
-            if (info != null)
-            {
-                object? obj = info.GetValue(control);
-                if (obj != null)
-                {
-                    return (Controls)obj;
-                }
-            }
-        }
-        return null;
-    }
+
 }

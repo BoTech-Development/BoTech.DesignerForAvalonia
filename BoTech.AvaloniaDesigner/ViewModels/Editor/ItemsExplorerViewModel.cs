@@ -11,11 +11,11 @@ public class ItemsExplorerViewModel : ViewModelBase
     public TreeViewNode? SelectedItem { get; set; }
     
     // will be injected
-    private DragAndDropController _dragAndDropController;
+    private PreviewController _previewController;
     
-    public ItemsExplorerViewModel(DragAndDropController dragAndDropController)
+    public ItemsExplorerViewModel(PreviewController previewController)
     {
-        _dragAndDropController = dragAndDropController;
+        _previewController = previewController;
         TreeViewNodes = new ObservableCollection<TreeViewNode>()
         {
             new TreeViewNode()
@@ -50,10 +50,10 @@ public class ItemsExplorerViewModel : ViewModelBase
     /// </summary>
     public void OnTreeViewSelectionChanged()
     {
-        if(SelectedItem != null) _dragAndDropController.StartDrag(SelectedItem.ControlInstance);
+        if(SelectedItem != null) _previewController.StartDrag(SelectedItem.ControlInstance);
     }
     /// <summary>
-    /// The TreeViewNode class i an model for each TreeView Node.<br/>
+    /// The TreeViewNode class is a model for each TreeView Node.<br/>
     /// It can be used to store the Text to display and an Instance for the referenced Control.
     /// </summary>
     public class TreeViewNode
