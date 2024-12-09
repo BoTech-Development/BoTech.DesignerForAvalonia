@@ -6,28 +6,30 @@
              xmlns:vm="clr-namespace:BoTech.AvaloniaDesigner.ViewModels.Editor"
              x:Class="BoTech.AvaloniaDesigner.Views.Editor.ViewHierarchyView"
              x:DataType="vm:ViewHierarchyViewModel">
-    <Grid RowDefinitions="Auto, Auto">
-        <StackPanel>
-            <TextBlock>View-Hierarchy</TextBlock>
-            <AutoCompleteBox 
-                FilterMode="Contains"
-                Watermark="Search for a Control...">
-                <AutoCompleteBox.InnerRightContent>
-                    <Button>
-                        <materialIcons:MaterialIcon Kind="Magnify"></materialIcons:MaterialIcon>
-                    </Button>
-                </AutoCompleteBox.InnerRightContent>
-            </AutoCompleteBox>
-        </StackPanel>
-        <TreeView Grid.Row="1" 
-                  ItemsSource="{Binding TreeViewNodes}"
-                  SelectionChanged="TreeView_OnSelectionChanged"
-                  SelectedItem="{Binding SelectedItem}">
-            <TreeView.ItemTemplate>
-                <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding Text}"></TextBlock>
-                </TreeDataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>
-    </Grid>
+    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8">
+        <Grid RowDefinitions="Auto, Auto">
+            <StackPanel>
+                <TextBlock>View-Hierarchy</TextBlock>
+                <AutoCompleteBox 
+                    FilterMode="Contains"
+                    Watermark="Search for a Control...">
+                    <AutoCompleteBox.InnerRightContent>
+                        <Button>
+                            <materialIcons:MaterialIcon Kind="Magnify"></materialIcons:MaterialIcon>
+                        </Button>
+                    </AutoCompleteBox.InnerRightContent>
+                </AutoCompleteBox>
+            </StackPanel>
+            <TreeView Grid.Row="1" 
+                    ItemsSource="{Binding TreeViewNodes}"
+                    SelectionChanged="TreeView_OnSelectionChanged"
+                    SelectedItem="{Binding SelectedItem}">
+                <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                        <TextBlock Text="{Binding Text}"></TextBlock>
+                    </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </Grid>
+    </Border>
 </UserControl>

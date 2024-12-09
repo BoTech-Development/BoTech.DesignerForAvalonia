@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using BoTech.AvaloniaDesigner.Models.Editor;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -22,9 +23,28 @@ public class PreviewController
     /// </summary>
     public Control? CurrentControl { get; set; }
     /// <summary>
+    /// The Selected Control which the User can Select from the Hierarchy View
+    /// </summary>
+    public Control? SelectedControl { get; set; }
+
+    private Grid _previewContent;
+
+    /// <summary>
     /// Will be set by the <see cref="PreviewViewModel"/> when the user hase changed something.
     /// </summary>
     public Grid PreviewContent { get; set; }
+   
+    
+    /*/// <summary>
+    /// Event will be called if the Preview had changed
+    /// </summary>
+    public event EventHandler<Grid>? PreviewContentChanged;
+    protected virtual void OnPreviewContentChanged(Grid previewContent)
+    {
+        PreviewContentChanged?.Invoke(this, previewContent);
+    }*/
+    
+    
     
     private Grid OriginalContent { get; set; }
     
@@ -32,6 +52,7 @@ public class PreviewController
     {
         Operation = EDragAndDropOperation.None;
         CurrentControl = null;
+        
     }
     /// <summary>
     /// The Controller has to be Initialized before it can run.
@@ -40,19 +61,25 @@ public class PreviewController
     {
         if (PreviewViewModel != null)
         {
-            PreviewViewModel.PreviewContentChanged += OnPreviewContentChanged;
+           // PreviewViewModel.PreviewContentChanged += OnPreviewContentChanged;
         }
     }
+
     /// <summary>
     /// Will be executed when the PreviewContent was changed by the PreviewViewModel.
+    /// <b>Important this Method must be called by each class which change the Preview Content.</b>
     /// This Event is needed, because other Views like the ViewHierarchy View has to reload the Tree View.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    /// <exception cref="NotImplementedException"></exception>
-    private void OnPreviewContentChanged(object? sender, Grid e)
+    public void OnPreviewContentChanged()
     {
-        if(ViewHierarchyViewModel != null) ViewHierarchyViewModel.Reload();
+        if (ViewHierarchyViewModel != null) ViewHierarchyViewModel.Reload();
+    }
+    /// <summary>
+    /// Event which will be called by the ViewHierarchyViewModel 
+    /// </summary>
+    public void OnSelectedControlChanged()
+    {
+        if (PropertiesViewModel != null && SelectedControl != null) PropertiesViewModel.RenderForControl(SelectedControl);
     }
 
     public void StartDrag(Control? control)

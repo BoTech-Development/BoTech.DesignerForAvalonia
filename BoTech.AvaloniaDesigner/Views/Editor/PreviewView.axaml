@@ -8,14 +8,18 @@
     <Design.DataContext>
         <vm:PreviewViewModel></vm:PreviewViewModel>
     </Design.DataContext> 
-    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8">
-        <Grid RowDefinitions="Auto, Auto">
+    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8" >
+        <Grid RowDefinitions="Auto, Auto" >
             <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button>Reload</Button>
                 <Button>Save</Button>
             </StackPanel>
             
-            <ContentControl Grid.Row="1" PointerPressed="Preview_OnPointerPressed" PointerExited="Preview_OnPointerExited" PointerMoved="Preview_OnPointerMoved" Content="{Binding PreviewContent}"></ContentControl>
+            <ContentControl Grid.Row="1" 
+                            PointerPressed="Preview_OnPointerPressed" 
+                            PointerExited="Preview_OnPointerExited" 
+                            PointerMoved="Preview_OnPointerMoved" 
+                            Content="{Binding PreviewController.PreviewContent}"></ContentControl>
         </Grid>
     </Border>
     

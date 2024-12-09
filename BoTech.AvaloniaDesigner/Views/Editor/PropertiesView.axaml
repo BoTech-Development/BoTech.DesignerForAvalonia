@@ -2,7 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="BoTech.AvaloniaDesigner.Views.Editor.PropertiesView">
-    Welcome to Avalonia!
+             xmlns:vm="clr-namespace:BoTech.AvaloniaDesigner.ViewModels.Editor"
+             x:Class="BoTech.AvaloniaDesigner.Views.Editor.PropertiesView"
+             x:DataType="vm:PropertiesViewModel">
+    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8">
+        <Grid RowDefinitions="Auto, Auto">
+            <TextBlock>Properties</TextBlock>
+            <ContentControl Grid.Row="1" Content="{Binding Tabs}">
+            </ContentControl>
+        </Grid>
+    </Border>
 </UserControl>

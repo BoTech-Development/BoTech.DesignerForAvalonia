@@ -3,12 +3,18 @@ using Avalonia.Controls;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 using BoTech.AvaloniaDesigner.Services.Avalonia;
 using DynamicData;
+using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
 
 public class ViewHierarchyViewModel : ViewModelBase
 {
-    public ObservableCollection<TreeViewNode> TreeViewNodes { get; set; } 
+    private ObservableCollection<TreeViewNode> _treeViewNodes = new();
+    public ObservableCollection<TreeViewNode> TreeViewNodes
+    {
+        get => _treeViewNodes; 
+        set => this.RaiseAndSetIfChanged(ref _treeViewNodes, value);
+    } 
     public TreeViewNode? SelectedItem { get; set; }
     
     private PreviewController _previewController;
@@ -21,7 +27,11 @@ public class ViewHierarchyViewModel : ViewModelBase
 
     public void OnTreeViewSelectionChanged()
     {
-        
+        if (SelectedItem != null)
+        {
+            _previewController.SelectedControl = SelectedItem.ControlInstance;
+            _previewController.OnSelectedControlChanged();// Call the Event so that all other views will notified.
+        }
     }
 
     /// <summary>
@@ -32,8 +42,10 @@ public class ViewHierarchyViewModel : ViewModelBase
     public void Reload()
     {
         TreeViewNode mainNode = GetTreeViewNodesFromControl(_previewController.PreviewContent);
+        TreeViewNodes = new ObservableCollection<TreeViewNode>();
+        TreeViewNodes.Add(mainNode);
         // Remove the main Node (Is useless)
-        TreeViewNodes = mainNode.Children;
+        //TreeViewNodes = mainNode.Children;
     }
 
     private TreeViewNode GetTreeViewNodesFromControl(Control control)

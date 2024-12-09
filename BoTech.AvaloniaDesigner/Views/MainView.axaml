@@ -12,11 +12,11 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-  <Grid ColumnDefinitions="Auto, Auto, Auto">
+  <Grid ColumnDefinitions="Auto, Auto, Auto,*">
       <ContentControl Grid.Column="0" Content="{Binding ItemsView}"></ContentControl>
       <ContentControl Grid.Column="1" Content="{Binding PreviewView}"></ContentControl>
       <ContentControl Grid.Column="2" Content="{Binding ViewHierarchyView}"></ContentControl>
-     
+      <ContentControl Grid.Column="3" Content="{Binding PropertiesView}"></ContentControl>
   </Grid>
     
     

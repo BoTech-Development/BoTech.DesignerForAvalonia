@@ -11,6 +11,7 @@ public class MainViewModel : ViewModelBase
     public PreviewView PreviewView { get; set; }
     public ItemsExplorerView ItemsView { get; set; } 
     public ViewHierarchyView ViewHierarchyView { get; set; }
+    public PropertiesView PropertiesView { get; set; }
 
     public MainViewModel()
     {
@@ -27,5 +28,10 @@ public class MainViewModel : ViewModelBase
         {
             DataContext = new ViewHierarchyViewModel(previewController)
         };
+        PropertiesView = new PropertiesView()
+        {
+            DataContext = new PropertiesViewModel(previewController)
+        };
+        previewController.Init();
     }
 }
