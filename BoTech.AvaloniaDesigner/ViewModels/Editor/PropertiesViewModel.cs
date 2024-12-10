@@ -69,7 +69,10 @@ public class PropertiesViewModel : ViewModelBase
             Tabs.Items.Add(tab);
         }
     }
-    
+    /// <summary>
+    /// This Class represents the Content of an Tab. Each Tab has one Tab Content.
+    /// The Tab content consist of a List of templates, which can be rednered by the <see cref="TabContent"><see cref="Render"/></see> Method.
+    /// </summary>
     public class TabContent(string name, List<IViewTemplate> templates)
     {
         public string Name {get; set;} = name;

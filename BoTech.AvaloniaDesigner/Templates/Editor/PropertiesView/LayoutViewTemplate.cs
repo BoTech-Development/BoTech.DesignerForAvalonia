@@ -1,7 +1,9 @@
+using System.Reactive.Subjects;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using BoTech.AvaloniaDesigner.Services.PropertiesView;
 
 namespace BoTech.AvaloniaDesigner.Templates.Editor.PropertiesView;
 
@@ -30,33 +32,53 @@ public class LayoutViewTemplate : IViewTemplate
      */
     public string Name { get; } = "Basic Layout";
 
-    public  Control GetViewTemplateForControl(Control control)
+    // Bindings for the Visual representation of the Margin settings of the Control
+    
+    private Subject<string> _bindingMarginTextTop = new();
+    private Subject<string> _bindingMarginTextBottom = new();
+    private Subject<string> _bindingMarginTextLeft = new();
+    private Subject<string> _bindingMarginTextRight = new();
+    
+    // Bindings for the Visual representation of the PADDING settings of the Control
+
+    private Subject<string> _bindingPaddingTextTop = new();
+    private Subject<string> _bindingPaddingTextBottom = new();
+    private Subject<string> _bindingPaddingTextLeft = new();
+    private Subject<string> _bindingPaddingTextRight = new();
+    public Control GetViewTemplateForControl(Control control)
     {
+	    // Main Stackpanel
+	    StackPanel stackPanel = new StackPanel();
+	    // For the Visual Representation of the Margin and Padding:
 	    TextBlock marginTextTop = new TextBlock()
 	    {
 		    HorizontalAlignment = HorizontalAlignment.Center,
-		    Text = "5"
+		    Text = "5",
+		    [!TextBlock.TextProperty] = _bindingMarginTextTop.ToBinding(),
 	    };
 	    DockPanel.SetDock(marginTextTop, Dock.Top);
 	    
 	    TextBlock marginTextBottom = new TextBlock()
 	    {
 		    HorizontalAlignment = HorizontalAlignment.Center,
-		    Text = "10"
+		    Text = "10",
+		    [!TextBlock.TextProperty] = _bindingMarginTextBottom.ToBinding()
 	    };
 	    DockPanel.SetDock(marginTextBottom, Dock.Bottom);
 	    
 	    TextBlock marginTextLeft = new TextBlock()
 	    {
 		    VerticalAlignment = VerticalAlignment.Center,
-		    Text = "15"
+		    Text = "15",
+		    [!TextBlock.TextProperty] = _bindingMarginTextLeft.ToBinding()
 	    };
 	    DockPanel.SetDock(marginTextLeft, Dock.Left);
 	    
 	    TextBlock marginTextRight = new TextBlock()
 	    {
 		    VerticalAlignment = VerticalAlignment.Center,
-		    Text = "20"
+		    Text = "20",
+		    [!TextBlock.TextProperty] = _bindingMarginTextRight.ToBinding()
 	    };
 	    DockPanel.SetDock(marginTextRight, Dock.Right);
 
@@ -65,28 +87,32 @@ public class LayoutViewTemplate : IViewTemplate
 	    TextBlock paddingTextTop = new TextBlock()
 	    {
 		    HorizontalAlignment = HorizontalAlignment.Center,
-		    Text = "5"
+		    Text = "5",
+		    [!TextBlock.TextProperty] = _bindingPaddingTextTop.ToBinding()
 	    };
 	    DockPanel.SetDock(paddingTextTop, Dock.Top);
 	    
 	    TextBlock paddingTextBottom = new TextBlock()
 	    {
 		    HorizontalAlignment = HorizontalAlignment.Center,
-		    Text = "10"
+		    Text = "10",
+		    [!TextBlock.TextProperty] = _bindingPaddingTextBottom.ToBinding()
 	    };
 	    DockPanel.SetDock(paddingTextBottom, Dock.Bottom);
 	    
 	    TextBlock paddingTextLeft = new TextBlock()
 	    {
 		    VerticalAlignment = VerticalAlignment.Center,
-		    Text = "15"
+		    Text = "15",
+		    [!TextBlock.TextProperty] = _bindingPaddingTextLeft.ToBinding()
 	    };
 	    DockPanel.SetDock(paddingTextLeft, Dock.Left);
 	    
 	    TextBlock paddingTextRight = new TextBlock()
 	    {
 		    VerticalAlignment = VerticalAlignment.Center,
-		    Text = "20"
+		    Text = "20",
+		    [!TextBlock.TextProperty] = _bindingPaddingTextRight.ToBinding()
 	    };
 	    DockPanel.SetDock(paddingTextRight, Dock.Right);
 	    
@@ -138,6 +164,27 @@ public class LayoutViewTemplate : IViewTemplate
 			    }
 		    }
 	    };
-	    return borderMargin;
+	    
+	    stackPanel.Children.Add(borderMargin);
+	    
+	    // Creating the TextBoxes for the Margin
+
+	    StandardViewTemplate standardViewTemplate = new StandardViewTemplate()
+	    {
+		    ReferencedProperties =
+		    {
+			    new StandardViewTemplate.ReferencedProperty("MinWidth", EditBoxOptions.Auto),
+			    new StandardViewTemplate.ReferencedProperty("MaxWidth", EditBoxOptions.Auto),
+			    new StandardViewTemplate.ReferencedProperty("IsEnabled", EditBoxOptions.Auto),
+
+		    }
+	    };
+	    stackPanel.Children.Add(standardViewTemplate.GetViewTemplateForControl(control));
+	    
+	    
+	    
+	    //stackPanel.Children.Add(ControlsCreator.CreateEditBox(control, "IsVisible", EditBoxOptions.Auto));
+	    
+	    return stackPanel;
     }
 }
