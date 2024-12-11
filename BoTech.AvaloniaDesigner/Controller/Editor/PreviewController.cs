@@ -29,7 +29,7 @@ public class PreviewController
     /// </summary>
     public Control? SelectedControl { get; set; }
 
-    private Grid _previewContent;
+    //private Grid _previewContent;
 
     /// <summary>
     /// Will be set by the <see cref="PreviewViewModel"/> when the user hase changed something.
@@ -48,7 +48,7 @@ public class PreviewController
     
     
     
-    private Grid OriginalContent { get; set; }
+   // private Grid OriginalContent { get; set; }
     
     public PreviewController()
     {
@@ -72,39 +72,27 @@ public class PreviewController
     /// <param name="control"></param>
     /// <param name="propertyName"></param>
     /// <param name="newValue"></param>
-    public void OnPropertyInPropertiesViewChanged(Control control, string propertyName, object? newValue)
+    public void OnPropertyInPropertiesViewChanged(Control control, PropertyInfo propertyInfo, object? newValue)
     {
-
-        PropertyInfo[] propertyInfos = control.GetType().GetProperties();
-        PropertyInfo? propertyInfo = null;
-        if ((propertyInfo = propertyInfos.Where(p => p.Name == propertyName).FirstOrDefault()) != null)
+        try
         {
-            try
+            propertyInfo.SetValue(control, newValue);
+        }
+        catch (Exception e)
+        {
+            // When the Property could not be converted
+            if (newValue != null)
             {
-                
-                propertyInfo.SetValue(control, newValue);
-            }
-            catch (Exception e)
-            {
-                // When the Property could not be converted
-                if (newValue != null)
+                if (newValue.GetType() != propertyInfo.PropertyType)
                 {
-                    if (newValue.GetType() != propertyInfo.PropertyType)
+                    try
                     {
-                        try
-                        {
-                            // Typecasting when the Type of the new Value is not equals with the Requested Type of the Property
-                            propertyInfo.SetValue(control, Convert.ChangeType(newValue, propertyInfo.PropertyType));
-                        }
-                        catch (Exception e2)
-                        {
-                            Console.WriteLine($"Exception in OnPropertyInPropertiesViewChanged: {e2}");
-                        }
+                        // Typecasting when the Type of the new Value is not equals with the Requested Type of the Property
+                        propertyInfo.SetValue(control, Convert.ChangeType(newValue, propertyInfo.PropertyType));
                     }
-                    else
+                    catch (Exception e2)
                     {
-                        // Property might be readonly.
-                        Console.WriteLine(e);
+                        Console.WriteLine($"Exception in OnPropertyInPropertiesViewChanged: {e2}");
                     }
                 }
                 else
@@ -113,7 +101,13 @@ public class PreviewController
                     Console.WriteLine(e);
                 }
             }
+            else
+            {
+                // Property might be readonly.
+                Console.WriteLine(e);
+            }
         }
+        
     }
     /// <summary>
     /// Will be executed when the PreviewContent was changed by the PreviewViewModel.

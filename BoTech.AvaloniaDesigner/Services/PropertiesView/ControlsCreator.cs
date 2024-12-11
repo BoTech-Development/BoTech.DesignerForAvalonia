@@ -5,6 +5,7 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 
 namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
@@ -76,6 +77,11 @@ public static class ControlsCreator
                     // Primitive Type string and Class String are handled the same way:
                     case "string": return CreateEditBoxForString(propertyInfo, control);
                     case "String": return CreateEditBoxForString(propertyInfo, control);
+                    
+                    // Avalonia Types:
+                    case "Thickness": return ControlsCreatorAvalonia.CreateEditBoxForThickness(propertyInfo, control);
+                    case "HorizontalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForAlignment(propertyInfo, control);
+                    case "VerticalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForAlignment(propertyInfo, control);
                 }
             }
             else if(options == EditBoxOptions.EmbedBindingsView)
@@ -83,7 +89,7 @@ public static class ControlsCreator
                     
             }
         }
-        //}
+        
         return new TextBlock()
         {
             Text = "Can not load a Template for: " + property,
@@ -98,11 +104,12 @@ public static class ControlsCreator
             IsChecked = (bool)propertyInfo.GetValue(control, null)!,
             IsEnabled = propertyInfo.CanWrite
         };
+       
         cb.IsCheckedChanged += (s, e) =>
         {
             if (PreviewController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, cb.IsChecked);
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, cb.IsChecked);
             }
         };
         return cb;
@@ -127,7 +134,7 @@ public static class ControlsCreator
         {
             if (PreviewController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, numericUpDown.Value);
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
             }
         };
         StackPanel panel = new StackPanel()
@@ -165,7 +172,7 @@ public static class ControlsCreator
         {
             if (PreviewController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, numericUpDown.Value);
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
             }
         };
         StackPanel panel = new StackPanel()
@@ -201,7 +208,7 @@ public static class ControlsCreator
         {
             if (PreviewController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, tb.Text);
             }
         };
         // PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
@@ -220,5 +227,12 @@ public static class ControlsCreator
         };
         return panel;
     }
+
+    
+
+   /* private static Control CreateEditBoxForSize(PropertyInfo propertyInfo, Control control)
+    {
+        
+    }*/
    
 }

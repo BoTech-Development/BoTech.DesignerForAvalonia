@@ -173,9 +173,9 @@ public class LayoutViewTemplate : IViewTemplate
 	    {
 		    ReferencedProperties =
 		    {
-			    new StandardViewTemplate.ReferencedProperty("MinWidth", EditBoxOptions.Auto), // double example
-			    new StandardViewTemplate.ReferencedProperty("MaxWidth", EditBoxOptions.Auto),
-			    new StandardViewTemplate.ReferencedProperty("IsEnabled", EditBoxOptions.Auto), // bool
+			    new StandardViewTemplate.ReferencedProperty("Margin", EditBoxOptions.Auto), // double example
+			    new StandardViewTemplate.ReferencedProperty("HorizontalAlignment", EditBoxOptions.Auto),
+			    new StandardViewTemplate.ReferencedProperty("VerticalAlignment", EditBoxOptions.Auto), // bool
 			    new StandardViewTemplate.ReferencedProperty("ZIndex", EditBoxOptions.Auto), // Int example
 			    new StandardViewTemplate.ReferencedProperty("Text", EditBoxOptions.Auto), // string
 		    }
