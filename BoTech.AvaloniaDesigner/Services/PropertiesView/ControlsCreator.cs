@@ -5,6 +5,7 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using BoTech.AvaloniaDesigner.Controller.Editor;
 
 namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 
@@ -15,6 +16,7 @@ namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 
 public static class ControlsCreator
 {
+    public static PreviewController? PreviewController { get; set; } = new();
     /// <summary>
     /// This Method creates a Control to edit a Property for a specific Control
     /// </summary>
@@ -36,22 +38,8 @@ public static class ControlsCreator
                 switch (propertyInfo.PropertyType.Name)
                 {
                     // All possible bool based Types:
-                    case "Boolean":
-                        CheckBox cb = new CheckBox()
-                        {
-                            Content = propertyInfo.Name,
-                            IsChecked = (bool)propertyInfo.GetValue(control, null)!,
-                            IsEnabled = propertyInfo.CanWrite
-                        };
-                        return cb;
-                    case "bool":
-                        CheckBox cb1 = new CheckBox()
-                        {
-                            Content = propertyInfo.Name,
-                            IsChecked = (bool)propertyInfo.GetValue(control, null)!,
-                            IsEnabled = propertyInfo.CanWrite
-                        };
-                        return cb1;
+                    case "Boolean": return CreateEditBoxForBoolean(propertyInfo, control);
+                    case "bool": return CreateEditBoxForBoolean(propertyInfo, control);
                         
                     // All possible Integer based Types. 
                         
@@ -101,6 +89,24 @@ public static class ControlsCreator
             Text = "Can not load a Template for: " + property,
         };
     }
+
+    private static Control CreateEditBoxForBoolean(PropertyInfo propertyInfo, Control control)
+    {
+        CheckBox cb = new CheckBox()
+        {
+            Content = propertyInfo.Name,
+            IsChecked = (bool)propertyInfo.GetValue(control, null)!,
+            IsEnabled = propertyInfo.CanWrite
+        };
+        cb.IsCheckedChanged += (s, e) =>
+        {
+            if (PreviewController != null)
+            {
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, cb.IsChecked);
+            }
+        };
+        return cb;
+    }
     /// <summary>
     /// External Method which is an extraction for all Integer Based Types
     /// </summary>
@@ -109,6 +115,21 @@ public static class ControlsCreator
     /// <returns></returns>
     private static Control CreateEditBoxForInteger(PropertyInfo propertyInfo, Control control)
     {
+        NumericUpDown numericUpDown = new NumericUpDown()
+        {
+            Text = propertyInfo.Name,
+            FormatString = "0",
+            Minimum = 0,
+            Value = Convert.ToDecimal(propertyInfo.GetValue(control, null)),
+            Increment = 1,
+        };
+        numericUpDown.ValueChanged += (sender, args) =>
+        {
+            if (PreviewController != null)
+            {
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, numericUpDown.Value);
+            }
+        };
         StackPanel panel = new StackPanel()
         {
             Orientation = Orientation.Horizontal,
@@ -119,14 +140,7 @@ public static class ControlsCreator
                     Text = propertyInfo.Name + ":",
                     VerticalAlignment = VerticalAlignment.Center,
                 },
-                new NumericUpDown()
-                {
-                    Text = propertyInfo.Name,
-                    FormatString = "0",
-                    Minimum = 0,
-                    Value = Convert.ToDecimal(propertyInfo.GetValue(control, null)),
-                    Increment = 1,
-                }
+               numericUpDown,
             }
         };
         return panel;
@@ -139,6 +153,21 @@ public static class ControlsCreator
     /// <returns></returns>
     private static Control CreateEditBoxForFloatingPoint(PropertyInfo propertyInfo, Control control)
     {
+        NumericUpDown numericUpDown = new NumericUpDown()
+        {
+            Text = propertyInfo.Name,
+            FormatString = "0.00",
+            Minimum = 0,
+            Value = Convert.ToDecimal(propertyInfo.GetValue(control, null))!,
+            Increment = 1,
+        };
+        numericUpDown.ValueChanged += (s, e) =>
+        {
+            if (PreviewController != null)
+            {
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, numericUpDown.Value);
+            }
+        };
         StackPanel panel = new StackPanel()
         {
             Orientation = Orientation.Horizontal,
@@ -149,16 +178,10 @@ public static class ControlsCreator
                     Text = propertyInfo.Name + ":",
                     VerticalAlignment = VerticalAlignment.Center,
                 },
-                new NumericUpDown()
-                {
-                    Text = propertyInfo.Name,
-                    FormatString = "0.00",
-                    Minimum = 0,
-                    Value = Convert.ToDecimal(propertyInfo.GetValue(control, null))!,
-                    Increment = 1,
-                }
+                numericUpDown,
             }
         };
+    
         return panel;
     }
     /// <summary>
@@ -169,6 +192,19 @@ public static class ControlsCreator
     /// <returns></returns>
     private static Control CreateEditBoxForString(PropertyInfo propertyInfo, Control control)
     {
+        TextBox tb = new TextBox()
+        {
+            Text = (string)propertyInfo.GetValue(control, null)!,
+            IsEnabled = propertyInfo.CanWrite,
+        };
+        tb.TextChanged += (s, e) =>
+        {
+            if (PreviewController != null)
+            {
+                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
+            }
+        };
+        // PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
         StackPanel panel = new StackPanel()
         {
             Orientation = Orientation.Horizontal,
@@ -179,14 +215,10 @@ public static class ControlsCreator
                     Text = propertyInfo.Name + ":",
                     VerticalAlignment = VerticalAlignment.Center,
                 },
-                new TextBox()
-                {
-                    Text = (string)propertyInfo.GetValue(control, null)!,
-                    IsEnabled = propertyInfo.CanWrite
-                }
+                tb
             }
         };
         return panel;
     }
-    
+   
 }

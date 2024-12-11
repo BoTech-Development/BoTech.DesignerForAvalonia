@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using BoTech.AvaloniaDesigner.Controller.Editor;
+using BoTech.AvaloniaDesigner.Services.PropertiesView;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 using BoTech.AvaloniaDesigner.Views.Editor;
 
@@ -32,6 +33,8 @@ public class MainViewModel : ViewModelBase
         {
             DataContext = new PropertiesViewModel(previewController)
         };
+        // Add the PreviewController Instance to the ControlsCreator class:
+        ControlsCreator.PreviewController = previewController;
         previewController.Init();
     }
 }

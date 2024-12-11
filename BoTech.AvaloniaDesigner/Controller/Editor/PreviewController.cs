@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using Avalonia.Controls;
 using BoTech.AvaloniaDesigner.Models.Editor;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -64,7 +66,55 @@ public class PreviewController
            // PreviewViewModel.PreviewContentChanged += OnPreviewContentChanged;
         }
     }
+    /// <summary>
+    /// This Method tries to apply the new Value to the referenced Property of the Control
+    /// </summary>
+    /// <param name="control"></param>
+    /// <param name="propertyName"></param>
+    /// <param name="newValue"></param>
+    public void OnPropertyInPropertiesViewChanged(Control control, string propertyName, object? newValue)
+    {
 
+        PropertyInfo[] propertyInfos = control.GetType().GetProperties();
+        PropertyInfo? propertyInfo = null;
+        if ((propertyInfo = propertyInfos.Where(p => p.Name == propertyName).FirstOrDefault()) != null)
+        {
+            try
+            {
+                
+                propertyInfo.SetValue(control, newValue);
+            }
+            catch (Exception e)
+            {
+                // When the Property could not be converted
+                if (newValue != null)
+                {
+                    if (newValue.GetType() != propertyInfo.PropertyType)
+                    {
+                        try
+                        {
+                            // Typecasting when the Type of the new Value is not equals with the Requested Type of the Property
+                            propertyInfo.SetValue(control, Convert.ChangeType(newValue, propertyInfo.PropertyType));
+                        }
+                        catch (Exception e2)
+                        {
+                            Console.WriteLine($"Exception in OnPropertyInPropertiesViewChanged: {e2}");
+                        }
+                    }
+                    else
+                    {
+                        // Property might be readonly.
+                        Console.WriteLine(e);
+                    }
+                }
+                else
+                {
+                    // Property might be readonly.
+                    Console.WriteLine(e);
+                }
+            }
+        }
+    }
     /// <summary>
     /// Will be executed when the PreviewContent was changed by the PreviewViewModel.
     /// <b>Important this Method must be called by each class which change the Preview Content.</b>
