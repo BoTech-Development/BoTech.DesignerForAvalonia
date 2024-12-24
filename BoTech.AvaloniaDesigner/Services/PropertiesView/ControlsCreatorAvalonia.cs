@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Mime;
 using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
@@ -15,119 +17,56 @@ public static class ControlsCreatorAvalonia
 {
     public static PreviewController? PreviewController { get; set; } = new();
 
-    public static Control CreateEditableControlForAlignment(PropertyInfo propertyInfo, Control control)
+    /// <summary>
+    /// This Method creates an ComboBox for all Enums. When the Selection changed the given Property of the Control will change too.
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="control"></param>
+    /// <returns></returns>
+    public static Control CreateEditableControlForEnum(PropertyInfo propertyInfo, Control control)
     {
-        StackPanel panel = new();
-        panel.Orientation = Orientation.Horizontal;
-        ComboBox choices = new ComboBox();
-        if (propertyInfo.PropertyType == typeof(HorizontalAlignment))
-        {
-            choices = new ComboBox()
-            {
-                Items =
-                {
-                    new ComboBoxItem()
-                    {
-                        Content = "Center"
-                    },
-                    new ComboBoxItem()
-                    {
-                        Content = "Left"
-                    },
-                    new ComboBoxItem()
-                    {
-                        Content = "Right"
-                    },
-                    new ComboBoxItem()
-                    {
-                        Content = "Stretch"
-                    }
-                }
-            };
-        }
-        else if (propertyInfo.PropertyType == typeof(VerticalAlignment))
-        {
-            choices = new ComboBox()
-            {
-                Items =
-                {
-                    new ComboBoxItem()
-                    {
-                        Content = "Bottom"
-                    },
-                    new ComboBoxItem()
-                    {
-                        Content = "Center"
-                    },
-                    new ComboBoxItem()
-                    {
-                        Content = "Top"
-                    },
-                    new ComboBoxItem()
-                    {
-                        Content = "Stretch"
-                    }
-                },
-                SelectedValue =new ComboBoxItem()
-                {
-                    Content = propertyInfo.GetValue(control).ToString()
-                } 
-            };
-        }
-
+        ComboBox choices = AddComboBoxItemsForEnum(propertyInfo, propertyInfo.GetValue(control).ToString(), new ComboBox());
         choices.SelectionChanged += (s, e) =>
         {
-            HandleSelectionChangedForAlignment(propertyInfo, control, choices);
+            HandleSelectionForEnumChanged(propertyInfo, control, choices);
         };
-        panel.Children.Add(new TextBlock()
-        {
-            Text = propertyInfo.Name + ":"
-        });
-        panel.Children.Add(choices);
-        return panel;
+        return ControlsCreator.AddEditBoxToStackPanel(choices, propertyInfo);
     }
-
-    private static void HandleSelectionChangedForAlignment(PropertyInfo propertyInfo, Control control, ComboBox comboBox)
+    
+    /// <summary>
+    /// A Helper Method to Create a ComboBox for an Enum. This Method also sets the selected Value of the ComboBox to the current Value of the propertyInfo (Control).
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="selectedItem"></param>
+    /// <param name="comboBox"></param>
+    /// <returns></returns>
+    private static ComboBox AddComboBoxItemsForEnum(PropertyInfo propertyInfo, string selectedItem , ComboBox comboBox)
     {
-        if (comboBox.SelectedItem != null && PreviewController != null)
+        string[] items = Enum.GetNames(propertyInfo.PropertyType);
+        foreach (string item in items)
         {
-            if (propertyInfo.PropertyType == typeof(HorizontalAlignment))
+            ComboBoxItem comboBoxItem = new ComboBoxItem()
             {
-                switch (((ComboBoxItem)comboBox.SelectedItem).Content!)
-                {
-                    case "Center":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, HorizontalAlignment.Center);
-                        break;
-                    case "Left":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, HorizontalAlignment.Left);
-                        break;
-                    case "Right":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, HorizontalAlignment.Right);
-                        break;
-                    case "Stretch":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, HorizontalAlignment.Stretch);
-                        break;
-                }
-            }
-            else if (propertyInfo.PropertyType == typeof(VerticalAlignment))
+                Content = item
+            };
+            comboBox.Items.Add(comboBoxItem);
+            if (item == selectedItem)
             {
-                switch (((ComboBoxItem)comboBox.SelectedItem).Content!)
-                {
-                    case "Bottom":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, VerticalAlignment.Bottom);
-                        break;
-                    case "Center":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, VerticalAlignment.Center);
-                        break;
-                    case "Top":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, VerticalAlignment.Top);
-                        break;
-                    case "Stretch":
-                        PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, VerticalAlignment.Stretch);
-                        break;
-                }
+                comboBox.SelectedItem = comboBoxItem;
             }
         }
+        return comboBox;
+    }
+    /// <summary>
+    /// Event Handler for any enum based Property. This Method sets or changes the property in the Control.
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="control"></param>
+    /// <param name="comboBox"></param>
+    private static void HandleSelectionForEnumChanged(PropertyInfo propertyInfo, Control control, ComboBox comboBox)
+    {
+        ComboBoxItem selectedItem = ((ComboBoxItem)comboBox.SelectedItem!);
+        propertyInfo.SetValue(control, Enum.Parse(propertyInfo.PropertyType, selectedItem.Content.ToString()));
     }
     /// <summary>
     /// Creates a Control for the Thickness object. This Method can be used for Properties like Margin or Padding.

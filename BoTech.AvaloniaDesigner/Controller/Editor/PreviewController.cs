@@ -70,7 +70,7 @@ public class PreviewController
     /// This Method tries to apply the new Value to the referenced Property of the Control
     /// </summary>
     /// <param name="control"></param>
-    /// <param name="propertyName"></param>
+    /// <param name="propertyInfo"></param>
     /// <param name="newValue"></param>
     public void OnPropertyInPropertiesViewChanged(Control control, PropertyInfo propertyInfo, object? newValue)
     {
