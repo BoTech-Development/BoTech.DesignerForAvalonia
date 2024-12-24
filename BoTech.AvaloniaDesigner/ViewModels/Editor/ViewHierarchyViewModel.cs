@@ -23,6 +23,7 @@ public class ViewHierarchyViewModel : ViewModelBase
         _previewController = previewController;
         _previewController.ViewHierarchyViewModel = this;
         TreeViewNodes = new ObservableCollection<TreeViewNode>();
+        Reload();
     }
 
     public void OnTreeViewSelectionChanged()

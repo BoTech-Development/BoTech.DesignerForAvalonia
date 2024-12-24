@@ -49,17 +49,17 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
     /// </summary>
     public PreviewController PreviewController { get; set; }
 
-    public PreviewViewModel(PreviewController PreviewController)
+    public PreviewViewModel(PreviewController previewController)
     {
         TextBlock pleaseWait = new TextBlock()
         {
             Text = "Please wait while initialisation...",
         };
-        this.PreviewController = PreviewController;
-        this.PreviewController.PreviewViewModel = this;
-        this.PreviewController.PreviewContent = new Grid();
-        this.PreviewController.PreviewContent.Children.Add(pleaseWait);
-      
+        PreviewController = previewController;
+        PreviewController.PreviewViewModel = this;
+        PreviewController.PreviewContent = new Grid();
+        PreviewController.PreviewContent.Children.Add(pleaseWait);
+        
         //Init();
     }
 
