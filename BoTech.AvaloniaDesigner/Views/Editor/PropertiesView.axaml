@@ -5,7 +5,10 @@
              xmlns:vm="clr-namespace:BoTech.AvaloniaDesigner.ViewModels.Editor"
              x:Class="BoTech.AvaloniaDesigner.Views.Editor.PropertiesView"
              x:DataType="vm:PropertiesViewModel">
-    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8">
+    <Border Name="CornerBorder" 
+        BorderThickness="2" 
+        BorderBrush="Gray" 
+        CornerRadius="8">
         <Grid RowDefinitions="Auto, Auto">
             <TextBlock>Properties</TextBlock>
             <ContentControl Grid.Row="1" Content="{Binding Tabs}">

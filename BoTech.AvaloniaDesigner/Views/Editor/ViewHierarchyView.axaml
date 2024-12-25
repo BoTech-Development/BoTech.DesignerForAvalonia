@@ -6,7 +6,10 @@
              xmlns:vm="clr-namespace:BoTech.AvaloniaDesigner.ViewModels.Editor"
              x:Class="BoTech.AvaloniaDesigner.Views.Editor.ViewHierarchyView"
              x:DataType="vm:ViewHierarchyViewModel">
-    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8">
+    <Border Name="CornerBorder" 
+        BorderThickness="2" 
+        BorderBrush="Gray" 
+        CornerRadius="8">
         <Grid RowDefinitions="Auto, Auto">
             <StackPanel>
                 <TextBlock>View-Hierarchy</TextBlock>
@@ -20,16 +23,19 @@
                     </AutoCompleteBox.InnerRightContent>
                 </AutoCompleteBox>
             </StackPanel>
-            <TreeView Grid.Row="1" 
-                    ItemsSource="{Binding TreeViewNodes}"
-                    SelectionChanged="TreeView_OnSelectionChanged"
-                    SelectedItem="{Binding SelectedItem}">
-                <TreeView.ItemTemplate>
-                    <TreeDataTemplate ItemsSource="{Binding Children}">
-                        <TextBlock Text="{Binding Text}"></TextBlock>
-                    </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <ScrollViewer Grid.Row="1" 
+                          Height="{Binding #CornerBorder.Bounds.Height}">
+                <TreeView 
+                        ItemsSource="{Binding TreeViewNodes}"
+                        SelectionChanged="TreeView_OnSelectionChanged"
+                        SelectedItem="{Binding SelectedItem}">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Text}"></TextBlock>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </ScrollViewer>
         </Grid>
     </Border>
 </UserControl>

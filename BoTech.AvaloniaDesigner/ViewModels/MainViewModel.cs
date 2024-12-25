@@ -15,10 +15,7 @@ public class MainViewModel : ViewModelBase
     public ViewHierarchyView ViewHierarchyView { get; set; }
     public PropertiesView PropertiesView { get; set; }
     
-    /// <summary>
-    /// Current View Size
-    /// </summary>
-    public Rect Bounds { get; set; }
+ 
 
     public MainViewModel()
     {
@@ -37,7 +34,7 @@ public class MainViewModel : ViewModelBase
         };
         PropertiesView = new PropertiesView()
         {
-            DataContext = new PropertiesViewModel(previewController, this)
+            DataContext = new PropertiesViewModel(previewController)
         };
         // Add the PreviewController Instance to the ControlsCreator class:
         ControlsCreator.PreviewController = previewController;

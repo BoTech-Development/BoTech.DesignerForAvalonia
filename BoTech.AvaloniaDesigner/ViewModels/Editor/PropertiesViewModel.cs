@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reactive.Subjects;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -26,8 +28,8 @@ public class PropertiesViewModel : ViewModelBase
     
     private PreviewController _previewController;
     private Control _currentControl = new();
-    private MainViewModel _mainViewModel;
-    public PropertiesViewModel(PreviewController previewController, MainViewModel mainViewModel)
+
+    public PropertiesViewModel(PreviewController previewController)
     {
         //Creating all Templates
         List<IViewTemplate> templates = new List<IViewTemplate>();
@@ -36,12 +38,20 @@ public class PropertiesViewModel : ViewModelBase
         layout.vm = this;
         TabContents.Add(layout);
 
-        _mainViewModel = mainViewModel;
-        this.UpdateView();
+        
         
         _previewController = previewController;
         _previewController.PropertiesViewModel = this;
+    }
+    /// <summary>
+    /// This Method is called by the Code-Behind.
+    /// The Code Behind has to set some Properties like the CornerBorder.
+    ///  Only when these properties are set the propertiesView can render.
+    /// </summary>
+    public void Init()
+    {
        
+        UpdateView();
     }
     /// <summary>
     /// Render the IViewTemplates with the correct data from the Control injected. 
@@ -65,6 +75,8 @@ public class PropertiesViewModel : ViewModelBase
     /// </summary>
     private void UpdateView()
     {
+       
+        
         // Removing all Tabs
         Tabs.Items.Clear();
         // Converting
@@ -75,12 +87,9 @@ public class PropertiesViewModel : ViewModelBase
             tab.Content = new ScrollViewer()
                 {
                     Content = content.PreRenderedContent,
-                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                    HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-                    MaxHeight = 800
-                    // TODO: Correct the Scroll Viewer
-                  //  MaxHeight = _mainViewModel.Bounds.Height,
-                  //  MaxWidth = _mainViewModel.Bounds.Width,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+                    HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+                    Height = 800,
                 };
             Tabs.Items.Add(tab);
         }
