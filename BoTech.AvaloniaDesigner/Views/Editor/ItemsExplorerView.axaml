@@ -9,7 +9,10 @@
     <Design.DataContext>
         <vm:ItemsExplorerViewModel></vm:ItemsExplorerViewModel>
     </Design.DataContext>
-    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8">
+    <Border Name="CornerBorder"
+        BorderThickness="2" 
+        BorderBrush="Gray" 
+        CornerRadius="8">
         <Grid RowDefinitions="Auto, Auto">
             <StackPanel>
                 <AutoCompleteBox 
@@ -22,16 +25,19 @@
                     </AutoCompleteBox.InnerRightContent>
                 </AutoCompleteBox>
             </StackPanel>
-            <TreeView Grid.Row="1" 
-                    ItemsSource="{Binding TreeViewNodes}"
-                    SelectionChanged="TreeView_OnSelectionChanged"
-                    SelectedItem="{Binding SelectedItem}">
-                <TreeView.ItemTemplate>
-                    <TreeDataTemplate ItemsSource="{Binding Children}">
-                        <TextBlock Text="{Binding Text}"></TextBlock>
-                    </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <!--Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type Border}},Path=Height}"-->
+            <ScrollViewer Grid.Row="1" 
+                          Height="{Binding #CornerBorder.Bounds.Height}">
+                <TreeView ItemsSource="{Binding TreeViewNodes}"
+                        SelectionChanged="TreeView_OnSelectionChanged"
+                        SelectedItem="{Binding SelectedItem}">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Text}"></TextBlock>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </ScrollViewer>
         </Grid>
     </Border>
 </UserControl>
