@@ -80,7 +80,7 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
             string error = "";
             if (!PlaceControlByPointerPosition(out error))
             {
-                // Error Handeling
+                // Error Handling
             }
 
         }

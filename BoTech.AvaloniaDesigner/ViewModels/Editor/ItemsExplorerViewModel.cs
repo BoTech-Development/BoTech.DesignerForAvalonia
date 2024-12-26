@@ -64,6 +64,16 @@ public class ItemsExplorerViewModel : ViewModelBase
             Control? control = Activator.CreateInstance(controlType) as Control;
             if (control != null)
             {
+                if (controlType.GetProperty("Text") != null)
+                {
+                    // Control has the Text Property
+                    control.GetType().GetProperty("Text").SetValue(control, "Your Text goes here...");
+                }
+
+                if (controlType.GetProperty("Content") != null)
+                {
+                    control.GetType().GetProperty("Content").SetValue(control, "Your Content goes here...");
+                }
                 return control;
             }
             return new TextBlock()

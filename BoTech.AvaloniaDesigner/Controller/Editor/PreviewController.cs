@@ -134,10 +134,11 @@ public class PreviewController
 
     public void DraggingPaused()
     {
-        
+        Operation = EDragAndDropOperation.Paused;
     }
     public void EndDrag()
     {
         CurrentControl = null;
+        Operation = EDragAndDropOperation.None;
     }
 }
