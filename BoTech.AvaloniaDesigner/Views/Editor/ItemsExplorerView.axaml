@@ -30,6 +30,7 @@
                           Height="{Binding #CornerBorder.Bounds.Height}">
                 <TreeView ItemsSource="{Binding TreeViewNodes}"
                         SelectionChanged="TreeView_OnSelectionChanged"
+                        SelectionMode="Single"
                         SelectedItem="{Binding SelectedItem}">
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate ItemsSource="{Binding Children}">

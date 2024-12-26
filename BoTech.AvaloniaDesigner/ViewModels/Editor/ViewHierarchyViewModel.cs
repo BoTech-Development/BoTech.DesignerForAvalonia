@@ -54,7 +54,7 @@ public class ViewHierarchyViewModel : ViewModelBase
         
         TreeViewNode newNode = new TreeViewNode()
         {
-            Text = control.GetType().Name,
+            Text = control.GetType().Name + " (" + control.Name + ")",
             ControlInstance = control,
         };
         // When the Control has Children

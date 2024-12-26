@@ -15,6 +15,10 @@ public class ItemsExplorerViewModel : ViewModelBase
 {
     public ObservableCollection<TreeViewNode> TreeViewNodes { get; set;  } 
     public TreeViewNode? SelectedItem { get; set; }
+    /// <summary>
+    /// Is used to fix the error that the OnTreeViewSelectionChanged is called twice
+    /// </summary>
+    private TreeViewNode? _oldSelectedItem = null;
     
     // will be injected
     private PreviewController _previewController;
@@ -42,7 +46,7 @@ public class ItemsExplorerViewModel : ViewModelBase
             nodes.Add(new TreeViewNode()
             {
                 Text = controlBasedType.Name,
-                ControlInstance = GetDefaultInstanceForControl(controlBasedType)
+                ControlType = controlBasedType
             });
         }
 
@@ -51,13 +55,13 @@ public class ItemsExplorerViewModel : ViewModelBase
             new TreeViewNode()
             {
                 Text = "Avalonia Controls",
-                ControlInstance = null,
+                ControlType = null,
                 Children = nodes
             }
         };
     }
 
-    private Control GetDefaultInstanceForControl(Type controlType)
+    private Control GetDefaultInstanceForControl(Type controlType, int count)
     {
         try
         {
@@ -73,6 +77,12 @@ public class ItemsExplorerViewModel : ViewModelBase
                 if (controlType.GetProperty("Content") != null)
                 {
                     control.GetType().GetProperty("Content").SetValue(control, "Your Content goes here...");
+                }
+                
+                // Create the unique Name:
+                if (controlType.GetProperty("Name") != null)
+                {
+                    control.GetType().GetProperty("Name").SetValue(control, controlType.Name + "_" + count.ToString());
                 }
                 return control;
             }
@@ -98,7 +108,12 @@ public class ItemsExplorerViewModel : ViewModelBase
     /// </summary>
     public void OnTreeViewSelectionChanged()
     {
-        if(SelectedItem != null) _previewController.StartDrag(SelectedItem.ControlInstance);
+        if (SelectedItem != null) //&& SelectedItem != _oldSelectedItem)
+        {
+            _previewController.StartDrag(GetDefaultInstanceForControl(SelectedItem.ControlType, SelectedItem.Count));
+            SelectedItem.Count++;
+            _oldSelectedItem = SelectedItem;
+        }
     }
     /// <summary>
     /// The TreeViewNode class is a model for each TreeView Node.<br/>
@@ -111,7 +126,11 @@ public class ItemsExplorerViewModel : ViewModelBase
         /// <summary>
         /// Referenced Control
         /// </summary>
-        public required Control ControlInstance { get; set; } 
+        public required Type ControlType { get; set; } 
+        /// <summary>
+        /// Counts how often the Control was added to the Preview to create a unique name for the Control.
+        /// </summary>
+        public int Count { get; set; }
         // Icon
     }
 }
