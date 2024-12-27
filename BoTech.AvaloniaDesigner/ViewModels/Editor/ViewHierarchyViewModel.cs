@@ -17,11 +17,11 @@ public class ViewHierarchyViewModel : ViewModelBase
     } 
     public TreeViewNode? SelectedItem { get; set; }
     
-    private PreviewController _previewController;
-    public ViewHierarchyViewModel(PreviewController previewController)
+    private EditorController _editorController;
+    public ViewHierarchyViewModel(EditorController editorController)
     {
-        _previewController = previewController;
-        _previewController.ViewHierarchyViewModel = this;
+        _editorController = editorController;
+        _editorController.ViewHierarchyViewModel = this;
         TreeViewNodes = new ObservableCollection<TreeViewNode>();
         Reload();
     }
@@ -30,19 +30,19 @@ public class ViewHierarchyViewModel : ViewModelBase
     {
         if (SelectedItem != null)
         {
-            _previewController.SelectedControl = SelectedItem.ControlInstance;
-            _previewController.OnSelectedControlChanged();// Call the Event so that all other views will notified.
+            _editorController.SelectedControl = SelectedItem.ControlInstance;
+            _editorController.OnSelectedControlChanged();// Call the Event so that all other views will notified.
         }
     }
 
     /// <summary>
-    /// Method to update the TreeView, when the PreviewContent has changed. Will be called by the <see cref="PreviewController">
+    /// Method to update the TreeView, when the PreviewContent has changed. Will be called by the <see cref="EditorController">
     ///     <cref>OnPreviewContentChanged</cref>
     /// </see>
     /// </summary>
     public void Reload()
     {
-        TreeViewNode mainNode = GetTreeViewNodesFromControl(_previewController.PreviewContent);
+        TreeViewNode mainNode = GetTreeViewNodesFromControl(_editorController.PreviewContent);
         TreeViewNodes = new ObservableCollection<TreeViewNode>();
         TreeViewNodes.Add(mainNode);
         // Remove the main Node (Is useless)

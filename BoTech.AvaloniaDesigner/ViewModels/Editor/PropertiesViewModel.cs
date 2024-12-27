@@ -26,10 +26,10 @@ public class PropertiesViewModel : ViewModelBase
 
     private List<TabContent> TabContents { get; } = new List<TabContent>();
     
-    private PreviewController _previewController;
+    private EditorController _editorController;
     private Control _currentControl = new();
 
-    public PropertiesViewModel(PreviewController previewController)
+    public PropertiesViewModel(EditorController editorController)
     {
         //Creating all Templates
         List<IViewTemplate> templates = new List<IViewTemplate>();
@@ -40,8 +40,8 @@ public class PropertiesViewModel : ViewModelBase
 
         
         
-        _previewController = previewController;
-        _previewController.PropertiesViewModel = this;
+        _editorController = editorController;
+        _editorController.PropertiesViewModel = this;
     }
     /// <summary>
     /// This Method is called by the Code-Behind.

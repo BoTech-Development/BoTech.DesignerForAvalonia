@@ -15,67 +15,23 @@ namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
 
 public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
 {
-/*
-    /// <summary>
-    /// Event will be called if the Preview changed
-    /// </summary>
-    public event EventHandler<Grid>? PreviewContentChanged;
-    protected virtual void OnPreviewContentChanged(Grid previewContent)
-    {
-       /* EventHandler<Grid>? handler = PreviewContentChanged;
-        if (handler != null)
-        {
-            handler(this, previewContent);
-        }*/
-    /*
-       PreviewContentChanged?.Invoke(this, previewContent);
-    }
-    private Grid _previewContent;
-    public Grid PreviewContent
-    {
-        get => _previewContent;
-        set
-        {
-            // Call the Event.
-            OnPreviewContentChanged(value);
-            _previewContent = value;
-        }
-    }
-*/
-
 
     /// <summary>
     /// Will be injected.
     /// </summary>
-    public PreviewController PreviewController { get; set; }
+    public EditorController EditorController { get; set; }
 
-    public PreviewViewModel(PreviewController previewController)
+    public PreviewViewModel(EditorController editorController)
     {
-        TextBlock pleaseWait = new TextBlock()
-        {
-            Text = "Please wait while initialisation...",
-        };
-        PreviewController = previewController;
-        PreviewController.PreviewViewModel = this;
-        PreviewController.PreviewContent = new Grid();
-        PreviewController.PreviewContent.Children.Add(pleaseWait);
-        
-        //Init();
+        EditorController = editorController;
     }
-
-    // Will be called from another Class
-    private void Init()
-    {
-
-    }
-
     // Events:
     public void OnPointerMoved(PointerEventArgs e)
     {
-        if (PreviewController.Operation == EDragAndDropOperation.DropObjectToPreview &&
-            PreviewController.CurrentControl != null)
+        if (EditorController.Operation == EDragAndDropOperation.DropObjectToPreview &&
+            EditorController.CurrentControl != null)
         {
-            if(PreviewController.CurrentControl != null) TryToRemoveExistingControl(PreviewController.CurrentControl, PreviewController.PreviewContent);
+            if(EditorController.CurrentControl != null) TryToRemoveExistingControl(EditorController.CurrentControl, EditorController.PreviewContent);
 
             string error = "";
             if (!PlaceControlByPointerPosition(out error))
@@ -91,16 +47,16 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
     /// <param name="e"></param>
     public void OnPointerExited(PointerEventArgs e)
     {
-        if (PreviewController.Operation == EDragAndDropOperation.DropObjectToPreview)
+        if (EditorController.Operation == EDragAndDropOperation.DropObjectToPreview)
         {
-            PreviewController.DraggingPaused();
+            EditorController.DraggingPaused();
         }
     }
     public void OnPointerPressed(PointerEventArgs e)
     {
-        if (PreviewController.Operation == EDragAndDropOperation.DropObjectToPreview)
+        if (EditorController.Operation == EDragAndDropOperation.DropObjectToPreview)
         {
-            PreviewController.EndDrag();
+            EditorController.EndDrag();
         }
     }
     /// <summary>
@@ -133,7 +89,7 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Tries to add the selected Control (located in the Drag and Drop Controller <see cref="PreviewController"/>), to the current Preview Context.<br/>
+    /// Tries to add the selected Control (located in the Drag and Drop Controller <see cref="EditorController"/>), to the current Preview Context.<br/>
     ///  Method adds the Control to the Control or in the Layout Control where the Pointer points to.
     /// </summary>
     /// <param name="error">Can be used to get the error string, when the system can not place the Control there</param>
@@ -145,7 +101,7 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
        
         if (control == null)
         {
-            control = PreviewController.PreviewContent;
+            control = EditorController.PreviewContent;
             //error = "Error: Control can be not null at this point.";
             //return false; // Error Control can be not null at this point.
         }
@@ -154,63 +110,63 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
         {
             if (TypeCastingService.IsLayoutControl(control))
             {
-                if (PreviewController.CurrentControl != null)
+                if (EditorController.CurrentControl != null)
                 {
                     switch (control.GetType().Name)
                     {
                         case "Border":
-                            ((Border)control).Child = PreviewController.CurrentControl;
+                            ((Border)control).Child = EditorController.CurrentControl;
                             placed = true;
                             break;
                         case "Canvas":
-                            ((Canvas)control).Children.Add(PreviewController.CurrentControl);
+                            ((Canvas)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
                         case "DockPanel":
-                            ((DockPanel)control).Children.Add(PreviewController.CurrentControl);
+                            ((DockPanel)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
                         case "Expander":
-                            ((Expander)control).Content = PreviewController.CurrentControl;
+                            ((Expander)control).Content = EditorController.CurrentControl;
                             placed = true;
                             break;
                         case "Grid":
-                            ((Grid)control).Children.Add(PreviewController.CurrentControl);
+                            ((Grid)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
                         case "GridSplitter":
                             throw new NotSupportedException(
                                 "The Control Grid Splitter is not supported in this Version");
-                            //  ((GridSplitter)control)..Add(PreviewController.CurrentControl); 
+                            //  ((GridSplitter)control)..Add(EditorController.CurrentControl); 
                             break;
                         case "Panel":
-                            ((Panel)control).Children.Add(PreviewController.CurrentControl);
+                            ((Panel)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
                         case "RelativePanel":
-                            ((RelativePanel)control).Children.Add(PreviewController.CurrentControl);
+                            ((RelativePanel)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
                         case "ScrollViewer":
-                            ((ScrollViewer)control).Content = PreviewController.CurrentControl;
+                            ((ScrollViewer)control).Content = EditorController.CurrentControl;
                             placed = true;
                             break;
                         case "SplitView":
                             throw new NotSupportedException("The Control SplitView is not supported in this Version");
                             // TODO: Add MessageBox to let the user decide if he wants to place the new Object in the Content or Pane side.
-                            // ((SplitView)control)..Add(PreviewController.CurrentControl); 
+                            // ((SplitView)control)..Add(EditorController.CurrentControl); 
                             break;
                         case "TabControl":
                             throw new NotSupportedException("The Control TabControl is not supported in this Version");
                             // TODO: Implement the TabControl
-                            // ((TabControl)control)..Add(PreviewController.CurrentControl); 
+                            // ((TabControl)control)..Add(EditorController.CurrentControl); 
                             break;
                         case "UniformGrid":
-                            ((UniformGrid)control).Children.Add(PreviewController.CurrentControl);
+                            ((UniformGrid)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
                         case "WrapPanel":
-                            ((WrapPanel)control).Children.Add(PreviewController.CurrentControl);
+                            ((WrapPanel)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
 
@@ -242,16 +198,16 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
         // place it into the Grid:
         if (!placed)
         {
-            if (PreviewController.CurrentControl != null)
+            if (EditorController.CurrentControl != null)
             {
-                PreviewController.PreviewContent.Children.Add(PreviewController.CurrentControl);
+                EditorController.PreviewContent.Children.Add(EditorController.CurrentControl);
                 // TODO: Call this Method by an Event
-                PreviewController.OnPreviewContentChanged();
+                EditorController.OnPreviewContentChanged();
             }
         }
         else
         {
-            PreviewController.OnPreviewContentChanged();
+            EditorController.OnPreviewContentChanged();
         }
         
         return false;

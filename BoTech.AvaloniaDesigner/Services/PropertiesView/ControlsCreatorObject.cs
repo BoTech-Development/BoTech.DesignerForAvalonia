@@ -287,7 +287,7 @@ public class ControlsCreatorObject
             if (parameterInfo.Name != null)
                 model.OnParameterForConstructorChanged(parameterInfo.Name, tb.Text);
         };
-        // PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
+        // EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
         return ControlsCreatorObject.AddEditableControlToStackPanel(tb, parameterInfo);
     }
 

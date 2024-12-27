@@ -15,7 +15,7 @@ namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 /// </summary>
 public static class ControlsCreatorAvalonia
 {
-    public static PreviewController? PreviewController { get; set; } = new();
+    public static EditorController? PreviewController { get; set; } = new();
 
     /// <summary>
     /// This Method creates an ComboBox for all Enums. When the Selection changed the given Property of the Control will change too.
@@ -170,7 +170,7 @@ public static class ControlsCreatorAvalonia
         return panel;
     }
     /// <summary>
-    /// Method first creates an new Thickness object and calls then the PreviewController
+    /// Method first creates an new Thickness object and calls then the EditorController
     /// </summary>
     /// <param name="propertyInfo"></param>
     /// <param name="control"></param>

@@ -21,11 +21,11 @@ public class ItemsExplorerViewModel : ViewModelBase
     private TreeViewNode? _oldSelectedItem = null;
     
     // will be injected
-    private PreviewController _previewController;
+    private EditorController _editorController;
     
-    public ItemsExplorerViewModel(PreviewController previewController)
+    public ItemsExplorerViewModel(EditorController editorController)
     {
-        _previewController = previewController;
+        _editorController = editorController;
       
        
         CreateTreeView();
@@ -110,7 +110,7 @@ public class ItemsExplorerViewModel : ViewModelBase
     {
         if (SelectedItem != null) //&& SelectedItem != _oldSelectedItem)
         {
-            _previewController.StartDrag(GetDefaultInstanceForControl(SelectedItem.ControlType, SelectedItem.Count));
+            _editorController.StartDrag(GetDefaultInstanceForControl(SelectedItem.ControlType, SelectedItem.Count));
             SelectedItem.Count++;
             _oldSelectedItem = SelectedItem;
         }

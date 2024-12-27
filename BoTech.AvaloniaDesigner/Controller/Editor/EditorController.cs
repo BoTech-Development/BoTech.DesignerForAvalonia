@@ -2,17 +2,24 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using BoTech.AvaloniaDesigner.Models.Editor;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
+using BoTech.AvaloniaDesigner.Views.Editor;
 
 namespace BoTech.AvaloniaDesigner.Controller.Editor;
 
-public class PreviewController
+public class EditorController
 {
-    // All View Models which are Related to the Controller:
-    // Each ViewModel has to set its Property in its ctor.
-    public PreviewViewModel? PreviewViewModel { get; set; }
-    public ItemsExplorerViewModel? ItemsExplorerViewModel { get; set; }
+ 
+    // All Views that are needed for the Editor:
+    public SolutionExplorerView SolutionExplorerView { get; set; }
+    public PreviewView PreviewView { get; set; }
+    public ItemsExplorerView ItemsView { get; set; } 
+    public ViewHierarchyView ViewHierarchyView { get; set; }
+    public PropertiesView PropertiesView { get; set; }
+    
+    
     public ViewHierarchyViewModel? ViewHierarchyViewModel { get; set; }
     public PropertiesViewModel? PropertiesViewModel { get; set; }
     
@@ -29,7 +36,6 @@ public class PreviewController
     /// </summary>
     public Control? SelectedControl { get; set; }
 
-    //private Grid _previewContent;
 
     /// <summary>
     /// Will be set by the <see cref="PreviewViewModel"/> when the user hase changed something.
@@ -37,34 +43,62 @@ public class PreviewController
     public Grid PreviewContent { get; set; }
    
     
-    /*/// <summary>
-    /// Event will be called if the Preview had changed
-    /// </summary>
-    public event EventHandler<Grid>? PreviewContentChanged;
-    protected virtual void OnPreviewContentChanged(Grid previewContent)
-    {
-        PreviewContentChanged?.Invoke(this, previewContent);
-    }*/
-    
-    
-    
-   // private Grid OriginalContent { get; set; }
-    
-    public PreviewController()
+    public EditorController()
     {
         Operation = EDragAndDropOperation.None;
         CurrentControl = null;
         
+        // Init PreviewContent
+        TextBlock pleaseWait = new TextBlock()
+        {
+            Text = "Please wait while initialisation...",
+        };
+        PreviewContent = new Grid();
+        PreviewContent.Children.Add(pleaseWait);
+        
     }
     /// <summary>
     /// The Controller has to be Initialized before it can run.
+    /// The Init Method is used to create all Views.
+    /// <returns>A grid is returned that contains all views belonging to the editor.</returns>
     /// </summary>
-    public void Init()
+    public StackPanel Init(string selectedPath)
     {
-        if (PreviewViewModel != null)
+        SolutionExplorerView = new SolutionExplorerView()
         {
-           // PreviewViewModel.PreviewContentChanged += OnPreviewContentChanged;
-        }
+            DataContext = new SolutionExplorerViewModel(selectedPath),
+            //[Grid.ColumnProperty] = 0
+        };
+        PreviewView = new PreviewView()
+        {
+            DataContext = new PreviewViewModel(this)
+            
+        };
+        ItemsView = new ItemsExplorerView()
+        {
+            DataContext = new ItemsExplorerViewModel(this)
+        };
+        ViewHierarchyView = new ViewHierarchyView()
+        {
+            DataContext = new ViewHierarchyViewModel(this)
+        };
+        PropertiesView = new PropertiesView()
+        {
+            DataContext = new PropertiesViewModel(this)
+        };
+        return new StackPanel()
+        {
+            Orientation = Orientation.Horizontal,
+            Children =
+            {
+                SolutionExplorerView,
+                ItemsView,
+                PreviewView,
+                ViewHierarchyView,
+                PropertiesView,
+            },
+           // ColumnDefinitions = new ColumnDefinitions("Auto, Auto, Auto, Auto ,Auto"),
+        };   
     }
     /// <summary>
     /// This Method tries to apply the new Value to the referenced Property of the Control

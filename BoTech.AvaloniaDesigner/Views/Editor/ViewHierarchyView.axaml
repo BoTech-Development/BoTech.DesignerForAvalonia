@@ -23,8 +23,7 @@
                     </AutoCompleteBox.InnerRightContent>
                 </AutoCompleteBox>
             </StackPanel>
-            <ScrollViewer Grid.Row="1" 
-                          Height="{Binding #CornerBorder.Bounds.Height}">
+            <ScrollViewer Grid.Row="1" >
                 <TreeView 
                         ItemsSource="{Binding TreeViewNodes}"
                         SelectionChanged="TreeView_OnSelectionChanged"

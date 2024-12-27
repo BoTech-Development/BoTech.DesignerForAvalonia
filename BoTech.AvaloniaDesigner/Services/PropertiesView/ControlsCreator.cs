@@ -18,7 +18,7 @@ namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 
 public static class ControlsCreator
 {
-    public static PreviewController? PreviewController { get; set; } = new();
+    public static EditorController? EditorController { get; set; } = new();
     public static readonly List<string> SupportedPrimitiveTypes = new List<string> { "Boolean", "bool", "Int16","UInt16","Int32","UInt32","Int64", "UInt64", "Single", "Double", "Decimal", "String", "string" };
     /// <summary>
     /// A List of all Types which do not need an editable Constructor and are stored under the namespace Avalonia.
@@ -150,9 +150,9 @@ public static class ControlsCreator
        
         cb.IsCheckedChanged += (s, e) =>
         {
-            if (PreviewController != null)
+            if (EditorController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, cb.IsChecked);
+                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, cb.IsChecked);
             }
         };
         return cb;
@@ -175,9 +175,9 @@ public static class ControlsCreator
         };
         numericUpDown.ValueChanged += (sender, args) =>
         {
-            if (PreviewController != null)
+            if (EditorController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
+                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
             }
         };
         
@@ -201,9 +201,9 @@ public static class ControlsCreator
         };
         numericUpDown.ValueChanged += (s, e) =>
         {
-            if (PreviewController != null)
+            if (EditorController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
+                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
             }
         };
         return AddEditBoxToStackPanel(numericUpDown, propertyInfo);
@@ -223,12 +223,12 @@ public static class ControlsCreator
         };
         tb.TextChanged += (s, e) =>
         {
-            if (PreviewController != null)
+            if (EditorController != null)
             {
-                PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, tb.Text);
+                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, tb.Text);
             }
         };
-        // PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
+        // EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
         return AddEditBoxToStackPanel(tb, propertyInfo);
     }
 }

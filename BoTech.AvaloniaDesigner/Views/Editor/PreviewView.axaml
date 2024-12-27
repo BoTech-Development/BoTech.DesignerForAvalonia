@@ -6,9 +6,12 @@
              x:DataType="vm:PreviewViewModel"
              x:Class="BoTech.AvaloniaDesigner.Views.Editor.PreviewView">
     <Design.DataContext>
-        <vm:PreviewViewModel></vm:PreviewViewModel>
+        <vm:PreviewViewModel/>
     </Design.DataContext> 
-    <Border BorderThickness="2" BorderBrush="Gray" CornerRadius="8" >
+    <Border BorderThickness="2" 
+            BorderBrush="Gray" 
+            CornerRadius="8" 
+            >
         <Grid RowDefinitions="Auto, Auto" >
             <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button>Reload</Button>
@@ -19,7 +22,7 @@
                             PointerPressed="Preview_OnPointerPressed" 
                             PointerExited="Preview_OnPointerExited" 
                             PointerMoved="Preview_OnPointerMoved" 
-                            Content="{Binding PreviewController.PreviewContent}"></ContentControl>
+                            Content="{Binding EditorController.PreviewContent}"></ContentControl>
         </Grid>
     </Border>
     

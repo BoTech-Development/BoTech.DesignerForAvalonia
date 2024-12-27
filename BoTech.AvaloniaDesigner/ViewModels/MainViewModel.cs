@@ -1,44 +1,48 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 using BoTech.AvaloniaDesigner.Views.Editor;
+using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public string Greeting => "Welcome to Avalonia!";
-    public PreviewView PreviewView { get; set; }
-    public ItemsExplorerView ItemsView { get; set; } 
-    public ViewHierarchyView ViewHierarchyView { get; set; }
-    public PropertiesView PropertiesView { get; set; }
-    
- 
+    public TopNavigationView TopNavigationView { get; set; }
+
+    private Control _content = new TextBlock()
+    {
+        Text = "Please Open a Directory",
+        FontWeight = FontWeight.Bold,
+        Foreground = Brushes.Orange,
+    };
+
+    /// <summary>
+    /// Here all Views will be injected with a Grid.
+    /// </summary>
+    public Control Content
+    {
+        get => _content; 
+        set => this.RaiseAndSetIfChanged(ref _content, value);
+    } 
+    public StatusConsoleView StatusConsoleView { get; set; }
 
     public MainViewModel()
     {
-        PreviewController previewController = new PreviewController();
-        PreviewView = new PreviewView()
+      
+        TopNavigationView = new TopNavigationView()
         {
-            DataContext = new PreviewViewModel(previewController)
+            DataContext = new TopNavigationViewModel(this)
         };
-        ItemsView = new ItemsExplorerView()
-        {
-            DataContext = new ItemsExplorerViewModel(previewController)
-        };
-        ViewHierarchyView = new ViewHierarchyView()
-        {
-            DataContext = new ViewHierarchyViewModel(previewController)
-        };
-        PropertiesView = new PropertiesView()
-        {
-            DataContext = new PropertiesViewModel(previewController)
-        };
-        // Add the PreviewController Instance to the ControlsCreator class:
-        ControlsCreator.PreviewController = previewController;
-        previewController.Init();
         
+        
+        
+        StatusConsoleView = new StatusConsoleView()
+        {
+
+        };
     }
 }
