@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.iOS" Version="11.2.2" />
+    <PackageReference Include="Avalonia.iOS" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.2.3" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
   </ItemGroup>
 

@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
+using BoTech.AvaloniaDesigner.Services.XML;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 using BoTech.AvaloniaDesigner.Views.Editor;
 using ReactiveUI;
@@ -32,6 +33,8 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
+        new Serializer();
+        //new Deserializer().Deserialize("", null);
       
         TopNavigationView = new TopNavigationView()
         {

@@ -2,6 +2,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Serialization;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using BoTech.AvaloniaDesigner.Controller.Editor;
 using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -15,12 +20,18 @@ public class SolutionExplorerViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _treeViewNodes, value);
     } 
     public TreeViewNode? SelectedItem { get; set; }
+    public EditorController EditorController { get; set; }
     private string _selectedFolder = "";
-    public SolutionExplorerViewModel(string selectedPath)
+    private string _assemblyPath;
+    private string _projectName;
+    public SolutionExplorerViewModel(string projectName, string selectedPath, EditorController editorController)
     {
-        TreeViewNode node = new TreeViewNode("Files", new DirectoryInfo(selectedPath));
-        UpdateTreeView(selectedPath, node);
-        TreeViewNodes.Add(node);
+        EditorController = editorController;
+        _projectName = projectName;
+        TreeViewNode rootNode = new TreeViewNode("Files", new DirectoryInfo(selectedPath));
+        UpdateTreeView(selectedPath, rootNode);
+        TreeViewNodes.Add(rootNode);
+        _assemblyPath = ExtractPathToAssemblyFromNodes(rootNode);
     }
 
     public void OnTreeViewNodeSelectedChanged()
@@ -29,20 +40,78 @@ public class SolutionExplorerViewModel : ViewModelBase
         {
             if (SelectedItem.File != null)
             {
-                switch (SelectedItem.File.Extension)
+                switch (SelectedItem.File.Name.Substring(SelectedItem.File.Name.IndexOf('.'), SelectedItem.File.Name.Length - SelectedItem.File.Name.IndexOf('.')))
                 {
-                    case "axaml":
+                    case ".axaml":
+                        LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
                         break;
-                    case "axaml.cs":
+                    case ".axaml.cs":
+                        LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
                         break;
-                    case "cs":
+                    case ".cs":
                         break;
                 }
             }
         }
     }
-
-    public void UpdateTreeView(string selectedFolder, TreeViewNode currentNode)
+    /// <summary>
+    /// This Method Update the current PreviewContent Property in the EditorController to the new File that should be load.
+    /// </summary>
+    /// <param name="pathToFile">Full-path to the .axaml File</param>
+    /// <param name="pathToAssembly">Full-path to the builded Assembly of the loaded Project.</param>
+    private void LoadPreviewFromFile(string pathToFile, string pathToAssembly)
+    {
+       // XmlSerializer serializer = new XmlSerializer(typeof(Control));
+       // StringReader reader = new StringReader(File.ReadAllText(pathToFile));
+       
+        //Control controla = (Control)serializer.Deserialize(reader);
+           
+        
+        
+        
+        object newContent = AvaloniaRuntimeXamlLoader.Load(File.ReadAllText(pathToFile), Assembly.LoadFile(pathToAssembly));
+        if (newContent is Control control)
+        {
+            EditorController.PreviewContent = new Grid()
+            {
+                Children =
+                {
+                    (Control)newContent
+                }
+            };
+        }
+        // RuntimeXamlLoaderDocument.
+    }
+    /// <summary>
+    /// This Method searches in all subdirectories to find the pre-built File: For example: MyApp.Desktop.dll
+    /// This Method can only search for an Assembly which was built for a Desktop device.
+    /// </summary>
+    /// <param name="rootNode"></param>
+    /// <returns>The full Path to the Assembly or string.Empty when the File was not found.</returns>
+    private string ExtractPathToAssemblyFromNodes(TreeViewNode rootNode)
+    {
+        if (rootNode.Text == _projectName + ".dll")
+        {
+            if(rootNode.File != null)
+                return rootNode.File.FullName;
+        }
+        else
+        {
+            string path = string.Empty;
+            foreach (TreeViewNode childNode in rootNode.Children)
+            {
+                path = ExtractPathToAssemblyFromNodes(childNode);
+                if(path != string.Empty) return path;
+            }
+        }
+        return string.Empty;
+    }
+    /// <summary>
+    /// Update the Tree which represents the Folder Structure.
+    /// </summary>
+    /// <param name="selectedFolder"></param>
+    /// <param name="currentNode"></param>
+    private void UpdateTreeView(string selectedFolder, TreeViewNode currentNode)
     {
         // Add all Directories to the 
         List<string> directories = Directory.EnumerateDirectories(selectedFolder).ToList();

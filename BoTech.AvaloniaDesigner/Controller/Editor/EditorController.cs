@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -62,11 +61,11 @@ public class EditorController
     /// The Init Method is used to create all Views.
     /// <returns>A grid is returned that contains all views belonging to the editor.</returns>
     /// </summary>
-    public StackPanel Init(string selectedPath)
+    public StackPanel Init(string selectedPath, string projectName)
     {
         SolutionExplorerView = new SolutionExplorerView()
         {
-            DataContext = new SolutionExplorerViewModel(selectedPath),
+            DataContext = new SolutionExplorerViewModel(projectName, selectedPath, this),
             //[Grid.ColumnProperty] = 0
         };
         PreviewView = new PreviewView()
@@ -100,6 +99,8 @@ public class EditorController
            // ColumnDefinitions = new ColumnDefinitions("Auto, Auto, Auto, Auto ,Auto"),
         };   
     }
+
+    
     /// <summary>
     /// This Method tries to apply the new Value to the referenced Property of the Control
     /// </summary>

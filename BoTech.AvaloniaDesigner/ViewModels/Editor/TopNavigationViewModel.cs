@@ -10,6 +10,7 @@ namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
 public class TopNavigationViewModel : ViewModelBase
 {
     public string SelectedPath { get; set; } = string.Empty;
+    public string ProjectName { get; set; } = string.Empty;
     public ReactiveCommand<Unit, Unit> LoadNewDirectoryCommand { get; set; }
     /// <summary>
     /// It is needed to have the MainViewModel reference to set the Content Object => Can change when the user wants to work either in the Editor or in the Style Editor.
@@ -33,7 +34,7 @@ public class TopNavigationViewModel : ViewModelBase
             {
                 // Creating an EditorController and update the Content Value.
                 EditorController = new EditorController();
-                MainViewModel.Content = EditorController.Init(SelectedPath);
+                MainViewModel.Content = EditorController.Init(SelectedPath, ProjectName);
                 // Add the EditorController Instance to the ControlsCreator class:
                 ControlsCreator.EditorController = EditorController;
             }

@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Controller.Editor;
+using BoTech.AvaloniaDesigner.Services.Avalonia;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
 
@@ -33,13 +34,7 @@ public class ItemsExplorerViewModel : ViewModelBase
 
     private void CreateTreeView()
     {
-        // Gets all Types which are nested under the Avalonia.? Namespace
-        List<TypeInfo> allTypes = Assembly.Load(new AssemblyName("Avalonia.Controls")).DefinedTypes.ToList();
-        // Therefore it is needed to get all Types which are directly nested under Avalonia.Controls
-        List<TypeInfo> sortedTypes = allTypes.Where(type => type.Namespace == "Avalonia.Controls").ToList();
-        
-        // Because of in the new Sorted List are a lot of Types which we do not use for example Interfaces or Classes like Control, it is necessary to filter all Type which inherit from Control.
-        List<TypeInfo> controlBasedTypes = sortedTypes.Where(type => type.AsType().IsSubclassOf(typeof(Control))).ToList();
+        List<TypeInfo> controlBasedTypes = TypeCastingService.GetAllControlBasedAvaloniaTypes();
         ObservableCollection<TreeViewNode> nodes = new ObservableCollection<TreeViewNode>();
         foreach (TypeInfo controlBasedType in controlBasedTypes)
         {
