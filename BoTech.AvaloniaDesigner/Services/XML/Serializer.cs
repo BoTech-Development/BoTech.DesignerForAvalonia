@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Serialization;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using BoTech.AvaloniaDesigner.Models.XML;
@@ -40,11 +42,12 @@ public class Serializer
                 }
             }
         };
-        Serialize(stackPanel);
+        //Serialize(stackPanel);
     }
 
     public string Serialize(Control control)
     {
+      
         XmlObject xmlParent = TranslateControlToXmlObject(control, null);
         string result = TranslateXmlObjectToString(xmlParent);
         return result;

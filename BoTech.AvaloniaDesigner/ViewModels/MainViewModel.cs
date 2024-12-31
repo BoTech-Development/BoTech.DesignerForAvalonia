@@ -33,8 +33,8 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        new Serializer();
-        //new Deserializer().Deserialize("", null);
+        //new Serializer();
+        new Deserializer();//.Deserialize("", null);
       
         TopNavigationView = new TopNavigationView()
         {

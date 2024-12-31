@@ -3,10 +3,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
+using System.Reflection.Metadata;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using BoTech.AvaloniaDesigner.Controller.Editor;
+using BoTech.AvaloniaDesigner.Services.XML;
 using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -24,6 +24,9 @@ public class SolutionExplorerViewModel : ViewModelBase
     private string _selectedFolder = "";
     private string _assemblyPath;
     private string _projectName;
+    
+    private Deserializer? _deserializer = null;
+    private Serializer? _serializer = null;
     public SolutionExplorerViewModel(string projectName, string selectedPath, EditorController editorController)
     {
         EditorController = editorController;
@@ -44,9 +47,10 @@ public class SolutionExplorerViewModel : ViewModelBase
                 {
                     case ".axaml":
                         LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
+                        EditorController.OnPreviewContentChanged();
                         break;
                     case ".axaml.cs":
-                        LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
+                      //  LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
                         break;
                     case ".cs":
                         break;
@@ -61,26 +65,37 @@ public class SolutionExplorerViewModel : ViewModelBase
     /// <param name="pathToAssembly">Full-path to the builded Assembly of the loaded Project.</param>
     private void LoadPreviewFromFile(string pathToFile, string pathToAssembly)
     {
-       // XmlSerializer serializer = new XmlSerializer(typeof(Control));
-       // StringReader reader = new StringReader(File.ReadAllText(pathToFile));
-       
-        //Control controla = (Control)serializer.Deserialize(reader);
-           
-        
-        
-        
-        object newContent = AvaloniaRuntimeXamlLoader.Load(File.ReadAllText(pathToFile), Assembly.LoadFile(pathToAssembly));
-        if (newContent is Control control)
+        if (File.Exists(pathToFile))
         {
-            EditorController.PreviewContent = new Grid()
+            if(_deserializer == null) _deserializer = new Deserializer();
+            //Extract Controls which are embedded in the UserControl or Window
+            Control view = _deserializer.Deserialize(File.ReadAllText(pathToFile), Assembly.LoadFile(pathToAssembly));
+            EditorController.RootNode = _deserializer.RootNode;
+            
+            Control? content = null;
+            
+            UserControl? userControl = view as UserControl;
+            if (userControl != null)
             {
-                Children =
+                content = userControl.Content as Control;
+            }
+            else
+            {
+                Window? window = view as Window;
+                if (window != null)
                 {
-                    (Control)newContent
+                    content = window.Content as Control;
                 }
-            };
+            }
+            if(content != null)
+                EditorController.PreviewContent = new Grid()
+                {
+                    Children =
+                    {
+                        content
+                    }
+                };
         }
-        // RuntimeXamlLoaderDocument.
     }
     /// <summary>
     /// This Method searches in all subdirectories to find the pre-built File: For example: MyApp.Desktop.dll

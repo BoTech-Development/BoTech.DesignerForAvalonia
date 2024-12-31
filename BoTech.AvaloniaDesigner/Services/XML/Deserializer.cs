@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Xml;
 using Avalonia.Controls;
 using BoTech.AvaloniaDesigner.Models.XML;
 
@@ -9,6 +11,7 @@ namespace BoTech.AvaloniaDesigner.Services.XML;
 
 public class Deserializer
 {
+    public XmlNode RootNode { get; set; }
     
     private const char OpenTag = '<';
     private const char EndTag = '/';
@@ -19,42 +22,68 @@ public class Deserializer
     private const char CloseBindingTag = '}';
     private const char PrefixSeparatorTag = ':';
     private const char Spacer = ' ';
+    private const string OpenCommentTag = "<!--";
+    private const string CloseCommentTag = "-->";
     
     private List<TypeInfo> AllControlTypes { get; set; }
     public Deserializer()
     {
         AllControlTypes = Assembly.Load(new AssemblyName("Avalonia.Controls")).DefinedTypes.ToList();
+      /*  Deserialize(
+            "<UserControl xmlns=\"https://github.com/avaloniaui\"\n             xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n             xmlns:d=\"http://schemas.microsoft.com/expression/blend/2008\"\n             xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"\n             xmlns:vm=\"clr-namespace:ADTest.ViewModels\"\n             mc:Ignorable=\"d\" d:DesignWidth=\"800\" d:DesignHeight=\"450\"\n             x:Class=\"ADTest.Views.MainView\"\n             x:DataType=\"vm:MainViewModel\">\n  <Design.DataContext>\n    <!-- This only sets the DataContext for the previewer in an IDE,\n         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->\n    <vm:MainViewModel />\n  </Design.DataContext>\n\n  <TextBlock Text=\"{Binding Greeting}\" HorizontalAlignment=\"Center\" VerticalAlignment=\"Center\"/>\n</UserControl>",
+            null);
+        */
     }
-    /*
-     * 
-     <SP>
-	    <TB Text="Hellord"/>
-	    <BTN>Click Me</BTN>
-	    <SP Orientation="Horizontal">
-		    <TB>Status:...</TB>	
-		    <BTN>Reset</BTN>
-	    </SP>
-    </SP>
-     */
     public Control Deserialize(string xml, Assembly assembly)
     {
-        XmlObject parent = new XmlObject()
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(xml);
+        RootNode = doc.DocumentElement;
+        return TranslateToControls(RootNode);
+        
+       /* XmlObject parent = new XmlObject()
         {
             NameOfType = "Parent",
             Parent = null
         };
+     /*   string oneLineXml = xml.Replace("\t", "").Replace("\n", "").Replace("\r", "");
+        string newOneLineXml = string.Empty;
+        bool foundSecond = false;
+        for (int i = 0; i < oneLineXml.Length; i++)
+        {
+            if (foundSecond)
+            {
+                if (oneLineXml[i] != Spacer)
+                {
+                    foundSecond = false;
+                    newOneLineXml += oneLineXml[i];
+                }
+            }
+            else
+            {
+                if (oneLineXml[i] == Spacer)
+                {
+                    foundSecond = true;
+                }
+                // When the next Character is an <
+                if(oneLineXml[i + 1] != OpenTag) newOneLineXml += oneLineXml[i];
+                
+            }
+        }*/
+        
         //ConvertXmlIntoNodes("<SP><TB Text=\"Hellord\"/><BTN>Click Me</BTN><SP Orientation=\"Horizontal\"><TB>Status:...</TB><BTN>Reset</BTN></SP></SP>", parent);
-        ConvertXmlIntoNodes("<StackPanel><TextBlock Text=\"Hellord\"/><Button>Click Me</Button><StackPanel><TextBlock>Status:...</TextBlock><Button>Reset</Button></StackPanel></StackPanel>", parent);
+        //ConvertXmlIntoNodes("<StackPanel><TextBlock Text=\"Hellord\"/><Button>Click Me</Button><StackPanel><TextBlock>Status:...</TextBlock><Button>Reset</Button></StackPanel></StackPanel>", parent);
+        /*ConvertXmlIntoNodes(xml, parent);
         ConvertXmlPropertiesInXmlBindings(parent);
         Control control = TranslateToControls(parent.Children[0]);
-        return control;
+        return control;*/
     }
 
-    private Control TranslateToControls(XmlObject current)
+    private Control TranslateToControls(XmlNode current)
     {
         Control control;
         TypeInfo? type = null;
-        if ((type = AllControlTypes.Find(t => t.Name == current.NameOfType)) != null)
+        if ((type = AllControlTypes.Find(t => t.Name == current.Name)) != null)
         {
             control = (Control)Activator.CreateInstance(type);
         }
@@ -62,7 +91,7 @@ public class Deserializer
         {
             control = new TextBlock()
             {
-                Text = "Can not find: " + current.NameOfType + " int the Avalonia.Controls dll."
+                Text = "Can not find: " + current.Name + " int the Avalonia.Controls dll."
             };
         }
         AddPropertiesToControl(current, control);
@@ -77,10 +106,10 @@ public class Deserializer
 
         if ((propertyInfo = control.GetType().GetProperty("Children")) != null)
         {
-            if (current.Children.Count >= 1)
+            if (current.ChildNodes.Count >= 1)
             {
                 List<Control> children = new List<Control>();
-                foreach (XmlObject child in current.Children)
+                foreach (XmlNode child in current.ChildNodes)
                 {
                     children.Add(TranslateToControls(child));
                 }
@@ -89,11 +118,11 @@ public class Deserializer
                     childrenList.AddRange(children);
                 }
             }
-            else if (current.DataBetween != string.Empty)
+            else if (current.InnerText != string.Empty)
             {
                 propertyInfo.SetValue(control, new TextBlock()
                 {
-                    Text = current.DataBetween,
+                    Text = current.InnerText,
                 });
             }
         }
@@ -105,26 +134,26 @@ public class Deserializer
 
         if ((propertyInfo = control.GetType().GetProperty("Text")) != null)
         {
-            if (current.DataBetween != string.Empty)
+            if (current.InnerText != string.Empty)
             {
-                propertyInfo.SetValue(control, current.DataBetween);
+                propertyInfo.SetValue(control, current.InnerText);
             }
         }
         
         return control;
     }
 
-    private void SetChildOrTextAsContent(PropertyInfo propertyInfo, XmlObject current, Control control)
+    private void SetChildOrTextAsContent(PropertyInfo propertyInfo, XmlNode current, Control control)
     {
-        if (current.Children.Count == 1)
+        if (current.ChildNodes.Count == 1)
         {
-            propertyInfo.SetValue(control, TranslateToControls(current.Children[0]));
+            propertyInfo.SetValue(control, TranslateToControls(current.ChildNodes[0]));
         }
-        else if(current.DataBetween != string.Empty)
+        else if(current.InnerText != string.Empty)
         {
             propertyInfo.SetValue(control, new TextBlock()
             {
-                Text = current.DataBetween,
+                Text = current.InnerText,
             });
         }
     }
@@ -133,191 +162,17 @@ public class Deserializer
     /// </summary>
     /// <param name="current"></param>
     /// <param name="control"></param>
-    private void AddPropertiesToControl(XmlObject current, Control control)
+    private void AddPropertiesToControl(XmlNode current, Control control)
     {
-        foreach (XmlProperty property in current.Properties)
+        foreach (XmlAttribute property in current.Attributes)
         {
             PropertyInfo? propertyInfo = null;
             // Check if Property is available
-            if ((propertyInfo = control.GetType().GetProperty(property.PropertyName)) != null)
+            if ((propertyInfo = control.GetType().GetProperty(property.Name)) != null)
             {
-                if(propertyInfo.CanWrite) propertyInfo.SetValue(control, Convert.ChangeType(property.PropertyValue, propertyInfo.PropertyType));
+                if(propertyInfo.CanWrite) propertyInfo.SetValue(control, Convert.ChangeType(property.Value, propertyInfo.PropertyType));
             }
         }
     }
-    private void ConvertXmlPropertiesInXmlBindings(XmlObject parent)
-    {
-        foreach (XmlProperty property in parent.Properties)
-        {
-            if (property.PropertyValue.StartsWith(OpenBindingTag) && property.PropertyValue.EndsWith(CloseBindingTag))
-            {
-                string valueWithoutBindingTags = property.PropertyValue.Replace("{", "").Replace("}", "");
-                string[] seperated = valueWithoutBindingTags.Split(" ");
-                if (seperated.Length == 2)
-                {
-                    property.Binding = new XmlBinding()
-                    {
-                        BindingType = seperated[0],
-                        BindingValue = seperated[1],
-                    };
-                }
-            }
-        }
-
-        foreach (XmlObject child in parent.Children)
-        {
-            ConvertXmlPropertiesInXmlBindings(child);
-        }
-    }
-    private void ConvertXmlIntoNodes(string xml, XmlObject parentNode, int currentIndex = 0)
-    {
-        XmlObject currentNode;
-        // Search for open "<" Tag
-        while (xml[currentIndex] != OpenTag)
-        {
-            if(currentIndex == xml.Length - 1) return;
-            // Do nothing
-            currentIndex++;
-        }
-
-        currentIndex++;
-        
-        // This variable is needed to avoid that XML nodes like </StackPanel> are not evaluated and processed as a new node.
-        // This would result in a new XmlObject being instantiated for each XML node.
-        int checkCount = 0;
-        
-        // Load the Type Name
-        string typeName = string.Empty;
-        // Ends if the String is at the end or the current Character is "/", ">" or " "
-        while ((xml[currentIndex] != Spacer && xml[currentIndex] != CloseTag && xml[currentIndex] != EndTag))
-        {
-            if(currentIndex == xml.Length - 1) return;
-            typeName += xml[currentIndex];
-            currentIndex++;
-            checkCount++;
-        }
-
-        if (checkCount >= 2)
-        {
-            currentNode = new XmlObject()
-            {
-                Parent = parentNode,
-                NameOfType = typeName,
-            };
-            parentNode.Children.Add(currentNode);
-
-            switch (xml[currentIndex])
-            {
-                // A Property will follow
-                case Spacer:
-                    LoadParameters(xml, currentIndex, currentNode, parentNode);
-                    break;
-                // There will be Data or Xml between
-                case CloseTag:
-                    LoadDataBetween(xml, currentIndex, currentNode, parentNode);
-                    break;
-                // The Xml Node ends, but there may be other nodes after this Node
-                case EndTag:
-                    // Load all other Nodes or Node
-                    ConvertXmlIntoNodes(xml, parentNode, currentIndex);
-                    break;
-            }
-        }
-
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="xml"></param>
-    /// <param name="currentIndex"></param>
-    /// <param name="currentXmlObject"></param>
-    /// <param name="parentNode">Is needed because after this Xml-Node can be other Xml-Nodes.</param>
-    private void LoadDataBetween(string xml, int currentIndex, XmlObject currentXmlObject, XmlObject parentNode)
-    {
-        currentIndex++;
-        if (xml[currentIndex] == OpenTag)
-        {
-            // There is another xml Node embedded in this Node
-            ConvertXmlIntoNodes(xml, currentXmlObject, currentIndex);
-        }
-        else
-        {
-            // Load Data
-            string data = string.Empty;
-            while (xml[currentIndex] != OpenTag)
-            {
-                if(currentIndex == xml.Length - 1) return;
-                data += xml[currentIndex];
-                currentIndex++;
-            }
-
-            while (xml[currentIndex] != CloseTag)
-            {
-                if(currentIndex == xml.Length - 1) return;
-                currentIndex++;
-            }
-            currentIndex++;
-            currentXmlObject.DataBetween = data;
-            ConvertXmlIntoNodes(xml, parentNode, currentIndex);
-        }
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="xml"></param>
-    /// <param name="currentIndex"></param>
-    /// <param name="currentXmlObject"></param>
-    /// <param name="parentNode">Parent is needed when the currentXmlObject is defined as : &#60;YourClass YourProperty=""/&#62;, because there may be other Xml-Nodes after this Node which has to be added to the Parent Node.</param>
-    private void LoadParameters(string xml, int currentIndex, XmlObject currentXmlObject, XmlObject parentNode)
-    {
-        while (xml[currentIndex] == Spacer)
-        {
-            currentIndex++;
-            string propertyName = string.Empty;
-            while (xml[currentIndex] != PropertyTag)
-            {
-                if(currentIndex == xml.Length - 1) return;
-                propertyName += xml[currentIndex];
-                currentIndex++;
-            }
-
-            XmlProperty property = new XmlProperty()
-            {
-                PropertyName = propertyName,
-            };
-            // Waiting for first '"'
-            while (xml[currentIndex] != OpenOrCloseValueTag)
-            {
-                if(currentIndex == xml.Length - 1) return;
-                currentIndex++;
-            }
-
-            currentIndex++;
-            string value = string.Empty;
-            while (xml[currentIndex] != OpenOrCloseValueTag)
-            {
-                if(currentIndex == xml.Length - 1) return;
-                value += xml[currentIndex];
-                currentIndex++;
-            }
-
-            property.PropertyValue = value;
-            currentXmlObject.Properties.Add(property);
-            currentIndex++;
-           // currentIndex++;
-        }
-
-        switch (xml[currentIndex])
-        {
-            case CloseTag:
-                LoadDataBetween(xml, currentIndex, currentXmlObject, parentNode);
-                break;
-            // The Xml Node ends, but there may be other nodes after this Node
-            case EndTag:
-                // Load all other Nodes or Node
-                ConvertXmlIntoNodes(xml, parentNode, currentIndex);
-                break;
-        }
-    }
-
+    
 }

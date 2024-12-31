@@ -1,14 +1,17 @@
 using System;
 using System.Reflection;
+using System.Xml;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using BoTech.AvaloniaDesigner.Models.Editor;
+using BoTech.AvaloniaDesigner.ViewModels;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 using BoTech.AvaloniaDesigner.Views.Editor;
+using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.Controller.Editor;
 
-public class EditorController
+public class EditorController : ViewModelBase
 {
  
     // All Views that are needed for the Editor:
@@ -35,11 +38,22 @@ public class EditorController
     /// </summary>
     public Control? SelectedControl { get; set; }
 
+    /// <summary>
+    /// Stores the deserialized Xml Node with all ChildNode.
+    /// It is needed to make the serialization process easier, and it is easier to hold the Comments in the xml Documents.
+    /// </summary>
+    public XmlNode RootNode { get; set; }
+    
+    private Grid _previewContent = new Grid();
 
     /// <summary>
     /// Will be set by the <see cref="PreviewViewModel"/> when the user hase changed something.
     /// </summary>
-    public Grid PreviewContent { get; set; }
+    public Grid PreviewContent
+    {
+        get => _previewContent; 
+        set => this.RaiseAndSetIfChanged(ref _previewContent, value);
+    }
    
     
     public EditorController()
