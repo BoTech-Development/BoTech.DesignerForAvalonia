@@ -16,10 +16,6 @@ public class ItemsExplorerViewModel : ViewModelBase
 {
     public ObservableCollection<TreeViewNode> TreeViewNodes { get; set;  } 
     public TreeViewNode? SelectedItem { get; set; }
-    /// <summary>
-    /// Is used to fix the error that the OnTreeViewSelectionChanged is called twice
-    /// </summary>
-    private TreeViewNode? _oldSelectedItem = null;
     
     // will be injected
     private EditorController _editorController;
@@ -55,7 +51,13 @@ public class ItemsExplorerViewModel : ViewModelBase
             }
         };
     }
-
+    /// <summary>
+    /// Returns an instance of the given Control Type with a default Text or Content.
+    /// Additionally, the Name of the Control will bes et with a count Var.
+    /// </summary>
+    /// <param name="controlType"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
     private Control GetDefaultInstanceForControl(Type controlType, int count)
     {
         try
@@ -107,7 +109,6 @@ public class ItemsExplorerViewModel : ViewModelBase
         {
             _editorController.StartDrag(GetDefaultInstanceForControl(SelectedItem.ControlType, SelectedItem.Count));
             SelectedItem.Count++;
-            _oldSelectedItem = SelectedItem;
         }
     }
     /// <summary>

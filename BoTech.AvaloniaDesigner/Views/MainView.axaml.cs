@@ -1,6 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using BoTech.AvaloniaDesigner.ViewModels;
+﻿using Avalonia.Controls;
+
 
 namespace BoTech.AvaloniaDesigner.Views;
 
@@ -9,7 +8,5 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-      
     }
-  
 }

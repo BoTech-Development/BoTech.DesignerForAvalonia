@@ -3,147 +3,93 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using System.Xml.Serialization;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.Avalonia;
+using BoTech.AvaloniaDesigner.ViewModels;
+using BoTech.AvaloniaDesigner.Views;
 
 namespace BoTech.AvaloniaDesigner.Services.XML;
 
 public class Serializer
 {
-    private const char OpenTag = '<';
-    private const char EndTag = '/';
-    private const char CloseTag = '>';
-    private const char PropertyTag = '=';
-    private const char OpenOrCloseValueTag = '"';
-    private const char OpenBindingTag = '{';
-    private const char CloseBindingTag = '}';
-    private const char PrefixSeparatorTag = ':';
-    private const char Spacer = ' ';
+    
     private List<TypeInfo> _allAvaloniaControlTypes;
+
+    private LoadingViewModel _loadingViewModel;
     
     public Serializer()
     {
         _allAvaloniaControlTypes = TypeCastingService.GetAllControlBasedAvaloniaTypes();
-        StackPanel stackPanel = new StackPanel()
-        {
-            Orientation = Orientation.Vertical,
-            Children =
-            {
-                new TextBlock()
-                {
-                    Text = "Hellord"
-                },
-                new Button()
-                {
-                    Content = "Click_Me!",
-                }
-            }
-        };
-        //Serialize(stackPanel);
     }
 
-    public string Serialize(Control control)
+    public string Serialize(XmlControl xmlControl)
     {
-      
-        XmlObject xmlParent = TranslateControlToXmlObject(control, null);
-        string result = TranslateXmlObjectToString(xmlParent);
+        // Init Loading View:
+        _loadingViewModel = new LoadingViewModel();
+        _loadingViewModel.ShowLoadingDialog();
+        _loadingViewModel.StatusText = "Saving...";
+        _loadingViewModel.SubStatusText = "Updating XML...";
+        
+        
+        UpdateXmlNodesForControl(xmlControl);
+        string result = SerializeXmlNode(xmlControl.Node);
         return result;
     }
-
-    private string TranslateXmlObjectToString(XmlObject xmlObject, int recursionDepth = 0)
+    public string SerializeXmlNode(XmlNode node)
     {
-        string result = "\n" + CreateTabSymbols(recursionDepth) + "<" + xmlObject.NameOfType;
+        XmlSerializer serializer = new XmlSerializer(typeof(XmlNode));//, new XmlRootAttribute(node.Name));
+       // TextWriter writer = new Stream
         
-        // All Properties
-        foreach (XmlProperty property in xmlObject.Properties)
+        using (StringWriter stringWriter = new StringWriter())
         {
-            string[] invalidTypeNames = { "Content", "Child", "Children", "Text" };
-            if(!invalidTypeNames.Contains(property.PropertyName))
-                result += " " + property.PropertyName + "=\"" + property.PropertyValue + "\"";
+            serializer.Serialize(stringWriter, node);
+            string result = stringWriter.ToString();
+            return result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
         }
-
-        if (xmlObject.Children.Count == 0 && xmlObject.DataBetween == string.Empty)
-        {
-            result += "/>";
-            return result;
-        }
-
-        if (xmlObject.Children.Count >= 1)
-        {
-            result += ">";
-            foreach (XmlObject child in xmlObject.Children)
-            {
-                result += TranslateXmlObjectToString(child);
-            }
-            result += "\n" + CreateTabSymbols(recursionDepth) + CreateTabSymbols(recursionDepth)  + "</" + xmlObject.NameOfType + ">";
-            return result;
-        }
-
-        if(xmlObject.DataBetween != string.Empty)
-        {
-            result += ">\n" + CreateTabSymbols(recursionDepth + 1) + xmlObject.DataBetween + "\n" + CreateTabSymbols(recursionDepth) + "</" + xmlObject.NameOfType + ">";
-            return result;
-        }
-
-        return "Error";
     }
-
-    private string CreateTabSymbols(int tabCount)
-    {
-        string result = string.Empty;
-        for (int i = 0; i < tabCount; i++)
-        {
-            result += "\t";
-        }
-        return result;
-    }
-    private XmlObject TranslateControlToXmlObject(Control control, XmlObject parent)
-    {
-        XmlObject current = new XmlObject()
-        {
-            NameOfType = control.GetType().Name,
-            Parent = parent,
-        };
+    private void UpdateXmlNodesForControl(XmlControl current)
+    { 
         
-        AddPropertiesThatChanged(current, control);
         
-        PropertyInfo? propertyInfo = null;
-        // Check which Property the Given Control has to create the Data Between Property
-        if ((propertyInfo = control.GetType().GetProperty("Children")) != null)
+        AddPropertiesThatChanged(current.Node, current.Control);
+        // When the current XmlControl has more than one Children => it must be a Control which has the Children Property. 
+        if (current.Children.Count > 1)
         {
-            object? value = propertyInfo.GetValue(control);
-            if (value != null)
+            foreach (XmlControl child in current.Children)
             {
-                if (value is Controls children)
-                {
-                    foreach (Control child in children)
-                    {
-                        current.Children.Add(TranslateControlToXmlObject(child, current));
-                    }
-                }
+                UpdateXmlNodesForControl(child);
             }
         }
-        if ((propertyInfo = control.GetType().GetProperty("Child")) != null)
+        else
         {
-            TranslateChildOrContentProperty(propertyInfo, current, control);
-        }
-        if ((propertyInfo = control.GetType().GetProperty("Content")) != null)
-        {
-            TranslateChildOrContentProperty(propertyInfo, current, control);
-        }
+            PropertyInfo? propertyInfo = null;
+            if ((propertyInfo = current.Control.GetType().GetProperty("Child")) != null)
+            {
+                TranslateChildOrContentProperty(propertyInfo, current, current.Control);
+            }
 
-        if ((propertyInfo = control.GetType().GetProperty("Text")) != null)
-        {
-            string? text = propertyInfo.GetValue(control)?.ToString();
-            if(text != null)current.DataBetween = text;
+            if ((propertyInfo = current.Control.GetType().GetProperty("Content")) != null)
+            {
+                TranslateChildOrContentProperty(propertyInfo, current, current.Control);
+            }
+
+            if ((propertyInfo = current.Control.GetType().GetProperty("Text")) != null)
+            {
+                string? text = propertyInfo.GetValue(current.Control)?.ToString();
+                if (text != null) current.Node.InnerText = text;
+            }
         }
-        return current;
     }
-
-    private void AddPropertiesThatChanged(XmlObject current, Control control)
+    /// <summary>
+    /// Checks which Property of a Control has not the default Value and creates new Attribute for this Node.
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="control"></param>
+    private void AddPropertiesThatChanged(XmlNode current, Control control)
     {
         object? convertedControl = TryToChangeTypeToAvaloniaControl(control);
        
@@ -160,7 +106,7 @@ public class Serializer
                     if (property.CanRead)
                     {
                         // Find the equivalent property to the "property" in the defaultProperty List
-                        PropertyInfo? defaultProperty = defaultProperties.FirstOrDefault(p => p.Name == property.Name);
+                        PropertyInfo? defaultProperty = defaultProperties.Find(p => p.Name == property.Name);
                         if (defaultProperty != null)
                         {
                             if (defaultProperty.CanRead)
@@ -169,21 +115,16 @@ public class Serializer
                                 {
                                     if (defaultProperty.GetValue(defaultControl) != property.GetValue(control))
                                     {
-                                        XmlProperty xmlProperty = new XmlProperty()
-                                        {
-                                            PropertyName = property.Name,
-                                            PropertyValue = property.GetValue(convertedControl).ToString(),
-                                        };
-                                        current.Properties.Add(xmlProperty);
+                                        XmlAttribute attribute = current.OwnerDocument.CreateAttribute(property.Name);
+                                        attribute.Value = property.GetValue(control).ToString();
+                                        current.Attributes.Append(attribute);
                                     }
                                 }
                                 catch (Exception e)
                                 {
                                     // GetValue can throw an TargetParameterCountException
                                     Console.WriteLine(e);
-                                    
                                 }
-                              
                             }
                         }
                     }
@@ -191,7 +132,11 @@ public class Serializer
             }
         }
     }
-
+    /// <summary>
+    /// This Method is needed to get the correct Type. For example when the given Control is a TextBlock the Method will return the TextBlock.
+    /// </summary>
+    /// <param name="control"></param>
+    /// <returns></returns>
     private object? TryToChangeTypeToAvaloniaControl(Control control)
     {
         foreach (TypeInfo typeInfo in _allAvaloniaControlTypes)
@@ -205,12 +150,16 @@ public class Serializer
             {
                 Console.WriteLine(e);
             }
-           
-           
         }
         return null;
     }
-    private void TranslateChildOrContentProperty(PropertyInfo propertyInfo, XmlObject current, Control control)
+    /// <summary>
+    /// This Method can be used to set the InnerText Property of an XmlNode.
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="current"></param>
+    /// <param name="control"></param>
+    private void TranslateChildOrContentProperty(PropertyInfo propertyInfo, XmlControl current, Control control)
     {
         object? content = propertyInfo.GetValue(control, null);
         if (content != null)
@@ -218,12 +167,13 @@ public class Serializer
             // Data can be set without another xml Node between.
             if (content is TextBlock textBlock)
             {
-                if (textBlock.Text != null) current.DataBetween = textBlock.Text;
+                if (textBlock.Text != null) current.Node.InnerText = textBlock.Text;
             }
             // The Data Between is another Control so it is necessary to create another xml node.
             else if (content is Control childControl)
             {
-                current.Children.Add(TranslateControlToXmlObject(childControl, current));
+                UpdateXmlNodesForControl(current.Children[0]);
+                //current.Children.Add(UpdateXmlNodesForControl(current));
             }
         }
     }

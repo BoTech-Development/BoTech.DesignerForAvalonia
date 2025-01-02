@@ -4,6 +4,7 @@ using System.Xml;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using BoTech.AvaloniaDesigner.Models.Editor;
+using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.ViewModels;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 using BoTech.AvaloniaDesigner.Views.Editor;
@@ -43,17 +44,21 @@ public class EditorController : ViewModelBase
     /// It is needed to make the serialization process easier, and it is easier to hold the Comments in the xml Documents.
     /// </summary>
     public XmlNode RootNode { get; set; }
+    public XmlControl RootConnectedNode { get; set; }
     
-    private Grid _previewContent = new Grid();
+    private Control _previewContent = new Grid();
 
     /// <summary>
     /// Will be set by the <see cref="PreviewViewModel"/> when the user hase changed something.
     /// </summary>
-    public Grid PreviewContent
+    public Control PreviewContent
     {
         get => _previewContent; 
         set => this.RaiseAndSetIfChanged(ref _previewContent, value);
     }
+    
+    public string OpenedFilePath { get; set; }
+    
    
     
     public EditorController()
@@ -66,9 +71,11 @@ public class EditorController : ViewModelBase
         {
             Text = "Please wait while initialisation...",
         };
-        PreviewContent = new Grid();
-        PreviewContent.Children.Add(pleaseWait);
-        
+        PreviewContent = new Grid()
+        {
+            Children = { pleaseWait }
+        };
+
     }
     /// <summary>
     /// The Controller has to be Initialized before it can run.

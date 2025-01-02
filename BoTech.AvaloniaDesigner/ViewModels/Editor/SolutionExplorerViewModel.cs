@@ -21,12 +21,13 @@ public class SolutionExplorerViewModel : ViewModelBase
     } 
     public TreeViewNode? SelectedItem { get; set; }
     public EditorController EditorController { get; set; }
-    private string _selectedFolder = "";
+   
     private string _assemblyPath;
     private string _projectName;
+
     
     private Deserializer? _deserializer = null;
-    private Serializer? _serializer = null;
+
     public SolutionExplorerViewModel(string projectName, string selectedPath, EditorController editorController)
     {
         EditorController = editorController;
@@ -37,6 +38,10 @@ public class SolutionExplorerViewModel : ViewModelBase
         _assemblyPath = ExtractPathToAssemblyFromNodes(rootNode);
     }
 
+
+    /// <summary>
+    /// Gets called when the user Clicks on a File in the TreeView
+    /// </summary>
     public void OnTreeViewNodeSelectedChanged()
     {
         if (SelectedItem != null)
@@ -48,6 +53,7 @@ public class SolutionExplorerViewModel : ViewModelBase
                     case ".axaml":
                         LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
                         EditorController.OnPreviewContentChanged();
+                        EditorController.OpenedFilePath = SelectedItem.File.FullName;
                         break;
                     case ".axaml.cs":
                       //  LoadPreviewFromFile(SelectedItem.File.FullName, _assemblyPath);
@@ -71,6 +77,7 @@ public class SolutionExplorerViewModel : ViewModelBase
             //Extract Controls which are embedded in the UserControl or Window
             Control view = _deserializer.Deserialize(File.ReadAllText(pathToFile), Assembly.LoadFile(pathToAssembly));
             EditorController.RootNode = _deserializer.RootNode;
+            EditorController.RootConnectedNode = _deserializer.RootConnectedNode;
             
             Control? content = null;
             
@@ -87,14 +94,8 @@ public class SolutionExplorerViewModel : ViewModelBase
                     content = window.Content as Control;
                 }
             }
-            if(content != null)
-                EditorController.PreviewContent = new Grid()
-                {
-                    Children =
-                    {
-                        content
-                    }
-                };
+            if (content != null)
+                EditorController.PreviewContent = content;
         }
     }
     /// <summary>

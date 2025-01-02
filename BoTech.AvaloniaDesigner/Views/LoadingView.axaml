@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.AvaloniaDesigner.ViewModels"
+             x:DataType="vm:LoadingViewModel"
+             x:Class="BoTech.AvaloniaDesigner.Views.LoadingView">
+    <Design.DataContext>
+        <vm:LoadingViewModel/>
+    </Design.DataContext> 
+    <StackPanel>
+        <TextBlock FontSize="26">Please wait while Loading...</TextBlock>
+        <TextBlock FontSize="22" Text="{Binding StatusText}"></TextBlock>
+        <TextBlock FontSize="20" Text="{Binding SubStatusText}"></TextBlock>
+        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding CurrentPercentage}" Maximum="{Binding Maximum}"></ProgressBar>
+    </StackPanel>
+</UserControl>

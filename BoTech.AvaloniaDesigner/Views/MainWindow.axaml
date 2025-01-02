@@ -6,7 +6,6 @@
         xmlns:views="clr-namespace:BoTech.AvaloniaDesigner.Views"
         x:Class="BoTech.AvaloniaDesigner.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="BoTech.AvaloniaDesigner"
-        SizeToContent="WidthAndHeight">
+        Title="BoTech.AvaloniaDesigner">
         <views:MainView />
 </Window>

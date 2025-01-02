@@ -1,31 +1,67 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reflection;
+using System.Xml;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 using BoTech.AvaloniaDesigner.Models.Editor;
+using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.Avalonia;
+using BoTech.AvaloniaDesigner.Services.XML;
 using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
 
 public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
 {
-
+    /// <summary>
+    /// when 
+    /// </summary>
+    private XmlControl? _oldConnectedXmlControl = null;
     /// <summary>
     /// Will be injected.
     /// </summary>
     public EditorController EditorController { get; set; }
-
+    /// <summary>
+    /// Will be called when the user clicks the Save Button.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SaveCommand { get; set; }
+    /// <summary>
+    /// Will be called when the User Clicks the Reload Button.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> ReLoadCommand { get; set; }
+    /// <summary>
+    /// The Layout Control where the new Control was injected.
+    /// Must be store because it is used by the CreateXmlControlConnection Method
+    /// </summary>
+    private Control _currentLayoutControl { get; set; }
     public PreviewViewModel(EditorController editorController)
     {
         EditorController = editorController;
+        SaveCommand = ReactiveCommand.Create(OnSaveCommand);
+        ReLoadCommand = ReactiveCommand.Create(OnReLoadCommand);
     }
     // Events:
+    public void OnSaveCommand()
+    {
+        string xml = new Serializer().Serialize(EditorController.RootConnectedNode);
+        if (File.Exists(EditorController.OpenedFilePath))
+        {
+            File.WriteAllText(EditorController.OpenedFilePath, xml);
+        }
+    }
+
+    public void OnReLoadCommand()
+    {
+        
+    }
+    
     public void OnPointerMoved(PointerEventArgs e)
     {
         if (EditorController.Operation == EDragAndDropOperation.DropObjectToPreview &&
@@ -49,20 +85,26 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
     {
         if (EditorController.Operation == EDragAndDropOperation.DropObjectToPreview)
         {
-            EditorController.DraggingPaused();
+            // Remove the new Control to visualize that it is not placed.
+            if (EditorController.CurrentControl != null)
+                TryToRemoveExistingControl(EditorController.CurrentControl, EditorController.PreviewContent);
+            // EditorController.DraggingPaused();
         }
     }
     public void OnPointerPressed(PointerEventArgs e)
     {
         if (EditorController.Operation == EDragAndDropOperation.DropObjectToPreview)
         {
+            CreateXmlControlConnection(_currentLayoutControl, EditorController.CurrentControl);
             EditorController.EndDrag();
         }
     }
+
     /// <summary>
     /// This Method is used to delete the new Control and place it to another position. To Place the control to a new position the Method <see cref="PlaceControlByPointerPosition"/> is used.
     /// </summary>
     /// <param name="control">The new Control</param>
+    /// <param name="previewControl">The Preview Content or the next recursive Control.</param>
     private void TryToRemoveExistingControl(Control control, Control previewControl)
     {
         if (TypeCastingService.IsLayoutControl(previewControl))
@@ -84,15 +126,14 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
                 }
             }
         }
-      
-        
     }
 
     /// <summary>
     /// Tries to add the selected Control (located in the Drag and Drop Controller <see cref="EditorController"/>), to the current Preview Context.<br/>
-    ///  Method adds the Control to the Control or in the Layout Control where the Pointer points to.
+    ///  Method adds the SelectedControl to the Layout Control where the pointer is over.
     /// </summary>
     /// <param name="error">Can be used to get the error string, when the system can not place the Control there</param>
+    /// <param name="control">For the recursive Call</param>
     /// <returns>Returns true when the Control has been added to the Grid or to the correct position.</returns>
     private bool PlaceControlByPointerPosition(out string error, Control? control = null)
     {
@@ -169,10 +210,15 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
                             ((WrapPanel)control).Children.Add(EditorController.CurrentControl);
                             placed = true;
                             break;
+                        case "StackPanel":
+                            ((StackPanel)control).Children.Add(EditorController.CurrentControl);
+                            placed = true;
+                            break;
 
                     }
+                    // Save it for the CreateXmlControlConnection Method
+                    _currentLayoutControl = control;
                 }
-
             }
             else
             {
@@ -200,7 +246,7 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
         {
             if (EditorController.CurrentControl != null)
             {
-                EditorController.PreviewContent.Children.Add(EditorController.CurrentControl);
+             //   EditorController.PreviewContent.Children.Add(EditorController.CurrentControl);
                 // TODO: Call this Method by an Event
                 EditorController.OnPreviewContentChanged();
             }
@@ -212,9 +258,27 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
         
         return false;
     }
-
-
-   
-
-
+    /// <summary>
+    /// Creates a new Connection between a new XmlNode and the new Control that the user has added.
+    /// </summary>
+    /// <param name="layoutControl">The new Control will be added to this Layout Control</param>
+    /// <param name="newControl">The new Control that the User has selected.</param>
+    private void CreateXmlControlConnection(Control layoutControl, Control newControl)
+    {
+        // Find the LayoutControl in the RootConnectedNode
+        XmlControl? xmlControl = EditorController.RootConnectedNode.Find(layoutControl);
+        if (xmlControl != null)
+        {
+            // Create a new Xml node but without the Properties and Inner Text. => This will be created in the Serializer.
+            XmlElement newNode = xmlControl.Node.OwnerDocument.CreateElement(newControl.GetType().Name);
+            
+            xmlControl.Node.AppendChild(newNode);
+            xmlControl.Children.Add(new XmlControl()
+            {
+                Control = newControl,
+                Parent = xmlControl,
+                Node = newNode,
+            });
+        }
+    }
 }
