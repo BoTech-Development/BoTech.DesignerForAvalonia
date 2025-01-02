@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 using DynamicData;
 
@@ -18,15 +19,15 @@ namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 public class ControlsCreatorObject
 {
     private ConstructorModel _constructorModel;
-    private Control _referencedControl; 
+    private XmlControl _referencedXmlControl; 
     public Expander EditableControls { get; set; }
 
 
 
-    public ControlsCreatorObject(PropertyInfo propertyInfo, Control referencedControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
+    public ControlsCreatorObject(PropertyInfo propertyInfo, XmlControl referencedXmlControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
     {
-        _referencedControl = referencedControl;
-        _constructorModel = new ConstructorModel(propertyInfo.PropertyType, propertyInfo.Name, _referencedControl, tabContent, viewTemplateName);
+        _referencedXmlControl = referencedXmlControl;
+        _constructorModel = new ConstructorModel(propertyInfo.PropertyType, propertyInfo.Name, _referencedXmlControl, tabContent, viewTemplateName);
         EditableControls = _constructorModel.Render();
     }
 
@@ -34,77 +35,6 @@ public class ControlsCreatorObject
     {
         EditableControls = _constructorModel.Rerender();;
     }
-
-   /* /// <summary>
-    /// This Method builds a set of Controls for each Property in the Constructor of the given PropertyType.
-    /// Is a Property in the constructor another object, then the Method will create an expander to display the Constructor of the property in the Constructor.
-    /// </summary>
-    /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
-    /// <param name="constructorInfo">Which Constructor should be used of the given PropertyType.</param>
-    /// <returns></returns>
-    public Expander CreateEditableControlForObject(PropertyInfo propertyInfo, Control control)
-    {
-        _constructorModel = new ConstructorModel(propertyInfo.PropertyType, _referencedControl);
-        EditableControls = _constructorModel.Render();
-        _referencedControl = control;
-        return EditableControls;
-    }*/
-
-  /*  private Expander CreateExpanderForConstructorRecursive(Type type, Control control)
-    {
-        ConstructorInfo[] constructors = type.GetConstructors();
-        List<ComboBoxItem> comboBoxItems = new List<ComboBoxItem>();
-        // Create ComboBox with all Constructors of the given Type.
-        // The ComboBox will be used to select the Constructor which should be used to create a new Object.
-        foreach (ConstructorInfo constructor in constructors)
-        {
-            string comboBoxContent = constructor.Name + "(";
-            ParameterInfo[] parameters = constructor.GetParameters();
-            foreach (ParameterInfo parameter in parameters)
-            {
-                comboBoxContent += parameter.ParameterType.Name + " " + parameter.Name + ", ";
-            }
-            comboBoxItems.Add(new ComboBoxItem()
-            {
-                Content = comboBoxContent,
-            });
-            
-        }
-
-        Expander expander = new Expander()
-        {
-            Header = new ComboBox()
-            {
-                ItemsSource = comboBoxItems,
-                SelectedIndex = 0
-            },
-        };
-        StackPanel expanderContent = new StackPanel()
-        {
-            Orientation = Orientation.Vertical
-        };
-        
-        // Create all editable Controls or new Constructor 
-        //Default Constructor Properties:
-        ParameterInfo[] parameters1 = constructors[0].GetParameters();
-        foreach (ParameterInfo parameter in parameters1)
-        {
-            if (ControlsCreator.SupportedPrimitiveTypes.Contains(parameter.ParameterType.Name) ||
-                ControlsCreator.SupportedAvaloniaTypes.Contains(parameter.ParameterType.Name))
-            {
-                ControlsCreatorObject.CreateEditableControl(parameter, null, expanderContent);
-            }
-            else
-            {
-                // The Type is not Supported and need an editable Control for its Constructor
-                expanderContent.Children.Add(CreateExpanderForConstructorRecursive(parameter.ParameterType, control));
-            }
-        }
-        
-        return expander;
-    }*/
-
     /// <summary>
     /// Creates an editable control for a specific parameter and its current value, adding it to the provided expander content.
     /// It determines the type of the parameter and generates an appropriate control accordingly.
@@ -318,9 +248,9 @@ public class ControlsCreatorObject
     public class ConstructorModel
     {
         /// <summary>
-        /// The Control which the User has Selected.
+        /// The Control and XmlNode which the User has Selected.
         /// </summary>
-        private Control ReferencedControl { get; set; } 
+        private XmlControl ReferencedXmlControl { get; set; } 
         private PropertiesViewModel.TabContent TabContent { get; set; }
         private string ViewTemplateName { get; set; }
         /// <summary>
@@ -368,11 +298,11 @@ public class ControlsCreatorObject
         /// <param name="referencedControl"></param>
         /// <param name="tabContent">The TabContent which will handle the Rendering event.</param>
         /// <param name="viewTemplateName">The Name of the Parent ViewTemplate.</param>
-        public ConstructorModel(Type type, string nameOfPropertyInControl ,Control referencedControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
+        public ConstructorModel(Type type, string nameOfPropertyInControl, XmlControl referencedXmlControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
         {   
             _type = type;
             _nameOfPropertyInControl = nameOfPropertyInControl;
-            ReferencedControl = referencedControl;
+            ReferencedXmlControl = referencedXmlControl;
             AvailableConstructors = type.GetConstructors();
             SelectedConstructor = AvailableConstructors[0];
             ParameterValues = new List<object>();
@@ -380,11 +310,11 @@ public class ControlsCreatorObject
             ViewTemplateName = viewTemplateName;
             Create();
         }
-        public ConstructorModel(Type type, string nameOfTypeInConstructor, ConstructorModel parent, Control referencedControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
+        public ConstructorModel(Type type, string nameOfTypeInConstructor, ConstructorModel parent, XmlControl referencedXmlControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
         {   
             _nameOfTypeInConstructor = nameOfTypeInConstructor;
             _type = type;
-            ReferencedControl = referencedControl;
+            ReferencedXmlControl = referencedXmlControl;
             AvailableConstructors = type.GetConstructors();
             SelectedConstructor = AvailableConstructors[0];
             ParameterValues = new List<object>();
@@ -408,7 +338,7 @@ public class ControlsCreatorObject
                 else
                 {
                     // The Type is not Supported and need an editable Control for its Constructor
-                    Children.Add(new ConstructorModel(parameter.ParameterType, parameter.Name, this, ReferencedControl, TabContent, ViewTemplateName));
+                    Children.Add(new ConstructorModel(parameter.ParameterType, parameter.Name, this, ReferencedXmlControl, TabContent, ViewTemplateName));
                     // Create a default Value for this non-Primitive Parameter.
                     // It is neccessary to create a new Item in the List, because the Child object will set it.
                     ParameterValues.Add(null);
@@ -539,7 +469,7 @@ public class ControlsCreatorObject
                         ParameterValues.Clear(); // Reset all Selected Values
                         Create(); // Update all Children and all editable Controls for this Constructor
                         // Call the event Handling Method in the TabContent class to Rerender everything
-                        TabContent.RenderOnlySelectedTemplate(ViewTemplateName, ReferencedControl);
+                        TabContent.RenderOnlySelectedTemplate(ViewTemplateName, ReferencedXmlControl);
                     }
                 }
             }
@@ -604,7 +534,7 @@ public class ControlsCreatorObject
                 {
                     object? nextInstance = SelectedConstructor.Invoke(ParameterValues.ToArray());
                     //object? nextInstance = Activator.CreateInstance(_type, ParameterValues.ToArray());
-                    ReferencedControl.GetType().GetProperty(_nameOfPropertyInControl)?.SetValue(ReferencedControl, nextInstance);
+                    ReferencedXmlControl.Control.GetType().GetProperty(_nameOfPropertyInControl)?.SetValue(ReferencedXmlControl.Control, nextInstance);
                 }
             }
         }
@@ -639,7 +569,7 @@ public class ControlsCreatorObject
                     if (_nameOfPropertyInControl != null)
                     {
                         object? nextInstance = SelectedConstructor.Invoke(ParameterValues.ToArray());
-                        ReferencedControl.GetType().GetProperty(_nameOfPropertyInControl)?.SetValue(ReferencedControl, nextInstance);
+                        ReferencedXmlControl.Control.GetType().GetProperty(_nameOfPropertyInControl)?.SetValue(ReferencedXmlControl.Control, nextInstance);
                     }
                 }
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Avalonia.Controls;
+using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 
@@ -24,7 +25,7 @@ public class StandardViewTemplate : IViewTemplate
     
     private bool _firstRender = true;
     // Note this Method rerenders the Referenced Property when this Method called more than one time.
-    public Control GetViewTemplateForControl(Control control, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
+    public Control GetViewTemplateForControl(XmlControl xmlControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
     {
         if (_firstRender)
         {
@@ -47,14 +48,14 @@ public class StandardViewTemplate : IViewTemplate
                         ControlsCreator.SupportedAvaloniaTypes.Contains(referencedProperty.PropertyInfo.PropertyType
                             .Name))
                     {
-                        stackPanel.Children.Add(ControlsCreator.CreateEditBox(control, referencedProperty.PropertyName,
+                        stackPanel.Children.Add(ControlsCreator.CreateEditBox(xmlControl, referencedProperty.PropertyName,
                             referencedProperty.Options));
                     }
                     else
                     {
                         // Create a new Editable Control with the ControlsCreatorObject class:
                         referencedProperty.ControlCreator = new ControlsCreatorObject(referencedProperty.PropertyInfo,
-                            control, tabContent, viewTemplateName);
+                            xmlControl, tabContent, viewTemplateName);
                         stackPanel.Children.Add(referencedProperty.ControlCreator.EditableControls);
                     }
                 }
@@ -81,7 +82,7 @@ public class StandardViewTemplate : IViewTemplate
                     if (ControlsCreator.SupportedPrimitiveTypes.Contains(referencedProperty.PropertyInfo.PropertyType.Name) ||
                         ControlsCreator.SupportedAvaloniaTypes.Contains(referencedProperty.PropertyInfo.PropertyType.Name))
                     {
-                        stackPanel.Children.Add(ControlsCreator.CreateEditBox(control, referencedProperty.PropertyName, referencedProperty.Options));
+                        stackPanel.Children.Add(ControlsCreator.CreateEditBox(xmlControl, referencedProperty.PropertyName, referencedProperty.Options));
                     }
                     else
                     {

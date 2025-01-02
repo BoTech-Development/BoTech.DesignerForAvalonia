@@ -43,7 +43,6 @@ public class EditorController : ViewModelBase
     /// Stores the deserialized Xml Node with all ChildNode.
     /// It is needed to make the serialization process easier, and it is easier to hold the Comments in the xml Documents.
     /// </summary>
-    public XmlNode RootNode { get; set; }
     public XmlControl RootConnectedNode { get; set; }
     
     private Control _previewContent = new Grid();
@@ -125,14 +124,16 @@ public class EditorController : ViewModelBase
     /// <summary>
     /// This Method tries to apply the new Value to the referenced Property of the Control
     /// </summary>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <param name="propertyInfo"></param>
     /// <param name="newValue"></param>
-    public void OnPropertyInPropertiesViewChanged(Control control, PropertyInfo propertyInfo, object? newValue)
+    public void OnPropertyInPropertiesViewChanged(XmlControl xmlControl, PropertyInfo propertyInfo, object? newValue)
     {
         try
         {
-            propertyInfo.SetValue(control, newValue);
+            propertyInfo.SetValue(xmlControl.Control, newValue);
+            // Apply the new Value: 
+            UpdatePropertyInXmlControl(xmlControl, propertyInfo, newValue);
         }
         catch (Exception e)
         {
@@ -144,7 +145,9 @@ public class EditorController : ViewModelBase
                     try
                     {
                         // Typecasting when the Type of the new Value is not equals with the Requested Type of the Property
-                        propertyInfo.SetValue(control, Convert.ChangeType(newValue, propertyInfo.PropertyType));
+                        propertyInfo.SetValue(xmlControl.Control, Convert.ChangeType(newValue, propertyInfo.PropertyType));
+                        // Apply the new Value: 
+                        UpdatePropertyInXmlControl(xmlControl, propertyInfo, newValue);
                     }
                     catch (Exception e2)
                     {
@@ -166,6 +169,38 @@ public class EditorController : ViewModelBase
         
     }
     /// <summary>
+    /// Updates or create a new XmlAttribute for the given Property and its new Value.
+    /// </summary>
+    /// <param name="xmlControl"></param>
+    /// <param name="propertyInfo"></param>
+    /// <param name="newValue"></param>
+    private void UpdatePropertyInXmlControl(XmlControl xmlControl, PropertyInfo propertyInfo, object? newValue)
+    {
+        if (newValue != null && xmlControl.Node.Attributes != null)
+        {
+            XmlAttribute? selectedAttribute = null;
+            foreach (XmlAttribute attribute in xmlControl.Node.Attributes)
+            {
+                if (attribute.Name == propertyInfo.Name) selectedAttribute = attribute;
+            }
+
+            if (selectedAttribute != null)
+            {
+                selectedAttribute.Value = newValue.ToString();
+            }
+            else
+            {
+                // Attribute is not available in the Node, so it is necessary to create a new one.
+                if (xmlControl.Node.OwnerDocument != null)
+                {
+                    XmlAttribute newAttribute = xmlControl.Node.OwnerDocument.CreateAttribute(propertyInfo.Name);   
+                    newAttribute.Value = newValue.ToString();
+                    xmlControl.Node.Attributes.Append(newAttribute);
+                }
+            }
+        }
+    }
+    /// <summary>
     /// Will be executed when the PreviewContent was changed by the PreviewViewModel.
     /// <b>Important this Method must be called by each class which change the Preview Content.</b>
     /// This Event is needed, because other Views like the ViewHierarchy View has to reload the Tree View.
@@ -179,7 +214,13 @@ public class EditorController : ViewModelBase
     /// </summary>
     public void OnSelectedControlChanged()
     {
-        if (PropertiesViewModel != null && SelectedControl != null) PropertiesViewModel.RenderForControl(SelectedControl);
+        if (PropertiesViewModel != null && SelectedControl != null)
+        {
+            // it is necessary to find the correct XmlControl for the given Control => see V1.0.16 (Issue #19)
+            XmlControl? xmlControl = RootConnectedNode.Find(SelectedControl);
+            if(xmlControl != null)
+                PropertiesViewModel.RenderForControl(xmlControl);
+        }
     }
 
     public void StartDrag(Control? control)

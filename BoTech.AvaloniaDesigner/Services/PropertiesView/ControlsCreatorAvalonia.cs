@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Controller.Editor;
+using BoTech.AvaloniaDesigner.Models.XML;
 
 namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 /// <summary>
@@ -21,14 +22,14 @@ public static class ControlsCreatorAvalonia
     /// This Method creates an ComboBox for all Enums. When the Selection changed the given Property of the Control will change too.
     /// </summary>
     /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <returns></returns>
-    public static Control CreateEditableControlForEnum(PropertyInfo propertyInfo, Control control)
+    public static Control CreateEditableControlForEnum(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
-        ComboBox choices = AddComboBoxItemsForEnum(propertyInfo, propertyInfo.GetValue(control).ToString(), new ComboBox());
+        ComboBox choices = AddComboBoxItemsForEnum(propertyInfo, propertyInfo.GetValue(xmlControl.Control).ToString(), new ComboBox());
         choices.SelectionChanged += (s, e) =>
         {
-            HandleSelectionForEnumChanged(propertyInfo, control, choices);
+            HandleSelectionForEnumChanged(propertyInfo, xmlControl, choices);
         };
         return ControlsCreator.AddEditBoxToStackPanel(choices, propertyInfo);
     }
@@ -40,7 +41,7 @@ public static class ControlsCreatorAvalonia
     /// <param name="selectedItem"></param>
     /// <param name="comboBox"></param>
     /// <returns></returns>
-    private static ComboBox AddComboBoxItemsForEnum(PropertyInfo propertyInfo, string selectedItem , ComboBox comboBox)
+    private static ComboBox AddComboBoxItemsForEnum(PropertyInfo propertyInfo, string selectedItem, ComboBox comboBox)
     {
         string[] items = Enum.GetNames(propertyInfo.PropertyType);
         foreach (string item in items)
@@ -61,12 +62,12 @@ public static class ControlsCreatorAvalonia
     /// Event Handler for any enum based Property. This Method sets or changes the property in the Control.
     /// </summary>
     /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <param name="comboBox"></param>
-    private static void HandleSelectionForEnumChanged(PropertyInfo propertyInfo, Control control, ComboBox comboBox)
+    private static void HandleSelectionForEnumChanged(PropertyInfo propertyInfo, XmlControl xmlControl, ComboBox comboBox)
     {
         ComboBoxItem selectedItem = ((ComboBoxItem)comboBox.SelectedItem!);
-        propertyInfo.SetValue(control, Enum.Parse(propertyInfo.PropertyType, selectedItem.Content.ToString()));
+        propertyInfo.SetValue(xmlControl, Enum.Parse(propertyInfo.PropertyType, selectedItem.Content.ToString()));
     }
     /// <summary>
     /// Creates a Control for the Thickness object. This Method can be used for Properties like Margin or Padding.
@@ -74,43 +75,43 @@ public static class ControlsCreatorAvalonia
     /// <param name="propertyInfo"></param>
     /// <param name="control"></param>
     /// <returns></returns>
-    public static Control CreateEditBoxForThickness(PropertyInfo propertyInfo, Control control)
+    public static Control CreateEditBoxForThickness(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
         NumericUpDown nUdTop = new NumericUpDown()
         {
             Minimum = 0,
-            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(control)!).Top),
+            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(xmlControl.Control)!).Top),
         };
         NumericUpDown nUdRight = new NumericUpDown()
         {
             Minimum = 0,
-            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(control)!).Right),
+            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(xmlControl.Control)!).Right),
         };
         NumericUpDown nUdLeft = new NumericUpDown()
         {
             Minimum = 0,
-            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(control)!).Left),
+            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(xmlControl.Control)!).Left),
         };
         NumericUpDown nUdBottom = new NumericUpDown()
         {
             Minimum = 0,
-            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(control)!).Bottom),
+            Value = Convert.ToDecimal(((Thickness)propertyInfo.GetValue(xmlControl.Control)!).Bottom),
         };
         nUdTop.ValueChanged += (s, e) =>
         {
-            HandleValueChangedEventForThickness(propertyInfo, control, nUdTop, nUdRight, nUdLeft, nUdBottom);
+            HandleValueChangedEventForThickness(propertyInfo, xmlControl, nUdTop, nUdRight, nUdLeft, nUdBottom);
         };
         nUdRight.ValueChanged += (s, e) =>
         {
-            HandleValueChangedEventForThickness(propertyInfo, control, nUdTop, nUdRight, nUdLeft, nUdBottom);
+            HandleValueChangedEventForThickness(propertyInfo, xmlControl, nUdTop, nUdRight, nUdLeft, nUdBottom);
         };
         nUdLeft.ValueChanged += (s, e) =>
         {
-            HandleValueChangedEventForThickness(propertyInfo, control, nUdTop, nUdRight, nUdLeft, nUdBottom);
+            HandleValueChangedEventForThickness(propertyInfo, xmlControl, nUdTop, nUdRight, nUdLeft, nUdBottom);
         };
         nUdBottom.ValueChanged += (s, e) =>
         {
-            HandleValueChangedEventForThickness(propertyInfo, control, nUdTop, nUdRight, nUdLeft, nUdBottom);
+            HandleValueChangedEventForThickness(propertyInfo, xmlControl, nUdTop, nUdRight, nUdLeft, nUdBottom);
         };
         
         StackPanel panel = new StackPanel()
@@ -173,18 +174,18 @@ public static class ControlsCreatorAvalonia
     /// Method first creates an new Thickness object and calls then the EditorController
     /// </summary>
     /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <param name="numericUpDownTop"></param>
     /// <param name="numericUpDownRight"></param>
     /// <param name="numericUpDownLeft"></param>
     /// <param name="numericUpDownBottom"></param>
-    private static void HandleValueChangedEventForThickness(PropertyInfo propertyInfo, Control control, NumericUpDown numericUpDownTop, NumericUpDown numericUpDownRight, NumericUpDown numericUpDownLeft, NumericUpDown numericUpDownBottom)
+    private static void HandleValueChangedEventForThickness(PropertyInfo propertyInfo, XmlControl xmlControl, NumericUpDown numericUpDownTop, NumericUpDown numericUpDownRight, NumericUpDown numericUpDownLeft, NumericUpDown numericUpDownBottom)
     {
         double top = Convert.ToDouble(numericUpDownTop.Value);
         double left = Convert.ToDouble(numericUpDownLeft.Value);
         double right = Convert.ToDouble(numericUpDownRight.Value);
         double bottom = Convert.ToDouble(numericUpDownBottom.Value);
         Thickness thickness = new Thickness(left, top, right, bottom);
-        if(PreviewController != null) PreviewController.OnPropertyInPropertiesViewChanged(control, propertyInfo, thickness);
+        if(PreviewController != null) PreviewController.OnPropertyInPropertiesViewChanged(xmlControl, propertyInfo, thickness);
     }
 }

@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using BoTech.AvaloniaDesigner.Controller.Editor;
+using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
 using BoTech.AvaloniaDesigner.Templates.Editor.PropertiesView;
 using BoTech.AvaloniaDesigner.Views;
@@ -27,7 +28,7 @@ public class PropertiesViewModel : ViewModelBase
     private List<TabContent> TabContents { get; } = new List<TabContent>();
     
     private EditorController _editorController;
-    private Control _currentControl = new();
+    
 
     public PropertiesViewModel(EditorController editorController)
     {
@@ -37,9 +38,6 @@ public class PropertiesViewModel : ViewModelBase
         TabContent layout = new TabContent("Layout", templates);
         layout.vm = this;
         TabContents.Add(layout);
-
-        
-        
         _editorController = editorController;
         _editorController.PropertiesViewModel = this;
     }
@@ -50,23 +48,19 @@ public class PropertiesViewModel : ViewModelBase
     /// </summary>
     public void Init()
     {
-       
         UpdateView();
     }
     /// <summary>
     /// Render the IViewTemplates with the correct data from the Control injected. 
     /// </summary>
     /// <param name="control"></param>
-    public void RenderForControl(Control control)
+    public void RenderForControl(XmlControl xmlControl)
     {
-        _currentControl = control;
-        
         // Prerendering
         foreach (TabContent content in TabContents)
         {
-            content.Render(control);
+            content.Render(xmlControl);
         }
-        
         UpdateView();
     }
     
@@ -75,8 +69,6 @@ public class PropertiesViewModel : ViewModelBase
     /// </summary>
     private void UpdateView()
     {
-       
-        
         // Removing all Tabs
         Tabs.Items.Clear();
         // Converting
@@ -113,7 +105,7 @@ public class PropertiesViewModel : ViewModelBase
         public PropertiesViewModel? vm { get; set; } 
         private List<Control> _preRenderedControls = new List<Control>();
         
-        public void Render(Control control)
+        public void Render(XmlControl xmlControl)
         {
             StackPanel stackPanel = new StackPanel();
             _preRenderedControls.Clear();
@@ -122,7 +114,7 @@ public class PropertiesViewModel : ViewModelBase
                 Expander expander = new Expander()
                 {
                     Header = viewTemplate.Name,
-                    Content = viewTemplate.GetViewTemplateForControl(control, this),
+                    Content = viewTemplate.GetViewTemplateForControl(xmlControl, this),
                 };
                 
                 stackPanel.Children.Add(expander);
@@ -141,13 +133,13 @@ public class PropertiesViewModel : ViewModelBase
         /// <param name="viewTemplateName">The Name of the View Template where the Instance of the ControlsCreatorObject class is located in.</param>
         /// <param name="currentControl">The Control which was Selected by the User.</param>
     
-        public void RenderOnlySelectedTemplate(string viewTemplateName, Control currentControl)
+        public void RenderOnlySelectedTemplate(string viewTemplateName, XmlControl currentXmlControl)
         {
             IViewTemplate? template = null;
             Control newControl = new();
             if ((template = Templates.Find(t => t.Name == viewTemplateName)) != null)
             {
-                newControl = template.GetRerenderedViewTemplateForControl(currentControl, this);
+                newControl = template.GetRerenderedViewTemplateForControl(currentXmlControl, this);
             }
             // Find the Correct Index in the PreRenderedControls List
             int index = Templates.FindIndex(t => t.Name == viewTemplateName);

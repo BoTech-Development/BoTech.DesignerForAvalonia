@@ -76,7 +76,6 @@ public class SolutionExplorerViewModel : ViewModelBase
             if(_deserializer == null) _deserializer = new Deserializer();
             //Extract Controls which are embedded in the UserControl or Window
             Control view = _deserializer.Deserialize(File.ReadAllText(pathToFile), Assembly.LoadFile(pathToAssembly));
-            EditorController.RootNode = _deserializer.RootNode;
             EditorController.RootConnectedNode = _deserializer.RootConnectedNode;
             
             Control? content = null;

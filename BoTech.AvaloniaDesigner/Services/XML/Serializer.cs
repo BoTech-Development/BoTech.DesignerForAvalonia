@@ -53,9 +53,7 @@ public class Serializer
     }
     private void UpdateXmlNodesForControl(XmlControl current)
     { 
-        
-        
-        AddPropertiesThatChanged(current.Node, current.Control);
+        //AddPropertiesThatChanged(current.Node, current.Control);
         // When the current XmlControl has more than one Children => it must be a Control which has the Children Property. 
         if (current.Children.Count > 1)
         {

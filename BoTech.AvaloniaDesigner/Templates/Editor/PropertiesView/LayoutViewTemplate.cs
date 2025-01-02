@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
 
@@ -50,7 +51,7 @@ public class LayoutViewTemplate : IViewTemplate
     private Subject<string> _bindingPaddingTextBottom = new();
     private Subject<string> _bindingPaddingTextLeft = new();
     private Subject<string> _bindingPaddingTextRight = new();
-    public Control GetViewTemplateForControl(Control control, PropertiesViewModel.TabContent tabContent)
+    public Control GetViewTemplateForControl(XmlControl xmlControl, PropertiesViewModel.TabContent tabContent)
     {
 	    // Main Stackpanel
 	    StackPanel stackPanel = new StackPanel();
@@ -65,29 +66,29 @@ public class LayoutViewTemplate : IViewTemplate
 	    {
 		    ReferencedProperties =
 		    {
-			    new StandardViewTemplate.ReferencedProperty("Margin", control, EditBoxOptions.Auto), // double example
-			    new StandardViewTemplate.ReferencedProperty("HorizontalAlignment", control, EditBoxOptions.Auto),
-			    new StandardViewTemplate.ReferencedProperty("VerticalAlignment", control, EditBoxOptions.Auto), // bool
-			    new StandardViewTemplate.ReferencedProperty("ZIndex", control, EditBoxOptions.Auto), // Int example
-			    new StandardViewTemplate.ReferencedProperty("Text", control, EditBoxOptions.Auto), // string
-			    new StandardViewTemplate.ReferencedProperty("FontWeight", control, EditBoxOptions.Auto), // enum
-			    new StandardViewTemplate.ReferencedProperty("Bounds", control, EditBoxOptions.Auto), // double
+			    new StandardViewTemplate.ReferencedProperty("Margin", xmlControl.Control, EditBoxOptions.Auto), // double example
+			    new StandardViewTemplate.ReferencedProperty("HorizontalAlignment", xmlControl.Control, EditBoxOptions.Auto),
+			    new StandardViewTemplate.ReferencedProperty("VerticalAlignment", xmlControl.Control, EditBoxOptions.Auto), // bool
+			    new StandardViewTemplate.ReferencedProperty("ZIndex", xmlControl.Control, EditBoxOptions.Auto), // Int example
+			    new StandardViewTemplate.ReferencedProperty("Text", xmlControl.Control, EditBoxOptions.Auto), // string
+			    new StandardViewTemplate.ReferencedProperty("FontWeight", xmlControl.Control, EditBoxOptions.Auto), // enum
+			    new StandardViewTemplate.ReferencedProperty("Bounds", xmlControl.Control, EditBoxOptions.Auto), // double
 		    }
 	    };
 	    // Saving the Standard View Template for the event handling
 	    StandardViewTemplates.Add(stdViewTemplate);
-	    stackPanel.Children.Add(stdViewTemplate.GetViewTemplateForControl(control, tabContent, Name));
+	    stackPanel.Children.Add(stdViewTemplate.GetViewTemplateForControl(xmlControl, tabContent, Name));
 	    return stackPanel;
     }
 
-    public Control GetRerenderedViewTemplateForControl(Control control, PropertiesViewModel.TabContent tabContent)
+    public Control GetRerenderedViewTemplateForControl(XmlControl xmlControl, PropertiesViewModel.TabContent tabContent)
     {
 	    StackPanel stackPanel = new StackPanel();
 	    // It is necessary because otherwise the Custom Margin Control will not appear on the Properties Editor.
 	    stackPanel.Children.Add(CreateCustomMarginAndPaddingView());
 	    foreach (StandardViewTemplate standardViewTemplate in StandardViewTemplates)
 	    {
-		    stackPanel.Children.Add(standardViewTemplate.GetViewTemplateForControl(control, tabContent, Name));
+		    stackPanel.Children.Add(standardViewTemplate.GetViewTemplateForControl(xmlControl, tabContent, Name));
 	    }
 	    return stackPanel;
     }

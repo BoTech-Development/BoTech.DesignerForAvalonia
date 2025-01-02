@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Controller.Editor;
+using BoTech.AvaloniaDesigner.Models.XML;
 
 namespace BoTech.AvaloniaDesigner.Services.PropertiesView;
 
@@ -28,20 +29,20 @@ public static class ControlsCreator
     /// <summary>
     /// This Method creates a Control to edit a Property for a specific Control
     /// </summary>
-    /// <param name="control">The referenced Control</param>
+    /// <param name="xmlControl">The referenced Control</param>
     /// <param name="property">The Name of the Property of the Control</param>
     /// <param name="options">View Options</param>
     /// <returns>One Avalonia Control when the Property was found and can display (Type casting). If it is not the case a TextBlock with the Error Message will be returned.  </returns>
-    public static Control CreateEditBox(Control control, string property, EditBoxOptions options)
+    public static Control CreateEditBox(XmlControl xmlControl, string property, EditBoxOptions options)
     {
-        Type controlType = control.GetType();
+        Type controlType = xmlControl.Control.GetType();
        // if (controlType.BaseType != typeof(Control))
         //{
         PropertyInfo[] propertyInfos = controlType.GetProperties();
         PropertyInfo? propertyInfo;
         if ((propertyInfo = propertyInfos.Where(p => p.Name == property).FirstOrDefault()) != null)
         {
-            return ControlsCreator.CreateEditBox(propertyInfo, control, options);
+            return ControlsCreator.CreateEditBox(xmlControl, propertyInfo,  options);
         }
         
         return new TextBlock()
@@ -51,69 +52,63 @@ public static class ControlsCreator
     }
 
   
-    public static Control CreateEditBox(PropertyInfo propertyInfo, Control control, EditBoxOptions options)
+    public static Control CreateEditBox(XmlControl xmlControl, PropertyInfo propertyInfo,  EditBoxOptions options)
     {
         if (options == EditBoxOptions.Auto)
         {
             switch (propertyInfo.PropertyType.Name)
             {
                 // All possible bool based Types:
-                case "Boolean": return CreateEditBoxForBoolean(propertyInfo, control);
-                case "bool": return CreateEditBoxForBoolean(propertyInfo, control);
+                case "Boolean": return CreateEditBoxForBoolean(propertyInfo, xmlControl);
+                case "bool": return CreateEditBoxForBoolean(propertyInfo, xmlControl);
                         
                 // All possible Integer based Types. 
                         
-                case "Int16": return CreateEditBoxForInteger(propertyInfo, control);
-                case "UInt16": return CreateEditBoxForInteger(propertyInfo, control);
-                case "Int32": return CreateEditBoxForInteger(propertyInfo, control);
-                case "UInt32": return CreateEditBoxForInteger(propertyInfo, control);
-                case "Int64": return CreateEditBoxForInteger(propertyInfo, control);
-                case "UInt64": return CreateEditBoxForInteger(propertyInfo, control);
+                case "Int16": return CreateEditBoxForInteger(propertyInfo, xmlControl);
+                case "UInt16": return CreateEditBoxForInteger(propertyInfo, xmlControl);
+                case "Int32": return CreateEditBoxForInteger(propertyInfo, xmlControl);
+                case "UInt32": return CreateEditBoxForInteger(propertyInfo, xmlControl);
+                case "Int64": return CreateEditBoxForInteger(propertyInfo, xmlControl);
+                case "UInt64": return CreateEditBoxForInteger(propertyInfo, xmlControl);
                         
                 // All Floating-Point primitive Types:
                         
                 case "Single":
-                    if ((float)propertyInfo.GetValue(control) != float.PositiveInfinity && (float)propertyInfo.GetValue(control) != float.NegativeInfinity)
+                    if ((float)propertyInfo.GetValue(xmlControl.Control) != float.PositiveInfinity && (float)propertyInfo.GetValue(xmlControl.Control) != float.NegativeInfinity)
                     {
-                        return CreateEditBoxForFloatingPoint(propertyInfo, control);
+                        return CreateEditBoxForFloatingPoint(propertyInfo, xmlControl);
                     }
                     return new TextBlock()
                     {
                         Text = "Can not display: " + propertyInfo.Name + "because its +|- infinite.",
                     };
                 case "Double":
-                    if ((double)propertyInfo.GetValue(control) != double.PositiveInfinity && (double)propertyInfo.GetValue(control) != double.NegativeInfinity)
+                    if ((double)propertyInfo.GetValue(xmlControl.Control) != double.PositiveInfinity && (double)propertyInfo.GetValue(xmlControl.Control) != double.NegativeInfinity)
                     {
-                        return CreateEditBoxForFloatingPoint(propertyInfo, control);
+                        return CreateEditBoxForFloatingPoint(propertyInfo, xmlControl);
                     }
                     return new TextBlock()
                     {
                         Text = "Can not display: " + propertyInfo.Name + "because its +|- infinite.",
                     };
-                case "Decimal": return CreateEditBoxForFloatingPoint(propertyInfo, control);
+                case "Decimal": return CreateEditBoxForFloatingPoint(propertyInfo, xmlControl);
                             
                             
                 // Primitive Type string and Class String are handled the same way:
-                case "string": return CreateEditBoxForString(propertyInfo, control);
-                case "String": return CreateEditBoxForString(propertyInfo, control);
+                case "string": return CreateEditBoxForString(propertyInfo, xmlControl);
+                case "String": return CreateEditBoxForString(propertyInfo, xmlControl);
                     
                 // Avalonia Types:
-                case "Thickness": return ControlsCreatorAvalonia.CreateEditBoxForThickness(propertyInfo, control);
-                case "HorizontalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, control);
-                case "VerticalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, control);
-                case "FontWeight": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, control);
-                case "FontStyle": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, control);
-                
-                
-              
-
+                case "Thickness": return ControlsCreatorAvalonia.CreateEditBoxForThickness(propertyInfo, xmlControl);
+                case "HorizontalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
+                case "VerticalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
+                case "FontWeight": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
+                case "FontStyle": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
             }
-   
-            
         }
         else if(options == EditBoxOptions.EmbedBindingsView)
         {
-                    
+            throw new NotImplementedException("Binding are not supported in this Version.");
         }
         return new TextBlock()
         {
@@ -139,12 +134,12 @@ public static class ControlsCreator
         return stackPanel;
     }
     
-    private static Control CreateEditBoxForBoolean(PropertyInfo propertyInfo, Control control)
+    private static Control CreateEditBoxForBoolean(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
         CheckBox cb = new CheckBox()
         {
             Content = propertyInfo.Name,
-            IsChecked = (bool)propertyInfo.GetValue(control, null)!,
+            IsChecked = (bool)propertyInfo.GetValue(xmlControl.Control, null)!,
             IsEnabled = propertyInfo.CanWrite
         };
        
@@ -152,7 +147,7 @@ public static class ControlsCreator
         {
             if (EditorController != null)
             {
-                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, cb.IsChecked);
+                EditorController.OnPropertyInPropertiesViewChanged(xmlControl, propertyInfo, cb.IsChecked);
             }
         };
         return cb;
@@ -161,23 +156,23 @@ public static class ControlsCreator
     /// External Method which is an extraction for all Integer Based Types
     /// </summary>
     /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <returns></returns>
-    private static Control CreateEditBoxForInteger(PropertyInfo propertyInfo, Control control)
+    private static Control CreateEditBoxForInteger(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
         NumericUpDown numericUpDown = new NumericUpDown()
         {
             Text = propertyInfo.Name,
             FormatString = "0",
             Minimum = 0,
-            Value = Convert.ToDecimal(propertyInfo.GetValue(control, null)),
+            Value = Convert.ToDecimal(propertyInfo.GetValue(xmlControl.Control, null)),
             Increment = 1,
         };
         numericUpDown.ValueChanged += (sender, args) =>
         {
             if (EditorController != null)
             {
-                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
+                EditorController.OnPropertyInPropertiesViewChanged(xmlControl, propertyInfo, numericUpDown.Value);
             }
         };
         
@@ -187,23 +182,23 @@ public static class ControlsCreator
     /// External Method which is an extraction for all Integer Based Types
     /// </summary>
     /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <returns></returns>
-    private static Control CreateEditBoxForFloatingPoint(PropertyInfo propertyInfo, Control control)
+    private static Control CreateEditBoxForFloatingPoint(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
         NumericUpDown numericUpDown = new NumericUpDown()
         {
             Text = propertyInfo.Name,
             FormatString = "0.00",
             Minimum = 0,
-            Value = Convert.ToDecimal(propertyInfo.GetValue(control, null))!,
+            Value = Convert.ToDecimal(propertyInfo.GetValue(xmlControl.Control, null))!,
             Increment = 1,
         };
         numericUpDown.ValueChanged += (s, e) =>
         {
             if (EditorController != null)
             {
-                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, numericUpDown.Value);
+                EditorController.OnPropertyInPropertiesViewChanged(xmlControl, propertyInfo, numericUpDown.Value);
             }
         };
         return AddEditBoxToStackPanel(numericUpDown, propertyInfo);
@@ -212,23 +207,23 @@ public static class ControlsCreator
     /// External Method which is an extraction for all Integer Based Types
     /// </summary>
     /// <param name="propertyInfo"></param>
-    /// <param name="control"></param>
+    /// <param name="xmlControl"></param>
     /// <returns></returns>
-    private static Control CreateEditBoxForString(PropertyInfo propertyInfo, Control control)
+    private static Control CreateEditBoxForString(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
         TextBox tb = new TextBox()
         {
-            Text = (string)propertyInfo.GetValue(control, null)!,
+            Text = (string)propertyInfo.GetValue(xmlControl.Control, null)!,
             IsEnabled = propertyInfo.CanWrite,
         };
         tb.TextChanged += (s, e) =>
         {
             if (EditorController != null)
             {
-                EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo, tb.Text);
+                EditorController.OnPropertyInPropertiesViewChanged(xmlControl, propertyInfo, tb.Text);
             }
         };
-        // EditorController.OnPropertyInPropertiesViewChanged(control, propertyInfo.Name, tb.Text);
+        // EditorController.OnPropertyInPropertiesViewChanged(xmlControl, propertyInfo.Name, tb.Text);
         return AddEditBoxToStackPanel(tb, propertyInfo);
     }
 }
