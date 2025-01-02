@@ -8,15 +8,21 @@
     <Menu>
         <MenuItem Header="_File">
             <MenuItem Header="_Open Folder">
-                <TextBox Watermark="Enter Path here."
-                         Text="{Binding SelectedPath}">
-                </TextBox>
-                <TextBox Watermark="Enter your Project name here..."
-                         Text="{Binding ProjectName}">
-                </TextBox>
-                <Button Command="{Binding LoadNewDirectoryCommand}">
-                    Load
-                </Button>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5" VerticalAlignment="Center">Project Path:</TextBlock>
+                        <TextBox Watermark="Enter Path here."
+                                 Text="{Binding SelectedPath}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0, 5,0,0">
+                        <TextBlock Margin="5" VerticalAlignment="Center">Project Name:</TextBlock>
+                        <TextBox Watermark="Enter your Project name here..."
+                                Text="{Binding ProjectName}"/>
+                    </StackPanel>
+                    <Button Margin="0, 5,0,0" Command="{Binding LoadNewDirectoryCommand}">
+                        Load
+                    </Button>
+                </StackPanel>
             </MenuItem>
         </MenuItem>
        
