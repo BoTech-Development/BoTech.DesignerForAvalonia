@@ -3,6 +3,8 @@ using System.Reactive;
 using System.Runtime.Serialization;
 using BoTech.AvaloniaDesigner.Controller.Editor;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
+using BoTech.AvaloniaDesigner.Views;
+using DialogHostAvalonia;
 using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -12,6 +14,7 @@ public class TopNavigationViewModel : ViewModelBase
     public string SelectedPath { get; set; } = string.Empty;
     public string ProjectName { get; set; } = string.Empty;
     public ReactiveCommand<Unit, Unit> LoadNewDirectoryCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> AboutViewCommand { get; set; }
     /// <summary>
     /// It is needed to have the MainViewModel reference to set the Content Object => Can change when the user wants to work either in the Editor or in the Style Editor.
     /// </summary>
@@ -23,6 +26,7 @@ public class TopNavigationViewModel : ViewModelBase
     public TopNavigationViewModel(MainViewModel mainViewModel)
     {
         LoadNewDirectoryCommand = ReactiveCommand.Create(LoadNewDirectory);
+        AboutViewCommand = ReactiveCommand.Create(ShowAboutView);
         MainViewModel = mainViewModel;
     }
 
@@ -40,5 +44,12 @@ public class TopNavigationViewModel : ViewModelBase
             }
         }
     }
-    
+
+    private void ShowAboutView()
+    {
+        DialogHost.Show(new AboutView()
+        {
+            DataContext = new AboutViewModel(),
+        }, "MainDialogHost");
+    }
 }
