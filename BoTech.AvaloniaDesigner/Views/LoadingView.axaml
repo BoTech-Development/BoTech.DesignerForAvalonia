@@ -12,6 +12,6 @@
         <TextBlock FontSize="26">Please wait while Loading...</TextBlock>
         <TextBlock FontSize="22" Text="{Binding StatusText}"></TextBlock>
         <TextBlock FontSize="20" Text="{Binding SubStatusText}"></TextBlock>
-        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding CurrentPercentage}" Maximum="{Binding Maximum}"></ProgressBar>
+        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding Current}" Maximum="{Binding Maximum}"></ProgressBar>
     </StackPanel>
 </UserControl>

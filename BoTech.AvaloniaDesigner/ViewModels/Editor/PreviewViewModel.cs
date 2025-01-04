@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -14,6 +15,8 @@ using BoTech.AvaloniaDesigner.Models.Editor;
 using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.Avalonia;
 using BoTech.AvaloniaDesigner.Services.XML;
+using BoTech.AvaloniaDesigner.Views;
+using DialogHostAvalonia;
 using ReactiveUI;
 
 namespace BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -50,10 +53,25 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
     // Events:
     public void OnSaveCommand()
     {
-        string xml = new Serializer().Serialize(EditorController.RootConnectedNode);
         if (File.Exists(EditorController.OpenedFilePath))
         {
+            LoadingViewModel loadingViewModel = new LoadingViewModel()
+            {
+                StatusText = "Saving... ",
+                SubStatusText = "Updating XML...",
+            };
+            LoadingView view = new LoadingView()
+            {
+                DataContext = loadingViewModel,
+            };
+            DialogHost.Show(view, "MainDialogHost");
+            loadingViewModel.SubStatusText = "Saving new Xml to File: " + EditorController.OpenedFilePath;
+            
+            string xml = new Serializer(loadingViewModel).Serialize(EditorController.RootConnectedNode);
             File.WriteAllText(EditorController.OpenedFilePath, xml);
+            
+            // Closing the new MessageBox (Loading View)
+            DialogHost.Close("MainDialogHost");
         }
     }
 

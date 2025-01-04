@@ -11,30 +11,27 @@ using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.Avalonia;
 using BoTech.AvaloniaDesigner.ViewModels;
 using BoTech.AvaloniaDesigner.Views;
+using DialogHostAvalonia;
 
 namespace BoTech.AvaloniaDesigner.Services.XML;
 
 public class Serializer
 {
-    
     private List<TypeInfo> _allAvaloniaControlTypes;
-
+    /// <summary>
+    /// The Loading View for the Message Box
+    /// </summary>
     private LoadingViewModel _loadingViewModel;
-    
-    public Serializer()
+    public Serializer(LoadingViewModel loadingViewModel)
     {
         _allAvaloniaControlTypes = TypeCastingService.GetAllControlBasedAvaloniaTypes();
+        _loadingViewModel = loadingViewModel;
     }
 
     public string Serialize(XmlControl xmlControl)
     {
-        // Init Loading View:
-        _loadingViewModel = new LoadingViewModel();
-        _loadingViewModel.ShowLoadingDialog();
-        _loadingViewModel.StatusText = "Saving...";
-        _loadingViewModel.SubStatusText = "Updating XML...";
-        
-        
+        _loadingViewModel.Maximum = CountAllChildren(xmlControl);
+        _loadingViewModel.IsIndeterminate = false;
         UpdateXmlNodesForControl(xmlControl);
         string result = SerializeXmlNode(xmlControl.Node);
         return result;
@@ -52,7 +49,10 @@ public class Serializer
         }
     }
     private void UpdateXmlNodesForControl(XmlControl current)
-    { 
+    {
+        _loadingViewModel.Current += 1;
+        _loadingViewModel.SubStatusText = "Updating Xml Node: " + current.Node.Name;
+        
         //AddPropertiesThatChanged(current.Node, current.Control);
         // When the current XmlControl has more than one Children => it must be a Control which has the Children Property. 
         if (current.Children.Count > 1)
@@ -174,5 +174,19 @@ public class Serializer
                 //current.Children.Add(UpdateXmlNodesForControl(current));
             }
         }
+    }
+    /// <summary>
+    /// This Method counts all Children of the xmlControl
+    /// </summary>
+    /// <param name="xmlControl"></param>
+    /// <returns></returns>
+    private int CountAllChildren(XmlControl xmlControl)
+    {
+        int count = xmlControl.Children.Count;
+        foreach (XmlControl child in xmlControl.Children)
+        {
+            count += CountAllChildren(child);
+        }
+        return count;
     }
 }

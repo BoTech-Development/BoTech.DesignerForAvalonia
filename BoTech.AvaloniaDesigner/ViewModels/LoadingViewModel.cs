@@ -28,11 +28,11 @@ public class LoadingViewModel : ViewModelBase
         get => _isIndeterminate;
         set => this.RaiseAndSetIfChanged(ref _isIndeterminate, value);
     }
-    public int _currentPercentage = 0;
-    public int CurrentPercentage
+    public int _current = 0;
+    public int Current
     {
-        get => _currentPercentage;
-        set => this.RaiseAndSetIfChanged(ref _currentPercentage, value);
+        get => _current;
+        set => this.RaiseAndSetIfChanged(ref _current, value);
     }
     
     public int _maximum = 100;
@@ -40,24 +40,5 @@ public class LoadingViewModel : ViewModelBase
     {
         get => _maximum;
         set => this.RaiseAndSetIfChanged(ref _maximum, value);
-    }
-    private LoadingView _loadingView;
-    private DialogWindowViewModel _dialogWindowViewModel;
-
-
-
-    public void ShowLoadingDialog()
-    {
-        _loadingView = new LoadingView()
-        {
-            DataContext = this
-        };
-        DialogWindowViewModel.Instance.ShowDialog(_loadingView);
-
-    }
-
-    public void CloseLoadingDialog()
-    {
-        _dialogWindowViewModel.CloseDialog();
     }
 }
