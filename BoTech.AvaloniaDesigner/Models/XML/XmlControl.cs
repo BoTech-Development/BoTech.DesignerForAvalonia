@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml;
 using Avalonia.Controls;
 
@@ -7,7 +9,7 @@ namespace BoTech.AvaloniaDesigner.Models.XML;
 /// This Model connects an XmlNode with a Control.
 /// This is necessary for the serialization Process where old XmlNodes may be edited.
 /// </summary>
-public class XmlControl
+public class XmlControl : ICloneable
 {
     public XmlControl? Parent { get; set; }
     public List<XmlControl> Children { get; set; } = new List<XmlControl>();
@@ -55,5 +57,52 @@ public class XmlControl
         }
         return null;
     }
-    
+
+    public object Clone()
+    {
+        XmlControl xmlControlCopy = new XmlControl();
+        
+        // Create a "deep Copy" of the Control by using the XmlNode.
+        
+        Control? copiedControl = Activator.CreateInstance(this.Control.GetType()) as Control;
+        if (copiedControl != null)
+        {
+            if (this.Node.Attributes != null)
+            {
+                foreach (XmlAttribute attribute in this.Node.Attributes)
+                {
+                    PropertyInfo? propertyInfo = copiedControl.GetType().GetProperty(attribute.Name);
+                    if (propertyInfo != null)
+                    {
+                        if (propertyInfo.PropertyType.IsEnum)
+                        {
+                            propertyInfo.SetValue(copiedControl,
+                                Enum.Parse(propertyInfo.PropertyType, attribute.Value));
+                        }
+                        else
+                        {
+                            propertyInfo.SetValue(copiedControl,
+                                Convert.ChangeType(attribute.Value, propertyInfo.PropertyType));
+                        }
+                    }
+                }
+            }
+            xmlControlCopy.Control = copiedControl;
+        }
+        
+        // Creating a Copy of the Node
+        
+        XmlElement? newNode = Node.OwnerDocument?.CreateElement(Control.GetType().Name);
+        if (newNode != null && Node.Attributes != null)
+        {
+            // Adding all Attributes:
+            foreach (XmlAttribute attribute in Node.Attributes)
+            {
+                newNode.Attributes.Append(attribute);
+            }
+            xmlControlCopy.Node = newNode;
+        }
+        
+        return xmlControlCopy;
+    }
 }
