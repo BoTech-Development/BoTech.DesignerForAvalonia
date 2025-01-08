@@ -2,21 +2,21 @@ name: Bug Report
 description: File a bug report
 labels: ["bug"]
 body:
-  - type: textarea
+  - type: markdown
     id: what-happened
     attributes:
       label: Describe the bug
       description: A clear and concise description of what the bug is.
     validations:
       required: true
-  - type: textarea
+  - type: markdown
     id: steps
     attributes:
       label: To Reproduce
       description: Steps to reproduce the behavior.
     validations:
       required: true
-  - type: textarea
+  - type: markdown
     id: what-expected
     attributes:
       label: Expected behavior
