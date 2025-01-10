@@ -57,7 +57,20 @@ public class XmlControl : ICloneable
         }
         return null;
     }
-
+    /// <summary>
+    /// Gets the most Parent Control.
+    /// </summary>
+    /// <returns></returns>
+    public XmlControl GetMostParent()
+    {
+        if(Parent != null) return Parent.GetMostParent();
+        return this;
+    }
+    /// <summary>
+    /// Clone the object: Method clones all Properties of the Control and inject it into a new Control.
+    /// It also only copies all Attributes of the XmlNode into a new XmlNode. 
+    /// </summary>
+    /// <returns></returns>
     public object Clone()
     {
         XmlControl xmlControlCopy = new XmlControl();

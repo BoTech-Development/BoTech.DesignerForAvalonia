@@ -33,11 +33,34 @@ public class PropertiesViewModel : ViewModelBase
     public PropertiesViewModel(EditorController editorController)
     {
         //Creating all Templates
+        
+        // Layout
         List<IViewTemplate> templates = new List<IViewTemplate>();
         templates.Add(new LayoutViewTemplate());
         TabContent layout = new TabContent("Layout", templates);
         layout.vm = this;
         TabContents.Add(layout);
+        // Appearance
+        templates = new List<IViewTemplate>();
+        templates.Add(new AppearanceViewTemplate());
+        TabContent appearance = new TabContent("Appearance", templates);
+        appearance.vm = this;
+        TabContents.Add(appearance);
+        // Content
+        templates = new List<IViewTemplate>();
+        templates.Add(new ContentViewTemplate());
+        TabContent content = new TabContent("Content", templates);
+        content.vm = this;
+        TabContents.Add(content);
+        // Input
+        templates = new List<IViewTemplate>();
+        templates.Add(new InputViewTemplate());
+        TabContent input = new TabContent("Input", templates);
+        input.vm = this;
+        TabContents.Add(input);
+
+        
+        
         _editorController = editorController;
         _editorController.PropertiesViewModel = this;
     }
@@ -79,9 +102,9 @@ public class PropertiesViewModel : ViewModelBase
             tab.Content = new ScrollViewer()
                 {
                     Content = content.PreRenderedContent,
-                    VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
-                    HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
-                    Height = 800,
+                    //VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+                    //HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+                    //Height = 800,
                 };
             Tabs.Items.Add(tab);
         }

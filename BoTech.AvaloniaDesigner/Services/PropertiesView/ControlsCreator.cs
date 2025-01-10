@@ -25,7 +25,7 @@ public static class ControlsCreator
     /// A List of all Types which do not need an editable Constructor and are stored under the namespace Avalonia.
     /// In this case it can be Enums like HorizontalAlignment.
     /// </summary>
-    public static readonly List<string> SupportedAvaloniaTypes = new List<string> { "HorizontalAlignment", "VerticalAlignment", "FontWeight", "FontStyle" };
+    public static readonly List<string> SupportedAvaloniaTypes = new List<string> { "HorizontalAlignment", "VerticalAlignment", "FontWeight", "FontStyle", "IBrush", "FontFamily" };
     /// <summary>
     /// This Method creates a Control to edit a Property for a specific Control
     /// </summary>
@@ -48,6 +48,8 @@ public static class ControlsCreator
         return new TextBlock()
         {
             Text = "Can not load a Template for: " + property,
+            Margin = new Thickness(0,5,0,0),
+            Foreground = Brushes.Orange
         };
     }
 
@@ -80,18 +82,19 @@ public static class ControlsCreator
                     }
                     return new TextBlock()
                     {
-                        Text = "Can not display: " + propertyInfo.Name + "because its +|- infinite.",
+                        Text = "Can not display: " + propertyInfo.Name + " because its +|- infinite.",
                     };
                 case "Double":
-                    if ((double)propertyInfo.GetValue(xmlControl.Control) != double.PositiveInfinity && (double)propertyInfo.GetValue(xmlControl.Control) != double.NegativeInfinity)
+                    double value = (double)propertyInfo.GetValue(xmlControl.Control);
+                    if (value != double.PositiveInfinity && value != double.NegativeInfinity)
                     {
                         return CreateEditBoxForFloatingPoint(propertyInfo, xmlControl);
                     }
                     return new TextBlock()
                     {
-                        Text = "Can not display: " + propertyInfo.Name + "because its +|- infinite.",
+                        Text = "Can not display: " + propertyInfo.Name + " because its +|- infinite.",
                     };
-                case "Decimal": return CreateEditBoxForFloatingPoint(propertyInfo, xmlControl);
+                case "Decimal":  return CreateEditBoxForFloatingPoint(propertyInfo, xmlControl);
                             
                             
                 // Primitive Type string and Class String are handled the same way:
@@ -104,6 +107,8 @@ public static class ControlsCreator
                 case "VerticalAlignment": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
                 case "FontWeight": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
                 case "FontStyle": return ControlsCreatorAvalonia.CreateEditableControlForEnum(propertyInfo, xmlControl);
+                case "IBrush": return ControlsCreatorAvalonia.CreateEditableControlForIBrush(propertyInfo, xmlControl);
+                case "FontFamily": return ControlsCreatorAvalonia.CreateEditableControlForFontFamily(propertyInfo, xmlControl);
             }
         }
         else if(options == EditBoxOptions.EmbedBindingsView)
@@ -113,6 +118,8 @@ public static class ControlsCreator
         return new TextBlock()
         {
             Text = "Can not load a Template for: " + propertyInfo.Name,
+            Margin = new Thickness(0,5,0,0),
+            Foreground = Brushes.Orange
         };
     }
     /// <summary>
@@ -123,12 +130,16 @@ public static class ControlsCreator
     /// <returns></returns>
     public static StackPanel AddEditBoxToStackPanel(Control control, PropertyInfo propertyInfo)
     {
-        StackPanel stackPanel = new StackPanel();
-        stackPanel.Orientation = Orientation.Horizontal;
+        StackPanel stackPanel = new StackPanel()
+        {
+            Orientation = Orientation.Horizontal,
+            Margin = new Thickness(0, 5, 0, 0),
+        };
         stackPanel.Children.Add(new TextBlock()
         {
             Text = propertyInfo.Name + ":",
             VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0 ,0 ,5 ,0)
         });
         stackPanel.Children.Add(control);
         return stackPanel;
@@ -186,12 +197,42 @@ public static class ControlsCreator
     /// <returns></returns>
     private static Control CreateEditBoxForFloatingPoint(PropertyInfo propertyInfo, XmlControl xmlControl)
     {
+        decimal value = 0;
+        if (propertyInfo.PropertyType == typeof(float))
+        {
+            if(float.IsNaN((float)propertyInfo.GetValue(xmlControl.Control)))
+            {
+                return new TextBlock()
+                {
+                    Text = "Property: " + propertyInfo.Name + " is NaN",
+                };
+            }
+            else
+            {
+                value = (decimal)propertyInfo.GetValue(xmlControl.Control)!;
+            }    
+        }
+        else if (propertyInfo.PropertyType == typeof(double))
+        {
+            if(double.IsNaN((double)propertyInfo.GetValue(xmlControl.Control)))
+            {
+                return new TextBlock()
+                {
+                    Text = "Property: " + propertyInfo.Name + " is NaN",
+                };
+            }
+            else
+            {
+                value = Convert.ToDecimal(propertyInfo.GetValue(xmlControl.Control));
+            }    
+        }
+        
         NumericUpDown numericUpDown = new NumericUpDown()
         {
             Text = propertyInfo.Name,
             FormatString = "0.00",
             Minimum = 0,
-            Value = Convert.ToDecimal(propertyInfo.GetValue(xmlControl.Control, null))!,
+            Value = value,
             Increment = 1,
         };
         numericUpDown.ValueChanged += (s, e) =>

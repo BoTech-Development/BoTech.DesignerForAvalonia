@@ -412,7 +412,8 @@ public class ControlsCreatorObject
                     },
                     Orientation = Orientation.Horizontal
                 },
-                Content = expanderContent
+                Content = expanderContent,
+                Margin = new Thickness(0,5,0,0)
             };
             
             int currentChildIndex = 0;

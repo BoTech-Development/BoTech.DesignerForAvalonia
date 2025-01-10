@@ -127,7 +127,7 @@ public class EditorController : ViewModelBase
     /// <param name="xmlControl"></param>
     /// <param name="propertyInfo"></param>
     /// <param name="newValue"></param>
-    public void OnPropertyInPropertiesViewChanged(XmlControl xmlControl, PropertyInfo propertyInfo, object? newValue)
+    public static void OnPropertyInPropertiesViewChanged(XmlControl xmlControl, PropertyInfo propertyInfo, object? newValue)
     {
         try
         {
@@ -174,7 +174,7 @@ public class EditorController : ViewModelBase
     /// <param name="xmlControl"></param>
     /// <param name="propertyInfo"></param>
     /// <param name="newValue"></param>
-    private void UpdatePropertyInXmlControl(XmlControl xmlControl, PropertyInfo propertyInfo, object? newValue)
+    private static void UpdatePropertyInXmlControl(XmlControl xmlControl, PropertyInfo propertyInfo, object? newValue)
     {
         if (newValue != null && xmlControl.Node.Attributes != null)
         {

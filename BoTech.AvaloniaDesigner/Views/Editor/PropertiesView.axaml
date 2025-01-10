@@ -9,10 +9,11 @@
         BorderThickness="2" 
         BorderBrush="Gray" 
         CornerRadius="8">
-        <Grid RowDefinitions="Auto, Auto">
+        <Grid RowDefinitions="Auto, 800" ColumnDefinitions="Auto, 200">
             <TextBlock>Properties</TextBlock>
-            <ContentControl Grid.Row="1" Content="{Binding Tabs}">
-            </ContentControl>
+            <ScrollViewer Grid.Row="1" >
+                <ContentControl Content="{Binding Tabs}"/>
+            </ScrollViewer>
         </Grid>
     </Border>
 </UserControl>

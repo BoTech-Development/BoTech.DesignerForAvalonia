@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using BoTech.AvaloniaDesigner.Models.XML;
 using BoTech.AvaloniaDesigner.Services.PropertiesView;
 using BoTech.AvaloniaDesigner.ViewModels.Editor;
@@ -13,7 +15,7 @@ namespace BoTech.AvaloniaDesigner.Templates.Editor.PropertiesView;
 /// A wrapper Class for the Controls Creator. This class can be used when you want to create an editable Box for one of the Avalonia Properties which are defined in the ControlsCreator Class.
 /// </summary>
 
-public class StandardViewTemplate : IViewTemplate
+public class StandardViewTemplate 
 {
     public string Name { get; } = "Standard View";
     /// <summary>
@@ -39,6 +41,8 @@ public class StandardViewTemplate : IViewTemplate
                     stackPanel.Children.Add(new TextBlock()
                     {
                         Text = "The Property " + referencedProperty.PropertyName + " does not exist in the selected Control.",
+                        Margin = new Thickness(0,5,0,0),
+                        Foreground = Brushes.Orange,
                     });
                 }
                 else
@@ -75,6 +79,8 @@ public class StandardViewTemplate : IViewTemplate
                     stackPanel.Children.Add(new TextBlock()
                     {
                         Text = "The Property " + referencedProperty.PropertyName + " does not exist in the selected Control.",
+                        Margin = new Thickness(0,5,0,0),
+                        Foreground = Brushes.Orange,
                     });
                 }
                 else
