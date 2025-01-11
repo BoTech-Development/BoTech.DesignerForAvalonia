@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Avalonia.Controls;
@@ -178,27 +179,121 @@ public class EditorController : ViewModelBase
     {
         if (newValue != null && xmlControl.Node.Attributes != null)
         {
-            XmlAttribute? selectedAttribute = null;
-            foreach (XmlAttribute attribute in xmlControl.Node.Attributes)
+            // When ist primitive the ToString() Method can be applied to edit or create a new Attribute for the XmlNode.
+            if (CheckIfPropertyNeedsXmlAttribute(propertyInfo))
             {
-                if (attribute.Name == propertyInfo.Name) selectedAttribute = attribute;
-            }
+                XmlAttribute? selectedAttribute = null;
+                foreach (XmlAttribute attribute in xmlControl.Node.Attributes)
+                {
+                    if (attribute.Name == propertyInfo.Name) selectedAttribute = attribute;
+                }
 
-            if (selectedAttribute != null)
-            {
-                selectedAttribute.Value = newValue.ToString();
+                if (selectedAttribute != null)
+                {
+                    selectedAttribute.Value = newValue.ToString();
+                }
+                else
+                {
+                    // Attribute is not available in the Node, so it is necessary to create a new one.
+                    if (xmlControl.Node.OwnerDocument != null)
+                    {
+                        XmlAttribute newAttribute = xmlControl.Node.OwnerDocument.CreateAttribute(propertyInfo.Name);
+                        newAttribute.Value = newValue.ToString();
+                        xmlControl.Node.Attributes.Append(newAttribute);
+                    }
+                }
             }
             else
             {
-                // Attribute is not available in the Node, so it is necessary to create a new one.
-                if (xmlControl.Node.OwnerDocument != null)
+                // Create a new Inner Element to set the Attribute:
+                UpdateClassPropertyInXmlControl(xmlControl, propertyInfo, newValue);
+            }
+        }
+    }
+
+    private static void UpdateClassPropertyInXmlControl(XmlControl xmlControl, PropertyInfo propertyInfo, object newValue)
+    {
+        // Removing the Attribute which is referenced to the given Property. It might be set by a primitife Value.
+        if(xmlControl.Node.Attributes != null)
+            if (xmlControl.Node.Attributes[propertyInfo.Name] != null)
+                xmlControl.Node.Attributes.Remove(xmlControl.Node.Attributes[propertyInfo.Name]);
+        if (xmlControl.Node.OwnerDocument != null)
+        {
+            XmlNode newNode = xmlControl.Node.OwnerDocument.CreateElement(xmlControl.Node.Name + "." + propertyInfo.Name);
+            AddNonPrimitivePropertyToXmlNode(newNode, newValue);
+        }
+    }
+    /*
+     * <Grid>
+     *  <Grid.ColumnDefinitions>
+     *      <ColumnDefinition>
+     *          <ColumnDefinition.Width>
+     *          20
+     *          </ColumnDefinition.Width>
+     *      </ColumnDefinition>
+     *  </Grid.ColumnDefinitions>
+     * </Grid>
+     */
+    /// <summary>
+    /// This Method can be used to add Properties which are not Primitve.
+    /// </summary>
+    /// <param name="parent">The Parent Node. It must be the Node with this Name  "YourClass.YourProperty"</param>
+    /// <param name="value">The Value of the Property which should be placed.</param>
+    private static void AddNonPrimitivePropertyToXmlNode(XmlNode parent, object value)
+    { 
+        XmlDocument? document = parent.OwnerDocument;
+        if (document != null)
+        {
+            XmlNode newNode = document.CreateElement(value.GetType().Name);
+            parent.AppendChild(newNode);
+            // Adding all Properties to the new Node 
+            PropertyInfo[] properties = value.GetType().GetProperties();
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.CanRead && property.CanWrite)
                 {
-                    XmlAttribute newAttribute = xmlControl.Node.OwnerDocument.CreateAttribute(propertyInfo.Name);   
-                    newAttribute.Value = newValue.ToString();
-                    xmlControl.Node.Attributes.Append(newAttribute);
+                    if (CheckIfPropertyNeedsXmlAttribute(property) && newNode.Attributes != null)
+                    {
+                        XmlAttribute newAttribute = document.CreateAttribute(property.Name);
+                        newAttribute.Value = value.ToString();
+                        newNode.Attributes.Append(newAttribute);
+                    }
+                    else
+                    {
+                        if (property.GetValue(value) != null)
+                        {
+                            // Creating the XmlNode for : <YourClass.YourProperty></YourClass.YourProperty>
+                            XmlNode propertyNode = document.CreateElement(value.GetType().Name + "." + property.Name);
+                            newNode.AppendChild(propertyNode);
+                            AddNonPrimitivePropertyToXmlNode(propertyNode, property.GetValue(value));
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private static bool CheckIfPropertyNeedsXmlAttribute(PropertyInfo property)
+    {
+        if (!property.PropertyType.IsPrimitive)
+        {
+            // Check if there is a Constructor which does not need any Attributes
+            ConstructorInfo[] constructors = property.PropertyType.GetConstructors();
+            ConstructorInfo? constructorWithNoParams = null;
+            if ((constructorWithNoParams = constructors.Where(c => c.GetParameters().Length == 0).FirstOrDefault()) != null)
+            {
+                // found a Constructor with no Params
+                // Now Check if any of the Properties of the Class, can be set and read.
+                foreach (PropertyInfo propertyOfClass in property.PropertyType.GetProperties())
+                {
+                    if (propertyOfClass.CanRead && propertyOfClass.CanWrite)
+                    {
+                        return false; // Property does not need an XmlAttribute but a new Class definition
+                    }
+                }
+            }
+        }
+        return true;
     }
     /// <summary>
     /// Will be executed when the PreviewContent was changed by the PreviewViewModel.

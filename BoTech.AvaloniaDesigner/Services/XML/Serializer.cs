@@ -87,6 +87,7 @@ public class Serializer
     /// </summary>
     /// <param name="current"></param>
     /// <param name="control"></param>
+    [Obsolete("All Properties are added during the drop of a new Control.")]
     private void AddPropertiesThatChanged(XmlNode current, Control control)
     {
         object? convertedControl = TryToChangeTypeToAvaloniaControl(control);
