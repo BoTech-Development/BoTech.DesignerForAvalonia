@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report
+description: Report an bug in the BoTech.AvaloniaDesigner
 labels: ["bug"]
 body:
   - type: textarea
