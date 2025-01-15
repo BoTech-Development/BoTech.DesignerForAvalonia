@@ -4,13 +4,13 @@
 <h3>Design Preview and Style your Avalonia App in the BoTech.AvaloniaDesigner.</h3>
 </h1>
 
-![GitHub Release](https://img.shields.io/github/v/release/BoTech-Development/BoTech.AvaloniaDesigner?include_prereleases&display_name=tag&style=flat)
-![GitHub Created At](https://img.shields.io/github/created-at/BoTech-Development/BoTech.AvaloniaDesigner?color=f0f0f0)
-[![GitHub forks](https://badgen.net/github/forks/BoTech-Development/BoTech.AvaloniaDesigner?color=25A18E)](https://GitHub.com/BoTech-Development/BoTech.AvaloniaDesigner/network/)
+![GitHub Release](https://img.shields.io/github/v/release/BoTech-Development/BoTech.AvaloniaDesigner)
+![GitHub Created At](https://img.shields.io/github/created-at/BoTech-Development/BoTech.AvaloniaDesigner)
+![GitHub forks](https://badgen.net/github/forks/BoTech-Development/BoTech.AvaloniaDesigner?color=25A18E)
   
-  [![GitHub stars](https://img.shields.io/github/stars/BoTech-Development/BoTech.AvaloniaDesigner.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/BoTech-Development/BoTech.AvaloniaDesigner/stargazers/)
-  [![GitHub watchers](https://img.shields.io/github/watchers/BoTech-Development/BoTech.AvaloniaDesigner.svg?style=social&label=Watch&maxAge=2592000)](https://GitHub.com/BoTech-Development/BoTech.AvaloniaDesigner/watchers/)
-  [![GitHub followers](https://img.shields.io/github/followers/BoTech-Development.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/BoTech-Development?tab=followers)
+![GitHub stars](https://img.shields.io/github/stars/BoTech-Development/BoTech.AvaloniaDesigner.svg)
+![GitHub watchers](https://img.shields.io/github/watchers/BoTech-Development/BoTech.AvaloniaDesigner.svg)
+[![GitHub followers](https://img.shields.io/github/followers/BoTech-Development.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/BoTech-Development?tab=followers)
 
 ## 📢V1.1.0 has been released!🎉
 + [click here](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/releases/tag/1.1.0)
