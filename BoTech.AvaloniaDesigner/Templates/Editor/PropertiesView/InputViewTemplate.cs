@@ -20,7 +20,7 @@ public class InputViewTemplate : IViewTemplate
         {
             ReferencedProperties =
             {
-                new StandardViewTemplate.ReferencedProperty("HotKey", xmlControl.Control, EditBoxOptions.Auto),
+                //new StandardViewTemplate.ReferencedProperty("HotKey", xmlControl.Control, EditBoxOptions.Auto),
             }
         };
         stackPanel.Children.Add(new TextBlock()

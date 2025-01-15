@@ -14,7 +14,7 @@
   </Design.DataContext>
     <StackPanel Orientation="Vertical">
         <ContentControl Content="{Binding TopNavigationView}"></ContentControl>    
-        <ContentControl Content="{Binding Content}" MaxHeight="800"></ContentControl>
+        <ContentControl Content="{Binding Content}" Height="800"></ContentControl>
         <ContentControl Content="{Binding StatusConsoleView}"></ContentControl>
     </StackPanel>
 </UserControl>

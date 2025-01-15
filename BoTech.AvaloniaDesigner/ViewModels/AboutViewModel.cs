@@ -22,7 +22,7 @@ public class AboutViewModel : ViewModelBase
     {
         Process.Start(new ProcessStartInfo
         {
-            FileName = "https://support.botech.dev/BoTech.AvaloniaDesigner/",
+            FileName = "https://aka.botech.dev/go/AvaloniaDesigner/",
             UseShellExecute = true
         });
     }
