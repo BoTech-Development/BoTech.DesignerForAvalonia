@@ -6,14 +6,14 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/BoTech-Development/BoTech.AvaloniaDesigner)
 ![GitHub Created At](https://img.shields.io/github/created-at/BoTech-Development/BoTech.AvaloniaDesigner)
-![GitHub forks](https://badgen.net/github/forks/BoTech-Development/BoTech.AvaloniaDesigner?color=25A18E)
+![GitHub forks](https://badgen.net/github/forks/BoTech-Development/BoTech.AvaloniaDesigner)
   
 ![GitHub stars](https://img.shields.io/github/stars/BoTech-Development/BoTech.AvaloniaDesigner.svg)
 ![GitHub watchers](https://img.shields.io/github/watchers/BoTech-Development/BoTech.AvaloniaDesigner.svg)
 [![GitHub followers](https://img.shields.io/github/followers/BoTech-Development.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/BoTech-Development?tab=followers)
 
 ## 📢V1.1.0 has been released!🎉
-+ [click here](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/releases/tag/1.1.0)
++ [click here](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/releases/tag/V1.1.0)
 
 ## Current Status:
 + I have published the first Release Version 🎉**V1.1.0**🎉
@@ -21,7 +21,7 @@
 + The Second Release will be usable:
   + See the Second Release Milestone for more Info: [V1.2.0](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/milestone/2)
 ## ℹ️📖Documentation
-+ [Online Doku](docs.botech.dev/AvaloniaDesigner)
++ [Online Doku](https://docs.botech.dev/AvaloniaDesigner)
 + [UML_Diagramm(Draw.io)](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/blob/master/Docs/Code/BoTech.AvaloniaDesigner.drawio)
 ## How to build?
 ### ⚙️Preparation of the development environment
