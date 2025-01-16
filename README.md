@@ -21,7 +21,7 @@
 + The Second Release will be usable:
   + See the Second Release Milestone for more Info: [V1.2.0](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/milestone/2)
 ## ℹ️📖Documentation
-+ [Online Doku](https://docs.botech.dev/AvaloniaDesigner)
++ [Online Doku](https://docs.botech.dev/)
 + [UML_Diagramm(Draw.io)](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/blob/master/Docs/Code/BoTech.AvaloniaDesigner.drawio)
 ## How to build?
 ### ⚙️Preparation of the development environment
