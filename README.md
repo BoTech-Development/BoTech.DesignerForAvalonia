@@ -1,5 +1,5 @@
 <h1>
-<img src="https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/blob/master/BoTech_AvaloniaDesigner_Logo_Text.png"
+<img src="https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/BoTech.DesignerForAvalonia/Assets/BoTech_DesignerForAvalonia_WithText_NoBG.png"
 <br/>
 <h3>Design Preview and Style your Avalonia App in the BoTech.AvaloniaDesigner.</h3>
 </h1>

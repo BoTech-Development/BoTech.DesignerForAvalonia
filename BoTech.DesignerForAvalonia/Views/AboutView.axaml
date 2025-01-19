@@ -17,7 +17,7 @@
         </Style>
     </UserControl.Styles>
     <StackPanel>
-        <Image Source="/Assets/AvaloniaDesigner_ApplicationLogo.png" Height="180"></Image>
+        <Image Source="/Assets/BoTech_DesignerForAvalonia_Small.png" Height="180"></Image>
         <TextBlock HorizontalAlignment="Center">Powered by: </TextBlock>
         <Image Source="/Assets/BoTechLogoNew.png" Width="180" Margin="0 ,0, 0, 5"></Image>
         <TextBlock HorizontalAlignment="Center" Margin="0 ,0, 0, 5">Version: V1.1.0 <LineBreak />(15.01.2025)</TextBlock>

@@ -6,7 +6,7 @@
         xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         xmlns:views="clr-namespace:BoTech.DesignerForAvalonia.Views"
         x:Class="BoTech.DesignerForAvalonia.Views.MainWindow"
-        Icon="/Assets/AvaloniaDesigner_ApplicationLogo.ico"
+        Icon="/Assets/BoTech_DesignerForAvalonia_Mini.ico"
         Title="BoTech.DesignerForAvalonia">
     <dialogHostAvalonia:DialogHost Identifier="MainDialogHost"
                                    DialogMargin="16"
