@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
+             x:Class="BoTech.DesignerForAvalonia.Views.Editor.ViewHierarchyView"
+             x:DataType="vm:ViewHierarchyViewModel">
+    <Border Name="CornerBorder" 
+        BorderThickness="2" 
+        BorderBrush="Gray" 
+        CornerRadius="8">
+        <Grid RowDefinitions="Auto, Auto">
+            <StackPanel>
+                <TextBlock>View-Hierarchy</TextBlock>
+                <AutoCompleteBox 
+                    FilterMode="Contains"
+                    Watermark="Search for a Control...">
+                    <AutoCompleteBox.InnerRightContent>
+                        <Button>
+                            <materialIcons:MaterialIcon Kind="Magnify"></materialIcons:MaterialIcon>
+                        </Button>
+                    </AutoCompleteBox.InnerRightContent>
+                </AutoCompleteBox>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" >
+                <TreeView 
+                        ItemsSource="{Binding TreeViewNodes}"
+                        SelectionChanged="TreeView_OnSelectionChanged"
+                        SelectedItem="{Binding SelectedItem}">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Text}">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="_Copy"
+                                                  Command="{Binding CopyCommand}">
+                                            <MenuItem.Icon>
+                                                <materialIcons:MaterialIcon Kind="ContentCopy"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="_Paste"
+                                                  Command="{Binding PasteCommand}">
+                                            <MenuItem.Icon>
+                                                <materialIcons:MaterialIcon Kind="ContentPaste"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="_Delete"
+                                                  Command="{Binding DeleteCommand}">
+                                            <MenuItem.Icon>
+                                                <materialIcons:MaterialIcon Kind="DeleteOutline"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

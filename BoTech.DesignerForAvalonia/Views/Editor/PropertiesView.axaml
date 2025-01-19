@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
+             x:Class="BoTech.DesignerForAvalonia.Views.Editor.PropertiesView"
+             x:DataType="vm:PropertiesViewModel">
+    <Border Name="CornerBorder" 
+        BorderThickness="2" 
+        BorderBrush="Gray" 
+        CornerRadius="8">
+        <Grid RowDefinitions="Auto, 800" ColumnDefinitions="Auto, 200">
+            <TextBlock>Properties</TextBlock>
+            <ScrollViewer Grid.Row="1" >
+                <ContentControl Content="{Binding Tabs}"/>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

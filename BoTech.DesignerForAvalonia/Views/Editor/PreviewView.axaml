@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
+             x:DataType="vm:PreviewViewModel"
+             x:Class="BoTech.DesignerForAvalonia.Views.Editor.PreviewView">
+    <Design.DataContext>
+        <vm:PreviewViewModel/>
+    </Design.DataContext> 
+    <Border BorderThickness="2" 
+            BorderBrush="Gray" 
+            CornerRadius="8" >
+        <Grid RowDefinitions="Auto, Auto" >
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Command="{Binding ReLoadCommand}">Reload</Button>
+                <Button Command="{Binding SaveCommand}">Save</Button>
+            </StackPanel>
+            
+            <ContentControl Grid.Row="1" 
+                            PointerPressed="Preview_OnPointerPressed" 
+                            PointerExited="Preview_OnPointerExited" 
+                            PointerMoved="Preview_OnPointerMoved" 
+                            Content="{Binding EditorController.PreviewContent}"></ContentControl>
+        </Grid>
+    </Border>
+    
+</UserControl>

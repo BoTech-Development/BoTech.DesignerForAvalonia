@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
+             x:Class="BoTech.DesignerForAvalonia.Views.Editor.TopNavigationView"
+             x:DataType="vm:TopNavigationViewModel">
+    <Menu>
+        <MenuItem Header="_File">
+            <MenuItem Header="_Open Folder">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5" VerticalAlignment="Center">Project Path:</TextBlock>
+                        <TextBox Watermark="Enter Path here."
+                                 Text="{Binding SelectedPath}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0, 5,0,0">
+                        <TextBlock Margin="5" VerticalAlignment="Center">Project Name:</TextBlock>
+                        <TextBox Watermark="Enter your Project name here..."
+                                Text="{Binding ProjectName}"/>
+                    </StackPanel>
+                    <Button Margin="0, 5,0,0" Command="{Binding LoadNewDirectoryCommand}">
+                        Load
+                    </Button>
+                </StackPanel>
+            </MenuItem>
+        </MenuItem>
+       <MenuItem Header="_Help">
+           <MenuItem Header="_About" Command="{Binding AboutViewCommand}"></MenuItem>
+       </MenuItem>
+    </Menu>
+</UserControl>

@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="BoTech.DesignerForAvalonia.Views.AboutView"
+             x:DataType="vm:AboutViewModel">
+    <UserControl.Styles>
+        <Style Selector="HyperlinkButton">
+            <Setter Property="TextBlock.TextDecorations" Value="" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="HyperlinkButton:pointerover">
+            <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel>
+        <Image Source="/Assets/AvaloniaDesigner_ApplicationLogo.png" Height="180"></Image>
+        <TextBlock HorizontalAlignment="Center">Powered by: </TextBlock>
+        <Image Source="/Assets/BoTechLogoNew.png" Width="180" Margin="0 ,0, 0, 5"></Image>
+        <TextBlock HorizontalAlignment="Center" Margin="0 ,0, 0, 5">Version: V1.1.0 <LineBreak />(15.01.2025)</TextBlock>
+        <StackPanel Orientation="Horizontal" Margin="0 ,0, 0, 5">
+            <icons:MaterialIcon Kind="FaceAgent" Width="24" Height="24" Margin="0 ,0, 5, 0"/>
+            <HyperlinkButton Command="{Binding OpenSupportWebsiteCommand}">For Support click here.</HyperlinkButton>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0 ,0, 0, 5">
+            <icons:MaterialIcon Kind="LinkVariant" Width="24" Height="24" Margin="0 ,0, 5, 0"/>
+            <HyperlinkButton Command="{Binding OpenWebsiteCommand}">www.botech.dev</HyperlinkButton>
+        </StackPanel>
+        <Button HorizontalAlignment="Center" Command="{Binding CloseCommand}">Close</Button>
+    </StackPanel>
+</UserControl>
