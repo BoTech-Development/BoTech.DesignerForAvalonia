@@ -20,6 +20,7 @@
 + The Software is not finished and in Alpha mode although a release Version has been published.
 + The Second Release will be usable:
   + See the Second Release Milestone for more Info: [V1.2.0](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/milestone/2)
+  + Or go to our Docs Page: [Roadmap For V1.1.x](https://docs.botech.dev/DesignerForAvalonia/1.1/roadmap-v1-1.html)
 ## ℹ️📖Documentation
 + [Online Doku](https://docs.botech.dev/)
 + [UML_Diagramm(Draw.io)](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/blob/master/Docs/Code/BoTech.AvaloniaDesigner.drawio)
