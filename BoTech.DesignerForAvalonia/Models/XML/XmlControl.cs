@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Avalonia.Controls;
+using BoTech.DesignerForAvalonia.Services.Avalonia;
 
 namespace BoTech.DesignerForAvalonia.Models.XML;
 /// <summary>
@@ -80,6 +82,7 @@ public class XmlControl : ICloneable
         Control? copiedControl = Activator.CreateInstance(this.Control.GetType()) as Control;
         if (copiedControl != null)
         {
+            // We want to iterate through the Attribute List to only copy the Properties that have really changed. 
             if (this.Node.Attributes != null)
             {
                 foreach (XmlAttribute attribute in this.Node.Attributes)
@@ -87,6 +90,9 @@ public class XmlControl : ICloneable
                     PropertyInfo? propertyInfo = copiedControl.GetType().GetProperty(attribute.Name);
                     if (propertyInfo != null)
                     {
+                        // Get the Property of the Current Control and Clone it
+                        
+                       // propertyInfo.SetValue(copiedControl, propertyInfo.GetValue(this.Node.Attributes[attribute.Name], null));
                         if (propertyInfo.PropertyType.IsEnum)
                         {
                             propertyInfo.SetValue(copiedControl,
@@ -94,8 +100,8 @@ public class XmlControl : ICloneable
                         }
                         else
                         {
-                            propertyInfo.SetValue(copiedControl,
-                                Convert.ChangeType(attribute.Value, propertyInfo.PropertyType));
+                            propertyInfo.SetValue(copiedControl, CloneService.CloneProperty(propertyInfo, copiedControl, Control));
+                            
                         }
                     }
                 }
@@ -104,18 +110,10 @@ public class XmlControl : ICloneable
         }
         
         // Creating a Copy of the Node
-        
-        XmlElement? newNode = Node.OwnerDocument?.CreateElement(Control.GetType().Name);
-        if (newNode != null && Node.Attributes != null)
-        {
-            // Adding all Attributes:
-            foreach (XmlAttribute attribute in Node.Attributes)
-            {
-                newNode.Attributes.Append(attribute);
-            }
-            xmlControlCopy.Node = newNode;
-        }
+
+        xmlControlCopy.Node  = Node.CloneNode(true);
         
         return xmlControlCopy;
     }
+    
 }

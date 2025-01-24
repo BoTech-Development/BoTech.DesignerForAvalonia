@@ -1,8 +1,7 @@
-<h1>
-<img src="https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/BoTech.DesignerForAvalonia/Assets/BoTech_DesignerForAvalonia_WithText_NoBG.png"
-<br/>
-<h3>Design Preview and Style your Avalonia App in the BoTech.DesignerForAvalonia.</h3>
-</h1>
+![Logo](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/BoTech.DesignerForAvalonia/Assets/BoTech_DesignerForAvalonia_WithText_NoBG.png)
+
+### Design Preview and Style your Avalonia App in the BoTech.DesignerForAvalonia.
+
 
 ![GitHub Release](https://img.shields.io/github/v/release/BoTech-Development/BoTech.AvaloniaDesigner)
 ![GitHub Created At](https://img.shields.io/github/created-at/BoTech-Development/BoTech.AvaloniaDesigner)
@@ -15,12 +14,12 @@
 ## 📢V1.1.0 has been released!🎉
 + [click here](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/releases/tag/V1.1.0)
 
+### Current Version: V1.1.1
 ## Current Status:
 + I have published the first Release Version 🎉**V1.1.0**🎉
 + The Software is not finished and in Alpha mode although a release Version has been published.
 + The Second Release will be usable:
-  + See the Second Release Milestone for more Info: [V1.2.0](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/milestone/2)
-  + Or go to our Docs Page: [Roadmap For V1.1.x](https://docs.botech.dev/DesignerForAvalonia/1.1/roadmap-v1-1.html)
+  + See the Second Release Roadmap [V1.2.0](https://docs.botech.dev/DesignerForAvalonia/1.1/roadmap-v1-1.html) for more info.
 ## ℹ️📖Documentation
 + [Online Doku](https://docs.botech.dev/)
 + [UML_Diagramm(Draw.io)](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/blob/master/Docs/Code/BoTech.AvaloniaDesigner.drawio)

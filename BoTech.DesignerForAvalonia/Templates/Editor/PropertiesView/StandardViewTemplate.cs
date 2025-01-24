@@ -60,7 +60,7 @@ public class StandardViewTemplate
                         // Create a new Editable Control with the ControlsCreatorObject class:
                         referencedProperty.ControlCreator = new ControlsCreatorObject(referencedProperty.PropertyInfo,
                             xmlControl, tabContent, viewTemplateName);
-                        stackPanel.Children.Add(referencedProperty.ControlCreator.EditableControls);
+                        stackPanel.Children.Add(referencedProperty.ControlCreator.VisualControl);
                     }
                 }
             }
@@ -99,7 +99,7 @@ public class StandardViewTemplate
                             //if (referencedProperty.ControlCreator.Rerender())
                             //{
                             referencedProperty.ControlCreator.Rerender();
-                                stackPanel.Children.Add(referencedProperty.ControlCreator.EditableControls);
+                                stackPanel.Children.Add(referencedProperty.ControlCreator.VisualControl);
                             //}
                         }
                     }

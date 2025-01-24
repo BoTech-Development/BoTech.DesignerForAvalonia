@@ -139,7 +139,8 @@ public static class ControlsCreator
         {
             Text = propertyInfo.Name + ":",
             VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0 ,0 ,5 ,0)
+            Margin = new Thickness(0 ,0 ,5 ,0),
+            FontWeight = FontWeight.Bold
         });
         stackPanel.Children.Add(control);
         return stackPanel;

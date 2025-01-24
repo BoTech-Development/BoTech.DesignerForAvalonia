@@ -20,8 +20,14 @@ public class ControlsCreatorObject
 {
     private ConstructorModel _constructorModel;
     private XmlControl _referencedXmlControl; 
+    /// <summary>
+    /// All Controls that are necessary to edit the current Property
+    /// </summary>
     public Expander EditableControls { get; set; }
-
+    /// <summary>
+    /// A button which will open the Message Box which contains the Editable Control.
+    /// </summary>
+    public StackPanel VisualControl  { get; set; }
 
 
     public ControlsCreatorObject(PropertyInfo propertyInfo, XmlControl referencedXmlControl, PropertiesViewModel.TabContent tabContent, string viewTemplateName)
@@ -29,6 +35,43 @@ public class ControlsCreatorObject
         _referencedXmlControl = referencedXmlControl;
         _constructorModel = new ConstructorModel(propertyInfo.PropertyType, propertyInfo.Name, _referencedXmlControl, tabContent, viewTemplateName);
         EditableControls = _constructorModel.Render();
+        VisualControl = new StackPanel()
+        {
+            Orientation = Orientation.Horizontal,
+        };
+        VisualControl.Children.Add(
+            new TextBlock()
+            {
+                Text = propertyInfo.Name + ":",
+                FontWeight = FontWeight.Bold,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+        try
+        {
+            VisualControl.Children.Add(
+                new TextBlock()
+                {
+                    Text = propertyInfo.GetValue(_referencedXmlControl)?.ToString(),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+        }
+        catch (Exception e)
+        {
+            VisualControl.Children.Add(
+                new TextBlock()
+                {
+                    Text = "Error by reading value as string: " + e.Message,
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+        }
+       
+        VisualControl.Children.Add(
+            new Button()
+            {
+                Content = "Edit",
+                VerticalAlignment = VerticalAlignment.Center,
+                
+            });
     }
 
     public void Rerender()

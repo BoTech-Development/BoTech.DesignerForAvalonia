@@ -51,6 +51,20 @@
                                                 <materialIcons:MaterialIcon Kind="DeleteOutline"/>
                                             </MenuItem.Icon>
                                         </MenuItem>
+                                        <MenuItem Header="_Move"
+                                                  Command="{Binding StartMoveCommand}"
+                                                  IsVisible="{Binding ViewModel.StartMoveButtonVisible}">
+                                            <MenuItem.Icon>
+                                                <materialIcons:MaterialIcon Kind="Drag"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="_Move Here"
+                                                  Command="{Binding StopMoveCommand}"
+                                                  IsVisible="{Binding !ViewModel.StartMoveButtonVisible}">
+                                            <MenuItem.Icon>
+                                                <materialIcons:MaterialIcon Kind="Drag"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>

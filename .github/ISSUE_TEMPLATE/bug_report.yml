@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report an bug in the BoTech.AvaloniaDesigner
+description: Report an bug in the BoTech.DesignerForAvalonia
 labels: ["bug"]
 body:
   - type: textarea
@@ -24,8 +24,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: BoTech.AvaloniaDesigner Version
-      placeholder: e.g. V1.0.19 or V1.1.0
+      label: BoTech.DesignerForAvalonia Version
+      placeholder: e.g. V1.0.19, V1.1.0 or V1.1.1
     validations:
       required: true
   - type: dropdown

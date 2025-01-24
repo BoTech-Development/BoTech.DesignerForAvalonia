@@ -4,10 +4,13 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reflection;
 using System.Xml;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using BoTech.DesignerForAvalonia.Controller.Editor;
 using BoTech.DesignerForAvalonia.Models.XML;
 using BoTech.DesignerForAvalonia.Services.Avalonia;
+using BoTech.DesignerForAvalonia.Views.Editor;
 using DynamicData;
 using ReactiveUI;
 
@@ -21,9 +24,18 @@ public class ViewHierarchyViewModel : ViewModelBase
         get => _treeViewNodes; 
         set => this.RaiseAndSetIfChanged(ref _treeViewNodes, value);
     } 
+    private bool _startMoveButtonVisible = true;
+    public bool StartMoveButtonVisible
+    {
+        get => _startMoveButtonVisible; 
+        set => this.RaiseAndSetIfChanged(ref _startMoveButtonVisible, value);
+    } 
+    
     public TreeViewNode? SelectedItem { get; set; }
 
     private TreeViewNode? _nodeToCopy;
+
+    private TreeViewNode? _nodeToMove;
     
     private EditorController _editorController;
     public ViewHierarchyViewModel(EditorController editorController)
@@ -32,6 +44,70 @@ public class ViewHierarchyViewModel : ViewModelBase
         _editorController.ViewHierarchyViewModel = this;
         TreeViewNodes = new ObservableCollection<TreeViewNode>();
         Reload();
+    }
+   
+    public void StartMove(TreeViewNode node)
+    {
+        _nodeToMove = node;
+    }
+
+    public void StopMove(TreeViewNode node)
+    {
+        if (_nodeToMove != null)
+        {
+            XmlControl? movedXmlControl = _editorController.RootConnectedNode.Find(_nodeToMove.ControlInstance);
+            XmlControl? currentXmlControl = _editorController.RootConnectedNode.Find(node.ControlInstance);
+            if (currentXmlControl != null && movedXmlControl != null)
+            {
+                XmlControl movedXMLControlClone = (XmlControl)movedXmlControl.Clone();
+                movedXMLControlClone.Parent = currentXmlControl;
+                // Creating new References
+                currentXmlControl.Children.Add(movedXMLControlClone);    
+                currentXmlControl.Node.AppendChild(movedXMLControlClone.Node);
+                // Remove the all old references
+                XmlControl? parent = movedXmlControl.Parent;
+                if (parent != null)
+                {
+                    parent.Children.Remove(movedXmlControl);
+                    parent.Node.RemoveChild(movedXmlControl.Node);
+                    // Removing the moved Control from the Parent Control
+                    PropertyInfo? propertyInfoParent;
+                    if ((propertyInfoParent = parent.Control.GetType().GetProperty("Child")) != null)
+                    {
+                        propertyInfoParent.SetValue(parent.Control, null);
+                    }
+                    if ((propertyInfoParent = parent.Control.GetType().GetProperty("Content")) != null)
+                    {
+                        propertyInfoParent.SetValue(parent.Control, null);
+                    }
+                    if ((propertyInfoParent = parent.Control.GetType().GetProperty("Children")) != null)
+                    {
+                        Controls? children = propertyInfoParent.GetValue(parent.Control) as Controls;
+                        if(children != null) children.Remove(movedXmlControl.Control);
+                    }
+                }
+                
+                // Update the Parent Control:
+                // Adding the new created Control as an child Control of the parent control.
+                
+                PropertyInfo? propertyInfo;
+                if ((propertyInfo = currentXmlControl.Control.GetType().GetProperty("Child")) != null)
+                {
+                    propertyInfo.SetValue(currentXmlControl.Control, movedXMLControlClone.Control);
+                }
+                if ((propertyInfo = currentXmlControl.Control.GetType().GetProperty("Content")) != null)
+                {
+                    propertyInfo.SetValue(currentXmlControl.Control, movedXMLControlClone.Control);
+                }
+                if ((propertyInfo = currentXmlControl.Control.GetType().GetProperty("Children")) != null)
+                {
+                    Controls? children = propertyInfo.GetValue(currentXmlControl.Control) as Controls;
+                    if(children != null) children.Add(movedXMLControlClone.Control);
+                }
+                // Update the View
+                Reload();
+            }
+        }
     }
 
     public void Copy(TreeViewNode copyNode)
@@ -165,22 +241,35 @@ public class ViewHierarchyViewModel : ViewModelBase
         public ReactiveCommand<Unit, Unit> CopyCommand { get; set; }
         public ReactiveCommand<Unit, Unit> PasteCommand { get; set; }
         public ReactiveCommand<Unit, Unit> DeleteCommand { get; set; }
+
+        public ReactiveCommand<Unit, Unit> StartMoveCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> StopMoveCommand { get; set; }
         
-        private ViewHierarchyViewModel _viewModel;
+        public ViewHierarchyViewModel ViewModel { get; set; }
         public TreeViewNode(ViewHierarchyViewModel viewHierarchyViewModel)
         {
-            _viewModel = viewHierarchyViewModel;
+            ViewModel = viewHierarchyViewModel;
             CopyCommand = ReactiveCommand.Create(() =>
             {
-                _viewModel.Copy(this);
+                ViewModel.Copy(this);
             });
             PasteCommand = ReactiveCommand.Create(() =>
             {
-                _viewModel.Paste(this);
+                ViewModel.Paste(this);
             });
             DeleteCommand = ReactiveCommand.Create(() =>
             {
-                _viewModel.Delete(this);
+                ViewModel.Delete(this);
+            });
+            StartMoveCommand = ReactiveCommand.Create(() =>
+            {
+                ViewModel.StartMove(this);
+                ViewModel.StartMoveButtonVisible = false;
+            });
+            StopMoveCommand = ReactiveCommand.Create(() =>
+            {
+                ViewModel.StopMove(this);
+                ViewModel.StartMoveButtonVisible = true;
             });
         }
     }

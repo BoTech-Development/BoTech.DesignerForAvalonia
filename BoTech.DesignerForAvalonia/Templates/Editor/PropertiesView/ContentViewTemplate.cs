@@ -26,7 +26,7 @@ public class ContentViewTemplate : IViewTemplate
         
         stackPanel.Children.Add(new TextBlock()
         {
-            Text = "Note: All Content Properties will be available in Version V1.2.x of this Product. \n For more details visit our Roadmap: aka.botech.dev/go/AvaloniaDesigner/Roadmap"
+            Text = "Note: All Content Properties will be available in Version V1.2.x of this Product. \n For more details visit our Roadmap: https://aka.botech.dev/go/DesignerForAvalonia/Roadmap"
         });
         
         
