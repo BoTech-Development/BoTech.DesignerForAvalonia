@@ -11,38 +11,55 @@ namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
 
 public class TopNavigationViewModel : ViewModelBase
 {
-    public string SelectedPath { get; set; } = string.Empty;
-    public string ProjectName { get; set; } = string.Empty;
-    public ReactiveCommand<Unit, Unit> LoadNewDirectoryCommand { get; set; }
+    /// <summary>
+    /// This command Opens the view with the given name.
+    /// </summary>
+    public ReactiveCommand<string, Unit> OpenViewCommand { get; set; }
+    /// <summary>
+    /// The instance of the current Editor Controller, which is needed to open Views again.
+    /// </summary>
+    public EditorController EditorController { get; set; }
+    public ReactiveCommand<Unit, Unit> LoadProjectCommand { get; set; }
     public ReactiveCommand<Unit, Unit> AboutViewCommand { get; set; }
     /// <summary>
     /// It is needed to have the MainViewModel reference to set the Content Object => Can change when the user wants to work either in the Editor or in the Style Editor.
     /// </summary>
-    public MainViewModel MainViewModel { get; set; }
-    /// <summary>
-    /// The Controller which manages the Editor Views ( PreviewView, PropertiesView, ViewHierarchyView, ItemsView and SolutionExplorerView) 
-    /// </summary>
-    private EditorController? EditorController { get; set; } = null;
+    private MainViewModel MainViewModel { get; set; }
+
+   
     public TopNavigationViewModel(MainViewModel mainViewModel)
     {
-        LoadNewDirectoryCommand = ReactiveCommand.Create(LoadNewDirectory);
+        LoadProjectCommand = ReactiveCommand.Create(LoadProject);
         AboutViewCommand = ReactiveCommand.Create(ShowAboutView);
+        OpenViewCommand = ReactiveCommand.Create<string>(OpenView);
         MainViewModel = mainViewModel;
+        
     }
 
-    private void LoadNewDirectory()
+    private void OpenView(string viewName)
     {
-        if (SelectedPath != "")
+        switch (viewName)
         {
-            if (Directory.Exists(SelectedPath))
-            {
-                // Creating an EditorController and update the Content Value.
-                EditorController = new EditorController();
-                MainViewModel.Content = EditorController.Init(SelectedPath, ProjectName);
-                // Add the EditorController Instance to the ControlsCreator class:
-                ControlsCreator.EditorController = EditorController;
-            }
+            case "Solution-Explorer":
+                EditorController.SolutionExplorerView.Open();
+                break;
+            case "Items-Explorer":
+                EditorController.ItemsView.Open();
+                break;
+            case "Preview-View":
+                EditorController.PreviewView.Open();
+                break;
+            case "Hierarchy-View":
+                EditorController.ViewHierarchyView.Open();
+                break;
+            case "Properties-View":
+                EditorController.PropertiesView.Open();
+                break;
         }
+    }
+    private void LoadProject()
+    {
+        new ProjectStartViewModel(MainViewModel).OpenProject();
     }
 
     private void ShowAboutView()

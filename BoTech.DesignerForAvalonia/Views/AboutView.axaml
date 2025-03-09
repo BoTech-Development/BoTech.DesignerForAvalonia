@@ -20,7 +20,7 @@
         <Image Source="/Assets/BoTech_DesignerForAvalonia_Small.png" Height="180"></Image>
         <TextBlock HorizontalAlignment="Center">Powered by: </TextBlock>
         <Image Source="/Assets/BoTechLogoNew.png" Width="180" Margin="0 ,0, 0, 5"></Image>
-        <TextBlock HorizontalAlignment="Center" Margin="0 ,0, 0, 5">Version: V1.1.1  <LineBreak />(24.01.2025)</TextBlock>
+        <TextBlock HorizontalAlignment="Center" Margin="0 ,0, 0, 5">Version: V1.1.2  <LineBreak />(09.03.2025)</TextBlock>
         <StackPanel Orientation="Horizontal" Margin="0 ,0, 0, 5">
             <icons:MaterialIcon Kind="FaceAgent" Width="24" Height="24" Margin="0 ,0, 5, 0"/>
             <HyperlinkButton Command="{Binding OpenSupportWebsiteCommand}">For Support click here.</HyperlinkButton>

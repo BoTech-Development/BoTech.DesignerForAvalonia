@@ -1,0 +1,59 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:projectModel="clr-namespace:BoTech.DesignerForAvalonia.Models.Project"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels"
+             x:Class="BoTech.DesignerForAvalonia.Views.ProjectStartView"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:DataType="vm:ProjectStartViewModel">
+
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Classes="LightBlue" 
+                   Theme="{StaticResource TagLabel}"
+                   FontWeight="Bold">
+                Select a Project:
+            </Label>
+            <Button>New</Button>
+            <Button Command="{Binding OpenProjectCommand}">Open</Button>
+            <Button Command="{Binding LoadProjectCommand}">Load</Button>
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding DisplayedProjects}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="projectModel:OpenableProject">
+                    <Border Theme="{StaticResource CardBorder}">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <Label Classes="Red" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Red}" Content="{Binding ShortName}"/>
+                                <Label Classes="Pink" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Pink}" Content="{Binding ShortName}"/>
+                                <Label Classes="Purple" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Purple}" Content="{Binding ShortName}"/>
+                                <Label Classes="Violet" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Violet}" Content="{Binding ShortName}"/>
+                                <Label Classes="Indigo" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Indigo}" Content="{Binding ShortName}"/>
+                                <Label Classes="Blue" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Blue}" Content="{Binding ShortName}"/>
+                                <Label Classes="LightBlue" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.LightBlue}" Content="{Binding ShortName}"/>
+                                <Label Classes="Cyan" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Cyan}" Content="{Binding ShortName}"/>
+                                <Label Classes="Teal" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Teal}" Content="{Binding ShortName}"/>
+                                <Label Classes="Green" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Green}" Content="{Binding ShortName}"/>
+                                <Label Classes="LightGreen" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.LightGreen}" Content="{Binding ShortName}"/>
+                                <Label Classes="Lime" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Lime}" Content="{Binding ShortName}"/>
+                                <Label Classes="Yellow" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Yellow}" Content="{Binding ShortName}"/>
+                                <Label Classes="Amber" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Amber}" Content="{Binding ShortName}"/>
+                                <Label Classes="Orange" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Orange}" Content="{Binding ShortName}"/>
+                                <Label Classes="Grey" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Grey}" Content="{Binding ShortName}"/>
+                                <Label Classes="White" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.White}" Content="{Binding ShortName}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding SolutionFilePath}"/>
+                            </StackPanel>
+                            <Button Command="{Binding LoadRecentProjectCommand}">
+                                <materialIcons:MaterialIcon Kind="OpenInNew"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

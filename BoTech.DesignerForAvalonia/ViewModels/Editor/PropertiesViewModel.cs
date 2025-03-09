@@ -9,11 +9,13 @@ using BoTech.DesignerForAvalonia.Views;
 using BoTech.DesignerForAvalonia.Controller.Editor;
 using BoTech.DesignerForAvalonia.Models.XML;
 using BoTech.DesignerForAvalonia.Templates.Editor.PropertiesView;
+using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
+using BoTech.DesignerForAvalonia.Views.Editor;
 using ReactiveUI;
 
 namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
 
-public class PropertiesViewModel : ViewModelBase
+public class PropertiesViewModel : CloseablePageViewModel<PropertiesView>
 {
     private TabControl _tabs = new TabControl();
     /// <summary>
@@ -30,7 +32,7 @@ public class PropertiesViewModel : ViewModelBase
     private EditorController _editorController;
     
 
-    public PropertiesViewModel(EditorController editorController)
+    public PropertiesViewModel(EditorController editorController, PropertiesView codeBehind) : base(codeBehind)
     {
         //Creating all Templates
         

@@ -9,10 +9,12 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using BoTech.DesignerForAvalonia.Controller.Editor;
 using BoTech.DesignerForAvalonia.Services.Avalonia;
+using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
+using BoTech.DesignerForAvalonia.Views.Editor;
 
 namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
 
-public class ItemsExplorerViewModel : ViewModelBase
+public class ItemsExplorerViewModel : CloseablePageViewModel<ItemsExplorerView>
 {
     public ObservableCollection<TreeViewNode> TreeViewNodes { get; set;  } 
     public TreeViewNode? SelectedItem { get; set; }
@@ -20,7 +22,7 @@ public class ItemsExplorerViewModel : ViewModelBase
     // will be injected
     private EditorController _editorController;
     
-    public ItemsExplorerViewModel(EditorController editorController)
+    public ItemsExplorerViewModel(EditorController editorController, ItemsExplorerView codeBehind) : base(codeBehind)
     {
         _editorController = editorController;
       

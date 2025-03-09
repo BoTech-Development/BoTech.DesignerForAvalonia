@@ -5,6 +5,7 @@ using BoTech.DesignerForAvalonia.Controller.Editor;
 using BoTech.DesignerForAvalonia.Services.PropertiesView;
 using BoTech.DesignerForAvalonia.Services.XML;
 using BoTech.DesignerForAvalonia.ViewModels.Editor;
+using BoTech.DesignerForAvalonia.Views;
 using BoTech.DesignerForAvalonia.Views.Editor;
 using ReactiveUI;
 
@@ -33,15 +34,18 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        //new Serializer();
-        new Deserializer();//.Deserialize("", null);
+   
       
         TopNavigationView = new TopNavigationView()
         {
             DataContext = new TopNavigationViewModel(this)
         };
-        
-        
+
+       
+        _content = new ProjectStartView()
+        {
+            DataContext = new ProjectStartViewModel(this)
+        };
         
         StatusConsoleView = new StatusConsoleView()
         {

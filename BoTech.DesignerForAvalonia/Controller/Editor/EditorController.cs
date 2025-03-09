@@ -5,10 +5,12 @@ using System.Xml;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using BoTech.DesignerForAvalonia.Models.Editor;
+using BoTech.DesignerForAvalonia.Models.Project;
 using BoTech.DesignerForAvalonia.Models.XML;
 using BoTech.DesignerForAvalonia.ViewModels;
 using BoTech.DesignerForAvalonia.ViewModels.Editor;
 using BoTech.DesignerForAvalonia.Views.Editor;
+using Microsoft.Build.Construction;
 using ReactiveUI;
 
 namespace BoTech.DesignerForAvalonia.Controller.Editor;
@@ -60,7 +62,9 @@ public class EditorController : ViewModelBase
     public string OpenedFilePath { get; set; }
     
    
-    
+    /// <summary>
+    /// Standard Ctor, which sets all Members to its default value if its necessary.
+    /// </summary>
     public EditorController()
     {
         Operation = EDragAndDropOperation.None;
@@ -82,30 +86,23 @@ public class EditorController : ViewModelBase
     /// The Init Method is used to create all Views.
     /// <returns>A grid is returned that contains all views belonging to the editor.</returns>
     /// </summary>
-    public StackPanel Init(string selectedPath, string projectName)
+    public StackPanel Init(Project project)
     {
-        SolutionExplorerView = new SolutionExplorerView()
-        {
-            DataContext = new SolutionExplorerViewModel(projectName, selectedPath, this),
-            //[Grid.ColumnProperty] = 0
-        };
-        PreviewView = new PreviewView()
-        {
-            DataContext = new PreviewViewModel(this)
-            
-        };
-        ItemsView = new ItemsExplorerView()
-        {
-            DataContext = new ItemsExplorerViewModel(this)
-        };
-        ViewHierarchyView = new ViewHierarchyView()
-        {
-            DataContext = new ViewHierarchyViewModel(this)
-        };
-        PropertiesView = new PropertiesView()
-        {
-            DataContext = new PropertiesViewModel(this)
-        };
+        SolutionExplorerView = new SolutionExplorerView();
+        SolutionExplorerView.DataContext = new SolutionExplorerViewModel(project, this, SolutionExplorerView);
+
+        PreviewView = new PreviewView();
+        PreviewView.DataContext = new PreviewViewModel(this, PreviewView);
+
+        ItemsView = new ItemsExplorerView();
+        ItemsView.DataContext = new ItemsExplorerViewModel(this, ItemsView);
+
+        ViewHierarchyView = new ViewHierarchyView();
+        ViewHierarchyView.DataContext = new ViewHierarchyViewModel(this, ViewHierarchyView);
+
+        PropertiesView = new PropertiesView();
+        PropertiesView.DataContext = new PropertiesViewModel(this, PropertiesView);
+        
         return new StackPanel()
         {
             Orientation = Orientation.Horizontal,
@@ -235,7 +232,7 @@ public class EditorController : ViewModelBase
      * </Grid>
      */
     /// <summary>
-    /// This Method can be used to add Properties which are not Primitve.
+    /// This Method can be used to add Properties which are not Primitive.
     /// </summary>
     /// <param name="parent">The Parent Node. It must be the Node with this Name  "YourClass.YourProperty"</param>
     /// <param name="value">The Value of the Property which should be placed.</param>

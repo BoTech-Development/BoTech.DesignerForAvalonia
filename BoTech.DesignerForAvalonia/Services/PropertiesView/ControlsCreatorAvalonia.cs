@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Labs.Controls;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using BoTech.DesignerForAvalonia.Views;
 using BoTech.DesignerForAvalonia.Controller.Editor;
@@ -117,18 +118,11 @@ public static class ControlsCreatorAvalonia
             Children =
             {
                 autoCompleteBox,
-                new Button()
+                new Label()
                 {
-                    CornerRadius = new CornerRadius(10),
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Background = new SolidColorBrush(Color.Parse("#7B2CBF")),
-                    Padding = new Thickness(0),
-                    Margin = new Thickness(0),
-                    Content = new TextBlock()
-                    {
-                        Text = "Beta",
-                        Foreground = new SolidColorBrush(Color.Parse("#C77DFF")),
-                    }
+                   
+                    Classes = { "Purple" },
+                    Content = "Beta",
                 }
             },
             Orientation = Orientation.Horizontal

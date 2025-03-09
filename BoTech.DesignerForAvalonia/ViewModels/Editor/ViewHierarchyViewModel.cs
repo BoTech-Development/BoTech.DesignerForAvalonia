@@ -10,13 +10,14 @@ using Avalonia.Input;
 using BoTech.DesignerForAvalonia.Controller.Editor;
 using BoTech.DesignerForAvalonia.Models.XML;
 using BoTech.DesignerForAvalonia.Services.Avalonia;
+using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
 using BoTech.DesignerForAvalonia.Views.Editor;
 using DynamicData;
 using ReactiveUI;
 
 namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
 
-public class ViewHierarchyViewModel : ViewModelBase
+public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
 {
     private ObservableCollection<TreeViewNode> _treeViewNodes = new();
     public ObservableCollection<TreeViewNode> TreeViewNodes
@@ -38,7 +39,7 @@ public class ViewHierarchyViewModel : ViewModelBase
     private TreeViewNode? _nodeToMove;
     
     private EditorController _editorController;
-    public ViewHierarchyViewModel(EditorController editorController)
+    public ViewHierarchyViewModel(EditorController editorController, ViewHierarchyView codeBehind) : base(codeBehind)
     {
         _editorController = editorController;
         _editorController.ViewHierarchyViewModel = this;

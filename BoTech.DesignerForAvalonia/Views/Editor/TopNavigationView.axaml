@@ -7,26 +7,27 @@
              x:DataType="vm:TopNavigationViewModel">
     <Menu>
         <MenuItem Header="_File">
-            <MenuItem Header="_Open Folder">
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="5" VerticalAlignment="Center">Project Path:</TextBlock>
-                        <TextBox Watermark="Enter Path here."
-                                 Text="{Binding SelectedPath}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0, 5,0,0">
-                        <TextBlock Margin="5" VerticalAlignment="Center">Project Name:</TextBlock>
-                        <TextBox Watermark="Enter your Project name here..."
-                                Text="{Binding ProjectName}"/>
-                    </StackPanel>
-                    <Button Margin="0, 5,0,0" Command="{Binding LoadNewDirectoryCommand}">
-                        Load
-                    </Button>
-                </StackPanel>
-            </MenuItem>
+            <MenuItem Header="_Open Project" Command="{Binding LoadProjectCommand}"/>
         </MenuItem>
-       <MenuItem Header="_Help">
-           <MenuItem Header="_About" Command="{Binding AboutViewCommand}"></MenuItem>
-       </MenuItem>
+        <MenuItem Header="_View">
+            <MenuItem Header="_Solution-Explorer"
+                      Command="{Binding OpenViewCommand}"
+                      CommandParameter="Solution-Explorer"></MenuItem>
+            <MenuItem Header="_Items-Explorer" 
+                      Command="{Binding OpenViewCommand}"
+                      CommandParameter="Items-Explorer"></MenuItem>
+            <MenuItem Header="_Preview-View" 
+                      Command="{Binding OpenViewCommand}"
+                      CommandParameter="Preview-View"></MenuItem>
+            <MenuItem Header="_Hierarchy-View" 
+                      Command="{Binding OpenViewCommand}"
+                      CommandParameter="Hierarchy-View"></MenuItem>
+            <MenuItem Header="_Properties-View" 
+                      Command="{Binding OpenViewCommand}"
+                      CommandParameter="Properties-View"></MenuItem>
+        </MenuItem>
+        <MenuItem Header="_Help">
+            <MenuItem Header="_About" Command="{Binding AboutViewCommand}"></MenuItem>
+        </MenuItem>
     </Menu>
 </UserControl>

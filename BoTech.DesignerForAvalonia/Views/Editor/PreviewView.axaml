@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
              x:DataType="vm:PreviewViewModel"
              x:Class="BoTech.DesignerForAvalonia.Views.Editor.PreviewView">
@@ -11,7 +12,21 @@
     <Border BorderThickness="2" 
             BorderBrush="Gray" 
             CornerRadius="8" >
-        <Grid RowDefinitions="Auto, Auto" >
+        <StackPanel>
+            <Grid>
+                <materialIcons:MaterialIcon 
+                    HorizontalAlignment="Left"
+                    Kind="FileEyeOutline" 
+                    Width="24" 
+                    Height="24"/>
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold">Preview</TextBlock>
+                <Button HorizontalAlignment="Right"
+                        Command="{Binding CloseCommand}">
+                    <materialIcons:MaterialIcon Kind="CloseCircle"/>
+                </Button>
+            </Grid>
             <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button Command="{Binding ReLoadCommand}">Reload</Button>
                 <Button Command="{Binding SaveCommand}">Save</Button>
@@ -22,7 +37,7 @@
                             PointerExited="Preview_OnPointerExited" 
                             PointerMoved="Preview_OnPointerMoved" 
                             Content="{Binding EditorController.PreviewContent}"></ContentControl>
-        </Grid>
+        </StackPanel>
     </Border>
     
 </UserControl>

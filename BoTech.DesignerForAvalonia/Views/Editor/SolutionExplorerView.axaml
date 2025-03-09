@@ -4,38 +4,95 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
+             xmlns:ModelsProject="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
              x:Class="BoTech.DesignerForAvalonia.Views.Editor.SolutionExplorerView"
              x:DataType="vm:SolutionExplorerViewModel">
     <Border Name="CornerBorder" 
             BorderThickness="2" 
             BorderBrush="Gray" 
             CornerRadius="8">
-        <Grid RowDefinitions="Auto, Auto">
-            <StackPanel>
-                <TextBlock>Solution-Explorer</TextBlock>
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <materialIcons:MaterialIcon 
+                    HorizontalAlignment="Left"
+                    Kind="FolderOutline" 
+                    Width="24" 
+                    Height="24"/>
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold">Solution Explorer</TextBlock>
+                <Button HorizontalAlignment="Right"
+                        Command="{Binding CloseCommand}">
+                    <materialIcons:MaterialIcon Kind="CloseCircle"/>
+                </Button>
+            </Grid>
+            <StackPanel Orientation="Horizontal">
+               
                 <AutoCompleteBox 
                     FilterMode="Contains"
                     Watermark="Search for a View...">
                     <AutoCompleteBox.InnerRightContent>
                         <Button>
-                            <materialIcons:MaterialIcon Kind="Magnify"></materialIcons:MaterialIcon>
+                            <materialIcons:MaterialIcon Kind="Magnify"/>
                         </Button>
                     </AutoCompleteBox.InnerRightContent>
                 </AutoCompleteBox>
-                
+                <ComboBox SelectedIndex="0"
+                          SelectionChanged="SelectingItemsControl_OnSelectionChanged">
+                    <ComboBox.Items>
+                        <ComboBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <materialIcons:MaterialIcon Kind="ApplicationBracketsOutline" />
+                                <TextBlock Margin="5, 0 ,0,0">Solution</TextBlock>
+                            </StackPanel>
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <materialIcons:MaterialIcon Kind="FolderMultipleOutline" />
+                                <TextBlock Margin="5, 0 ,0,0">File System</TextBlock>
+                            </StackPanel>
+                        </ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
+                <Button>
+                    <materialIcons:MaterialIcon Kind="Cog" />
+                </Button>
             </StackPanel>
-            <ScrollViewer Grid.Row="1"
+            <ScrollViewer 
                           Height="800">
-                <TreeView ItemsSource="{Binding TreeViewNodes}"
-                    SelectedItem="{Binding SelectedItem}"
-                    SelectionChanged="TreeView_OnSelectionChanged">
-                    <TreeView.ItemTemplate>
-                        <TreeDataTemplate ItemsSource="{Binding Children}">
-                            <TextBlock Text="{Binding Text}"></TextBlock>
-                        </TreeDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
+                <StackPanel>
+                    <TreeView ItemsSource="{Binding TreeViewNodes}"
+                              SelectedItem="{Binding SelectedItem}"
+                              SelectionChanged="TreeView_OnSelectionChanged">
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialIcons:MaterialIcon 
+                                        Kind="{Binding Icon}" 
+                                        Width="22" 
+                                        Height="22"
+                                        Margin="0, 0,3 ,0"
+                                        VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Text}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                    <!--<ItemsControl ItemsSource="{Binding ProjectViews}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="DisplayableProjectView">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                    <Button Command="EditViewCommand">
+                                        <materialIcons:MaterialIcon Kind="FileEditOutline"/>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>-->
+                </StackPanel>
             </ScrollViewer>
-        </Grid>
+        </StackPanel>
     </Border>
 </UserControl>

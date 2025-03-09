@@ -15,13 +15,15 @@ using BoTech.DesignerForAvalonia.Models.Editor;
 using BoTech.DesignerForAvalonia.Models.XML;
 using BoTech.DesignerForAvalonia.Services.Avalonia;
 using BoTech.DesignerForAvalonia.Services.XML;
+using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
 using BoTech.DesignerForAvalonia.Views;
+using BoTech.DesignerForAvalonia.Views.Editor;
 using DialogHostAvalonia;
 using ReactiveUI;
 
 namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
 
-public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
+public class PreviewViewModel : CloseablePageViewModel<PreviewView>
 {
     /// <summary>
     /// when 
@@ -44,7 +46,7 @@ public class PreviewViewModel : ViewModelBase, INotifyPropertyChanged
     /// Must be store because it is used by the CreateXmlControlConnection Method
     /// </summary>
     private Control _currentLayoutControl { get; set; }
-    public PreviewViewModel(EditorController editorController)
+    public PreviewViewModel(EditorController editorController, PreviewView codeBehind) : base(codeBehind) 
     {
         EditorController = editorController;
         SaveCommand = ReactiveCommand.Create(OnSaveCommand);

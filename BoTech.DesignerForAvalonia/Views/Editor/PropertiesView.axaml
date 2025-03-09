@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
              x:Class="BoTech.DesignerForAvalonia.Views.Editor.PropertiesView"
              x:DataType="vm:PropertiesViewModel">
@@ -9,11 +10,27 @@
         BorderThickness="2" 
         BorderBrush="Gray" 
         CornerRadius="8">
-        <Grid RowDefinitions="Auto, 800" ColumnDefinitions="Auto, 200">
-            <TextBlock>Properties</TextBlock>
-            <ScrollViewer Grid.Row="1" >
+        <StackPanel Orientation="Horizontal">
+            <Grid ColumnDefinitions="Auto, Auto, Auto">
+                <materialIcons:MaterialIcon
+                    Grid.Column="0"
+                    HorizontalAlignment="Left"
+                    Kind="SquareEditOutline" 
+                    Width="24" 
+                    Height="24"/>
+                <TextBlock Grid.Column="1" 
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold">Properties</TextBlock>
+                <Button Grid.Column="2" 
+                        HorizontalAlignment="Right"
+                        Command="{Binding CloseCommand}">
+                        <materialIcons:MaterialIcon Kind="CloseCircle"/>
+                </Button>
+            </Grid>
+            <ScrollViewer>
                 <ContentControl Content="{Binding Tabs}"/>
             </ScrollViewer>
-        </Grid>
+        </StackPanel>
     </Border>
 </UserControl>
