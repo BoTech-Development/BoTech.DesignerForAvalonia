@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reflection;
-using System.Xml;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using BoTech.DesignerForAvalonia.Controller.Editor;
+using BoTech.DesignerForAvalonia.Models.Editor;
 using BoTech.DesignerForAvalonia.Models.XML;
 using BoTech.DesignerForAvalonia.Services.Avalonia;
 using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
 using BoTech.DesignerForAvalonia.Views.Editor;
-using DynamicData;
 using ReactiveUI;
 
 namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
@@ -25,18 +20,43 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
         get => _treeViewNodes; 
         set => this.RaiseAndSetIfChanged(ref _treeViewNodes, value);
     } 
+    /// <summary>
+    /// Is true when the context menu should display the Move or Move here option.
+    /// </summary>
     private bool _startMoveButtonVisible = true;
     public bool StartMoveButtonVisible
     {
         get => _startMoveButtonVisible; 
         set => this.RaiseAndSetIfChanged(ref _startMoveButtonVisible, value);
     } 
-    
+    /// <summary>
+    /// The selected Node of the TreeView.
+    /// </summary>
     public TreeViewNode? SelectedItem { get; set; }
-
+    /// <summary>
+    /// Node which was selected by the user to copy.
+    /// </summary>
     private TreeViewNode? _nodeToCopy;
-
+    /// <summary>
+    /// Node which was selected by the user to move.
+    /// </summary>
     private TreeViewNode? _nodeToMove;
+    /// <summary>
+    /// Starts the search function
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SearchCommand { get; set; }
+    /// <summary>
+    /// Deletes all search Results
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> DeleteSearchResultsCommand { get; set; }
+    /// <summary>
+    /// The text content of the Search bar.
+    /// </summary>
+    public string CurrentSearchText { get; set; }
+    /// <summary>
+    /// The Main node of the TreeView must be stored separately, because the Property TreeViewNodes can be replaced with the search Results.
+    /// </summary>
+    private TreeViewNode _mainNode { get; set; }
     
     private EditorController _editorController;
     public ViewHierarchyViewModel(EditorController editorController, ViewHierarchyView codeBehind) : base(codeBehind)
@@ -44,15 +64,41 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
         _editorController = editorController;
         _editorController.ViewHierarchyViewModel = this;
         TreeViewNodes = new ObservableCollection<TreeViewNode>();
+        SearchCommand = ReactiveCommand.Create(Search);
+        DeleteSearchResultsCommand = ReactiveCommand.Create(DeleteSearchResults);
         Reload();
     }
-   
-    public void StartMove(TreeViewNode node)
+
+    private void DeleteSearchResults() => TreeViewNodes = new ObservableCollection<TreeViewNode>() { _mainNode };
+    public void Search()
+    {
+        TreeViewNode searchNode = new TreeViewNode(this)
+        {
+            Text = "Avalonia Controls",
+            ControlInstance = null,
+        };
+        if (_mainNode.Search(CurrentSearchText, searchNode))
+        {
+            TreeViewNodes = new ObservableCollection<TreeViewNode>() { searchNode };
+        }
+        else
+        {
+            TreeViewNodes = new ObservableCollection<TreeViewNode>() 
+            { 
+                new TreeViewNode(this)
+                {
+                    Text = "Nothing Found.",
+                    ControlInstance = null,
+                } 
+            };
+        }
+    }
+    private void StartMove(TreeViewNode node)
     {
         _nodeToMove = node;
     }
 
-    public void StopMove(TreeViewNode node)
+    private void StopMove(TreeViewNode node)
     {
         if (_nodeToMove != null)
         {
@@ -111,12 +157,12 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
         }
     }
 
-    public void Copy(TreeViewNode copyNode)
+    private void Copy(TreeViewNode copyNode)
     {
         _nodeToCopy = copyNode;
     }
 
-    public void Paste(TreeViewNode selectedNode)
+    private void Paste(TreeViewNode selectedNode)
     {
         if (_nodeToCopy != null)
         {
@@ -150,7 +196,7 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
             }
         }
     }
-    public void Delete(TreeViewNode selectedNode)
+    private void Delete(TreeViewNode selectedNode)
     {
         XmlControl? xmlControl = _editorController.RootConnectedNode.Find(selectedNode.ControlInstance);
         if (xmlControl != null)
@@ -198,9 +244,9 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
     /// </summary>
     public void Reload()
     {
-        TreeViewNode mainNode = GetTreeViewNodesFromControl(_editorController.PreviewContent);
+        _mainNode = GetTreeViewNodesFromControl(_editorController.PreviewContent);
         TreeViewNodes = new ObservableCollection<TreeViewNode>();
-        TreeViewNodes.Add(mainNode);
+        TreeViewNodes.Add(_mainNode);
         // Remove the main Node (Is useless)
         //TreeViewNodes = mainNode.Children;
     }
@@ -226,14 +272,14 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
         return newNode;
         
     }
+
     /// <summary>
     /// The TreeViewNode class is a model for each TreeView Node.<br/>
     /// It can be used to store the Text to display and an Instance for the referenced Control.
     /// </summary>
-    public class TreeViewNode
+    public class TreeViewNode : TreeViewNodeBase
     {
-        public ObservableCollection<TreeViewNode> Children { get; } = new ObservableCollection<TreeViewNode>();
-        public string Text { get; set; } = string.Empty;
+      
         /// <summary>
         /// Referenced Control on the Preview 
         /// </summary>
@@ -272,6 +318,17 @@ public class ViewHierarchyViewModel : CloseablePageViewModel<ViewHierarchyView>
                 ViewModel.StopMove(this);
                 ViewModel.StartMoveButtonVisible = true;
             });
+        }
+
+        protected override TreeViewNodeBase? Copy(TreeViewNodeBase nodeToCopy)
+        {
+            if(nodeToCopy is TreeViewNode treeViewNode) return new TreeViewNode(treeViewNode.ViewModel)
+            {
+                Children = treeViewNode.Children,
+                Text = treeViewNode.Text,
+                ControlInstance = treeViewNode.ControlInstance,
+            };
+            return null;
         }
     }
 }

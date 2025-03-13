@@ -27,4 +27,8 @@
     <PackageReference Include="Semi.Avalonia" Version="11.2.1.5" />
     <PackageReference Include="ThemeEditor.Controls.ColorPicker" Version="11.2.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controller\Project\" />
+  </ItemGroup>
 </Project>

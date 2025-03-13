@@ -28,4 +28,13 @@ public partial class SolutionExplorerView : CloseablePageCodeBehind
             vm.OnExplorerTypeChanged();
         }
     }
+
+    private void AutoCompleteBox_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (DataContext is SolutionExplorerViewModel vm)
+        {
+            vm.SearchForAFileOrFolder(vm.CurrentSearchText);
+        }
+        //throw new System.NotImplementedException();
+    }
 }

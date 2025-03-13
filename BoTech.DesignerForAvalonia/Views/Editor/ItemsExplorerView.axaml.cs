@@ -20,4 +20,12 @@ public partial class ItemsExplorerView : CloseablePageCodeBehind
             vm.OnTreeViewSelectionChanged();
         }
     }
+
+    private void AutoCompleteBox_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (DataContext is ItemsExplorerViewModel vm)
+        {
+            vm.Search();
+        }
+    }
 }

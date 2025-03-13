@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using Avalonia.Controls;
 using BoTech.DesignerForAvalonia.Controller.Editor;
+using BoTech.DesignerForAvalonia.Models.Editor;
 using BoTech.DesignerForAvalonia.Models.Project;
 using BoTech.DesignerForAvalonia.Services.XML;
 using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
@@ -25,6 +26,9 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
     /// Saves all visible files or directories
     /// </summary>
     private ObservableCollection<TreeViewNode> _treeViewNodes = new();
+    /// <summary>
+    /// Saves all visible files or directories
+    /// </summary>
     public ObservableCollection<TreeViewNode> TreeViewNodes
     {
         get => _treeViewNodes; 
@@ -38,20 +42,37 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
     /// Saves all Views in the Solution
     /// </summary>
     private ObservableCollection<DisplayableProjectView> _projectViews = new();
+    /// <summary>
+    /// Saves all Views in the Solution
+    /// </summary>
     public ObservableCollection<DisplayableProjectView> ProjectViews
     {
         get => _projectViews; 
         set => this.RaiseAndSetIfChanged(ref _projectViews, value);
     } 
+    /// <summary>
+    /// Loads the Selected View
+    /// </summary>
     public ReactiveCommand<string, Unit> EditViewCommand { get; }
-    
+    /// <summary>
+    /// When button Pressed, the system will search for the string
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SearchCommand { get; set; }
+    /// <summary>
+    /// Show all Files or the Solution
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> DeleteSearchResultsCommand { get; set; }
+    /// <summary>
+    /// The text which the user has entered int the search bar.
+    /// </summary>
+    public string CurrentSearchText { get; set; }
     public EditorController EditorController { get; set; }
    
 
     
     private bool _explorerType = true;
-    private List<TreeViewNode> _fileSystemTreeViewNodes = new List<TreeViewNode>();
-    private List<TreeViewNode> _solutionTreeViewNodes = new List<TreeViewNode>();
+    private TreeViewNode _fileSystemTreeViewNode = null!;
+    private TreeViewNode _solutionTreeViewNode = null!;
     
     private Deserializer? _deserializer = null;
     
@@ -62,16 +83,72 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
         EditorController = editorController;
 
         EditViewCommand = ReactiveCommand.Create<string>(EditView);
+
+        SearchCommand = ReactiveCommand.Create(() =>
+        {
+            SearchForAFileOrFolder(CurrentSearchText);
+        });
+        DeleteSearchResultsCommand = ReactiveCommand.Create(() =>
+        {
+            OnExplorerTypeChanged(false);
+        });
+        
         _project = project;
         
         UpdateTreeView(project.SolutionFile, project.SolutionFilePath);
-        SyncProjectByUsingTheFileTree(project, _fileSystemTreeViewNodes[0]);
+        SyncProjectByUsingTheFileTree(project, _fileSystemTreeViewNode);
         project.OutputPath = ExtractPathToAssemblyFromNodes(project.SolutionFilePath, Path.GetFileNameWithoutExtension(project.SolutionFilePath));
 
       
        // ProjectViews.Clear();
         //ProjectViews = new ObservableCollection<DisplayableProjectView>(){ (IEnumerable<DisplayableProjectView>)ProjectViews.Concat(_project.ProjectViews) };
 
+    }
+
+    public void SearchForAFileOrFolder(string name)
+    {
+        if (_explorerType)
+        {
+            TreeViewNode searchResultNode = new TreeViewNode(_solutionTreeViewNode.Text, _solutionTreeViewNode.File);
+            if (_solutionTreeViewNode.Search(name, searchResultNode))
+            {
+                TreeViewNodes.Clear();
+                TreeViewNodes = new ObservableCollection<TreeViewNode>()
+                {
+                    (TreeViewNode)searchResultNode.Children.First()
+                };
+            }
+            else
+            {
+                // Nothing found
+                TreeViewNodes.Clear();
+                TreeViewNodes = new ObservableCollection<TreeViewNode>()
+                {
+                    new TreeViewNode("Nothing Found.", _solutionTreeViewNode.File)
+                };
+            }
+        }
+        else
+        {
+            TreeViewNode searchResultNode = new TreeViewNode("Files", _fileSystemTreeViewNode.Directory);
+            if (_fileSystemTreeViewNode.Search(name, searchResultNode))
+            {
+                TreeViewNodes.Clear();
+                TreeViewNodes = new ObservableCollection<TreeViewNode>()
+                {
+                    (TreeViewNode)searchResultNode.Children.First()
+                };
+            }
+            else
+            {
+                // Nothing found
+                TreeViewNodes.Clear();
+                TreeViewNodes = new ObservableCollection<TreeViewNode>()
+                {
+                    new TreeViewNode("Nothing Found.", _fileSystemTreeViewNode.Directory)
+                };
+            }
+        }
     }
     
     /// <summary>
@@ -114,18 +191,25 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
         }
     }
     /// <summary>
-    /// Changes the View Type (Solution or File)
+    /// Change the View Type (Solution or File)
     /// </summary>
-    public void OnExplorerTypeChanged()
+    /// <param name="changeType">Is only necessary for the Search Bar.</param>
+    public void OnExplorerTypeChanged(bool changeType = true)
     {
-        _explorerType = !_explorerType;
+        if(changeType)_explorerType = !_explorerType;
         if (_explorerType)
         {
-            TreeViewNodes = new ObservableCollection<TreeViewNode>(_solutionTreeViewNodes.ToList());
+            TreeViewNodes = new ObservableCollection<TreeViewNode>()
+            {
+                _solutionTreeViewNode
+            };
         }
         else
         {
-            TreeViewNodes = new ObservableCollection<TreeViewNode>(_fileSystemTreeViewNodes.ToList());
+            TreeViewNodes = new ObservableCollection<TreeViewNode>()
+            {
+                _fileSystemTreeViewNode
+            };
         }
     }
     /// <summary>
@@ -191,14 +275,14 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
         FileInfo file = new FileInfo(selectedSolutionFile);
         TreeViewNode rootNode = new TreeViewNode(file.Name.Replace(".sln", string.Empty), file);
         UpdateTreeViewSolution(solutionFile, rootNode);
-        _solutionTreeViewNodes = new List<TreeViewNode> { rootNode };
-        TreeViewNodes = new ObservableCollection<TreeViewNode>(_solutionTreeViewNodes);
+        _solutionTreeViewNode = rootNode;
+        TreeViewNodes = new ObservableCollection<TreeViewNode>(){_solutionTreeViewNode};
       
         TreeViewNode rootNode2 = new TreeViewNode("Files", new DirectoryInfo(selectedSolutionFile));
         if (file.Directory != null)
         {
             UpdateTreeViewFiles(file.Directory.FullName, rootNode2);
-            _fileSystemTreeViewNodes = new List<TreeViewNode>() { rootNode2 };
+            _fileSystemTreeViewNode =  rootNode2;
         }
 
     }
@@ -347,20 +431,13 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
             SyncProjectByUsingTheFileTree(project, child);
         }
     }
-    public class TreeViewNode
+    public class TreeViewNode : TreeViewNodeBase
     {
-        public ObservableCollection<TreeViewNode> Children { get; } = new ObservableCollection<TreeViewNode>();
-        /// <summary>
-        /// The Visible Text.
-        /// </summary>
-        public string Text { get; set; } 
+
         public DirectoryInfo? Directory { get; set; }
         public FileInfo? File { get; set; }
-        
-        
         public MaterialIconKind Icon { get; set; }
-        // TODO: Add Icons ( file-edit-outline => For .axaml Files; file-code-outline => For .cs Files oder .axaml.cs; file-question-outline => File Type not defined; file-star-four-points => For Style Files;  folder;
-
+        
         public TreeViewNode(string text, DirectoryInfo directory)
         {
             Text = text;
@@ -392,6 +469,23 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
                     Icon = MaterialIconKind.FileQuestionOutline;
                     break;
             }
+        }
+        protected override TreeViewNodeBase? Copy(TreeViewNodeBase nodeToCopy)
+        {
+            if (nodeToCopy is TreeViewNode treeViewNode)
+            {
+                if (treeViewNode.Directory != null) return new TreeViewNode(treeViewNode.Text, treeViewNode.Directory);
+                if (treeViewNode.File != null) return new TreeViewNode(treeViewNode.Text, treeViewNode.File);
+            }
+            return null; // Error
+        }
+        /// <summary>
+        /// Only for debugging purposes. 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Text;
         }
     }
 

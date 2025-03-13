@@ -27,14 +27,20 @@
                 </Button>
             </Grid>
             <StackPanel Orientation="Horizontal">
-               
                 <AutoCompleteBox 
                     FilterMode="Contains"
-                    Watermark="Search for a View...">
+                    Watermark="Search for a View..."
+                    TextChanged="AutoCompleteBox_OnTextChanged"
+                    Text="{Binding CurrentSearchText}">
                     <AutoCompleteBox.InnerRightContent>
-                        <Button>
-                            <materialIcons:MaterialIcon Kind="Magnify"/>
-                        </Button>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Command="{Binding SearchCommand}">
+                                <materialIcons:MaterialIcon Kind="Magnify"/>
+                            </Button>
+                            <Button Command="{Binding DeleteSearchResultsCommand}">
+                                <materialIcons:MaterialIcon Kind="CloseCircleOutline"/>
+                            </Button>
+                        </StackPanel>
                     </AutoCompleteBox.InnerRightContent>
                 </AutoCompleteBox>
                 <ComboBox SelectedIndex="0"
@@ -58,8 +64,7 @@
                     <materialIcons:MaterialIcon Kind="Cog" />
                 </Button>
             </StackPanel>
-            <ScrollViewer 
-                          Height="800">
+            <ScrollViewer Height="800">
                 <StackPanel>
                     <TreeView ItemsSource="{Binding TreeViewNodes}"
                               SelectedItem="{Binding SelectedItem}"

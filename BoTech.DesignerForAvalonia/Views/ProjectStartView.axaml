@@ -25,7 +25,7 @@
                     <Border Theme="{StaticResource CardBorder}">
                         <StackPanel Orientation="Horizontal">
                             <StackPanel>
-                                <Label Classes="Red" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Red}" Content="{Binding ShortName}"/>
+                                <Label Classes="Red" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Red, Mode=OneWay}" Content="{Binding ShortName}"/>
                                 <Label Classes="Pink" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Pink}" Content="{Binding ShortName}"/>
                                 <Label Classes="Purple" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Purple}" Content="{Binding ShortName}"/>
                                 <Label Classes="Violet" Theme="{StaticResource TagLabel}" IsVisible="{Binding DisplayableProjectInfo.Violet}" Content="{Binding ShortName}"/>
@@ -47,7 +47,8 @@
                                 <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
                                 <TextBlock Text="{Binding SolutionFilePath}"/>
                             </StackPanel>
-                            <Button Command="{Binding LoadRecentProjectCommand}">
+                            <Button HorizontalAlignment="Right"
+                                Command="{Binding LoadRecentProjectCommand}">
                                 <materialIcons:MaterialIcon Kind="OpenInNew"/>
                             </Button>
                         </StackPanel>

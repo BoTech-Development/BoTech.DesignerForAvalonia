@@ -58,9 +58,14 @@ public class EditorController : ViewModelBase
         get => _previewContent; 
         set => this.RaiseAndSetIfChanged(ref _previewContent, value);
     }
-    
+    /// <summary>
+    /// Path to the current File which will be displayed by the Preview View.
+    /// </summary>
     public string OpenedFilePath { get; set; }
-    
+    /// <summary>
+    /// The Project which is currently open.
+    /// </summary>
+    public Project CurrentProject { get; set; }
    
     /// <summary>
     /// Standard Ctor, which sets all Members to its default value if its necessary.
@@ -88,6 +93,8 @@ public class EditorController : ViewModelBase
     /// </summary>
     public StackPanel Init(Project project)
     {
+        CurrentProject = project;
+        
         SolutionExplorerView = new SolutionExplorerView();
         SolutionExplorerView.DataContext = new SolutionExplorerViewModel(project, this, SolutionExplorerView);
 

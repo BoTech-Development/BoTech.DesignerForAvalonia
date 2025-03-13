@@ -27,7 +27,7 @@ public class OpenableProject : Project
         this.ShortName = project.ShortName;
         LoadRecentProjectCommand = ReactiveCommand.Create(() =>
         {
-            viewModel.LoadProject(this as Project);
+            viewModel.LoadOpenableProject(this);
         });
     }
 }

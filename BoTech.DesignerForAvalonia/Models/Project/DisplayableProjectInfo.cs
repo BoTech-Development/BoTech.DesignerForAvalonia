@@ -9,23 +9,23 @@ namespace BoTech.DesignerForAvalonia.Models.Project;
 public class DisplayableProjectInfo 
 {
    
-    public bool Red { get; private set; }
-    public bool Pink { get; private set; }
-    public bool Purple { get; private set; }
-    public bool Violet { get; private set; }
-    public bool Indigo { get; private set; }
-    public bool Blue { get; private set; }
-    public bool LightBlue { get; private set; }
-    public bool Cyan { get; private set; }
-    public bool Teal { get; private set; }
-    public bool Green { get; private set; }
-    public bool LightGreen { get; private set; }
-    public bool Lime { get; private set; }
-    public bool Yellow { get; private set; }
-    public bool Amber { get; private set; }
-    public bool Orange { get; private set; }
-    public bool Grey { get; private set; }
-    public bool White { get; private set; }
+    public bool Red { get;  set; }
+    public bool Pink { get;  set; }
+    public bool Purple { get;  set; }
+    public bool Violet { get;  set; }
+    public bool Indigo { get;  set; }
+    public bool Blue { get;  set; }
+    public bool LightBlue { get;  set; }
+    public bool Cyan { get;  set; }
+    public bool Teal { get;  set; }
+    public bool Green { get;  set; }
+    public bool LightGreen { get;  set; }
+    public bool Lime { get;  set; }
+    public bool Yellow { get;  set; }
+    public bool Amber { get;  set; }
+    public bool Orange { get;  set; }
+    public bool Grey { get;  set; }
+    public bool White { get;  set; }
     
     public void SetColorByName(string colorName)
     {

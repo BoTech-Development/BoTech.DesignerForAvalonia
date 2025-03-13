@@ -5,29 +5,55 @@
              xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
              x:Class="BoTech.DesignerForAvalonia.Views.Editor.TopNavigationView"
              x:DataType="vm:TopNavigationViewModel">
-    <Menu>
-        <MenuItem Header="_File">
-            <MenuItem Header="_Open Project" Command="{Binding LoadProjectCommand}"/>
-        </MenuItem>
-        <MenuItem Header="_View">
-            <MenuItem Header="_Solution-Explorer"
-                      Command="{Binding OpenViewCommand}"
-                      CommandParameter="Solution-Explorer"></MenuItem>
-            <MenuItem Header="_Items-Explorer" 
-                      Command="{Binding OpenViewCommand}"
-                      CommandParameter="Items-Explorer"></MenuItem>
-            <MenuItem Header="_Preview-View" 
-                      Command="{Binding OpenViewCommand}"
-                      CommandParameter="Preview-View"></MenuItem>
-            <MenuItem Header="_Hierarchy-View" 
-                      Command="{Binding OpenViewCommand}"
-                      CommandParameter="Hierarchy-View"></MenuItem>
-            <MenuItem Header="_Properties-View" 
-                      Command="{Binding OpenViewCommand}"
-                      CommandParameter="Properties-View"></MenuItem>
-        </MenuItem>
-        <MenuItem Header="_Help">
-            <MenuItem Header="_About" Command="{Binding AboutViewCommand}"></MenuItem>
-        </MenuItem>
-    </Menu>
+    <StackPanel Orientation="Vertical" >
+        <Border Theme="{StaticResource CardBorder}" IsVisible="{Binding IsProjectLoaded}">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel>
+                    <Label Classes="Red" Theme="{StaticResource TagLabel}" IsVisible="{Binding  LoadedProject.DisplayableProjectInfo.Red}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Pink" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Pink}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Purple" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Purple}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Violet" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Violet}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Indigo" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Indigo}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Blue" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Blue}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="LightBlue" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.LightBlue}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Cyan" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Cyan}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Teal" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Teal}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Green" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Green}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="LightGreen" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.LightGreen}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Lime" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Lime}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Yellow" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Yellow}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Amber" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Amber}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Orange" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Orange}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Grey" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Grey}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="White" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.White}" Content="{Binding LoadedProject.ShortName}"/>
+                </StackPanel>
+                <TextBlock VerticalAlignment="Center" Text="{Binding LoadedProject.Name}" FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+        <Menu>
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open Project" Command="{Binding LoadProjectCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Solution-Explorer"
+                          Command="{Binding OpenViewCommand}"
+                          CommandParameter="Solution-Explorer"></MenuItem>
+                <MenuItem Header="_Items-Explorer" 
+                          Command="{Binding OpenViewCommand}"
+                          CommandParameter="Items-Explorer"></MenuItem>
+                <MenuItem Header="_Preview-View" 
+                          Command="{Binding OpenViewCommand}"
+                        CommandParameter="Preview-View"></MenuItem>
+                <MenuItem Header="_Hierarchy-View" 
+                          Command="{Binding OpenViewCommand}"
+                          CommandParameter="Hierarchy-View"></MenuItem>
+                <MenuItem Header="_Properties-View" 
+                          Command="{Binding OpenViewCommand}"
+                          CommandParameter="Properties-View"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Command="{Binding AboutViewCommand}"></MenuItem>
+            </MenuItem>
+        </Menu>
+    </StackPanel>
 </UserControl>

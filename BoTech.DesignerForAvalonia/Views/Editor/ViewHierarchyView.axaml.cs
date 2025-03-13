@@ -21,4 +21,12 @@ public partial class ViewHierarchyView : CloseablePageCodeBehind
             vm.OnTreeViewSelectionChanged();
         }
     }
+
+    private void AutoCompleteBox_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (DataContext is ViewHierarchyViewModel vm)
+        {
+            vm.Search();
+        }
+    }
 }

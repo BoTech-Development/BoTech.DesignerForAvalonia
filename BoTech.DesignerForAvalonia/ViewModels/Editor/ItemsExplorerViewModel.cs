@@ -2,22 +2,54 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using BoTech.DesignerForAvalonia.Controller.Editor;
+using BoTech.DesignerForAvalonia.Models.Editor;
 using BoTech.DesignerForAvalonia.Services.Avalonia;
 using BoTech.DesignerForAvalonia.ViewModels.Abstraction;
 using BoTech.DesignerForAvalonia.Views.Editor;
+using ReactiveUI;
 
 namespace BoTech.DesignerForAvalonia.ViewModels.Editor;
 
 public class ItemsExplorerViewModel : CloseablePageViewModel<ItemsExplorerView>
 {
-    public ObservableCollection<TreeViewNode> TreeViewNodes { get; set;  } 
+    private ObservableCollection<TreeViewNode> _treeViewNodes = new();
+    
+    /// <summary>
+    /// Displayed Controls
+    /// </summary>
+    public ObservableCollection<TreeViewNode> TreeViewNodes 
+    {
+        get => _treeViewNodes; 
+        set => this.RaiseAndSetIfChanged(ref _treeViewNodes, value);
+    }  
+    /// <summary>
+    /// Selected Control
+    /// </summary>
     public TreeViewNode? SelectedItem { get; set; }
+    /// <summary>
+    /// starts the search function
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SearchCommand { get; set; }
+    /// <summary>
+    /// Replaces the Search results to the original list of TreeViewNodes.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> DeleteSearchResultsCommand { get; set; }
+    /// <summary>
+    /// The search string that the User can enter.
+    /// </summary>
+    public string CurrentSearchText { get; set; }
+
+    /// <summary>
+    /// All Controls without the Search function Applied.
+    /// </summary>
+    private TreeViewNode _allControls;
     
     // will be injected
     private EditorController _editorController;
@@ -25,15 +57,40 @@ public class ItemsExplorerViewModel : CloseablePageViewModel<ItemsExplorerView>
     public ItemsExplorerViewModel(EditorController editorController, ItemsExplorerView codeBehind) : base(codeBehind)
     {
         _editorController = editorController;
-      
-       
+        SearchCommand =  ReactiveCommand.Create(Search);
+        DeleteSearchResultsCommand = ReactiveCommand.Create(DeleteSearchResults);
         CreateTreeView();
+        TreeViewNodes = new ObservableCollection<TreeViewNode>() { _allControls };
     }
 
+    public void Search()
+    {
+        TreeViewNode searchNode = new TreeViewNode()
+        {
+            Text = "Avalonia Controls",
+            ControlType = null,
+        };
+        if (_allControls.Search(CurrentSearchText, searchNode))
+        {
+            TreeViewNodes = new ObservableCollection<TreeViewNode>() { searchNode };
+        }
+        else
+        {
+            TreeViewNodes = new ObservableCollection<TreeViewNode>() 
+            { 
+                new TreeViewNode()
+                {
+                    Text = "Nothing Found.",
+                    ControlType = null,
+                } 
+            };
+        }
+    }
+    private void DeleteSearchResults() => TreeViewNodes = new ObservableCollection<TreeViewNode>() { _allControls };
     private void CreateTreeView()
     {
         List<TypeInfo> controlBasedTypes = TypeCastingService.GetAllControlBasedAvaloniaTypes();
-        ObservableCollection<TreeViewNode> nodes = new ObservableCollection<TreeViewNode>();
+        ObservableCollection<TreeViewNodeBase> nodes = new ObservableCollection<TreeViewNodeBase>();
         foreach (TypeInfo controlBasedType in controlBasedTypes)
         {
             nodes.Add(new TreeViewNode()
@@ -43,15 +100,13 @@ public class ItemsExplorerViewModel : CloseablePageViewModel<ItemsExplorerView>
             });
         }
 
-        TreeViewNodes = new ObservableCollection<TreeViewNode>()
+        _allControls = new TreeViewNode()
         {
-            new TreeViewNode()
-            {
-                Text = "Avalonia Controls",
-                ControlType = null,
-                Children = nodes
-            }
+            Text = "Avalonia Controls",
+            ControlType = null,
+            Children = nodes
         };
+
     }
     /// <summary>
     /// Returns an instance of the given Control Type with a default Text or Content.
@@ -117,10 +172,26 @@ public class ItemsExplorerViewModel : CloseablePageViewModel<ItemsExplorerView>
     /// The TreeViewNode class is a model for each TreeView Node.<br/>
     /// It can be used to store the Text to display and an Instance for the referenced Control.
     /// </summary>
-    public class TreeViewNode
+    public class TreeViewNode : TreeViewNodeBase
     {
-        public ObservableCollection<TreeViewNode> Children { get; set;  } = new ObservableCollection<TreeViewNode>();
-        public string Text { get; set; } = string.Empty;
+       
+        protected override TreeViewNodeBase? Copy(TreeViewNodeBase nodeToCopy)
+        {
+            TreeViewNode copy;
+            if (nodeToCopy is TreeViewNode treeViewNode)
+            {
+                copy = new TreeViewNode()
+                {
+                    Text = treeViewNode.Text,
+                    ControlType = treeViewNode.ControlType,
+                    Count = treeViewNode.Count,
+                };
+                return copy;
+            }
+            return null;
+        }
+
+       
         /// <summary>
         /// Referenced Control
         /// </summary>

@@ -2,8 +2,10 @@ using System.IO;
 using System.Reactive;
 using System.Runtime.Serialization;
 using BoTech.DesignerForAvalonia.Controller.Editor;
+using BoTech.DesignerForAvalonia.Models.Project;
 using BoTech.DesignerForAvalonia.Services.PropertiesView;
 using BoTech.DesignerForAvalonia.Views;
+using BoTech.DesignerForAvalonia.Views.Editor;
 using DialogHostAvalonia;
 using ReactiveUI;
 
@@ -16,50 +18,68 @@ public class TopNavigationViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<string, Unit> OpenViewCommand { get; set; }
     /// <summary>
-    /// The instance of the current Editor Controller, which is needed to open Views again.
+    /// Loads a new Porject
     /// </summary>
-    public EditorController EditorController { get; set; }
     public ReactiveCommand<Unit, Unit> LoadProjectCommand { get; set; }
+    /// <summary>
+    /// Shows the About View Dialog.
+    /// </summary>
     public ReactiveCommand<Unit, Unit> AboutViewCommand { get; set; }
+    /// <summary>
+    /// Is true when a project is loaded so that the View can show the name and can display some more Controls in the TopNavBar
+    /// </summary>
+    public bool IsProjectLoaded { get; set; } = false;
+    /// <summary>
+    /// The Project which was Loaded. Must be initialized for the View, which access this Variable.
+    /// </summary>
+    public Project LoadedProject { get; set; } = new();
     /// <summary>
     /// It is needed to have the MainViewModel reference to set the Content Object => Can change when the user wants to work either in the Editor or in the Style Editor.
     /// </summary>
-    private MainViewModel MainViewModel { get; set; }
-
+    private MainViewModel _mainViewModel { get; set; }
+    private ProjectController _projectController { get; set; }
    
     public TopNavigationViewModel(MainViewModel mainViewModel)
     {
         LoadProjectCommand = ReactiveCommand.Create(LoadProject);
         AboutViewCommand = ReactiveCommand.Create(ShowAboutView);
         OpenViewCommand = ReactiveCommand.Create<string>(OpenView);
-        MainViewModel = mainViewModel;
+        _mainViewModel = mainViewModel;
         
     }
-
+    /// <summary>
+    /// Initialise the View => Shows for example the Current Opened project in the top nav bar.
+    /// </summary>
+    public void OnProjectLoaded(ProjectController projectController)
+    {
+        _projectController = projectController;
+        LoadedProject = projectController.LoadedProject;
+        IsProjectLoaded = true;
+    }
     private void OpenView(string viewName)
     {
         switch (viewName)
         {
             case "Solution-Explorer":
-                EditorController.SolutionExplorerView.Open();
+                _projectController.EditorController.SolutionExplorerView.Open();
                 break;
             case "Items-Explorer":
-                EditorController.ItemsView.Open();
+                _projectController.EditorController.ItemsView.Open();
                 break;
             case "Preview-View":
-                EditorController.PreviewView.Open();
+                _projectController.EditorController.PreviewView.Open();
                 break;
             case "Hierarchy-View":
-                EditorController.ViewHierarchyView.Open();
+                _projectController.EditorController.ViewHierarchyView.Open();
                 break;
             case "Properties-View":
-                EditorController.PropertiesView.Open();
+                _projectController.EditorController.PropertiesView.Open();
                 break;
         }
     }
     private void LoadProject()
     {
-        new ProjectStartViewModel(MainViewModel).OpenProject();
+        new ProjectStartViewModel(_mainViewModel).OpenProject();
     }
 
     private void ShowAboutView()
