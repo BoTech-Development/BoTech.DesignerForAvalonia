@@ -14,7 +14,7 @@
 ## 📢V1.1.0 has been released!🎉
 + [click here](https://github.com/BoTech-Development/BoTech.AvaloniaDesigner/releases/tag/V1.1.0)
 
-### Current Version: V1.1.1
+### Current Version: [V1.1.3](https://github.com/users/BoTech-Development/projects/1)
 ## Current Status:
 + I have published the first Release Version 🎉**V1.1.0**🎉
 + The Software is not finished and in Alpha mode although a release Version has been published.
@@ -32,12 +32,6 @@
 + Clone the Repo, open and run the Desktop Build Configuration.
 + 😊 Happy developing and create cool Designs.
 ## ©️License 
-### What you are allowed to do with this Content
-+ You are permitted to further develop the software.
-+ **We welcome your continued development of the software.**
-### What you are _not_ allowed to do with this Content.
-+ You are not allowed to use this Content commercially.
-+ You are not allowed to publish this Software under another name.
-+ You are not allowed to use this code in other Projects or Programs.
+This Repository is licensed under the MIT License: [Go To the MIT License](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/LICENSE)
 
-Copyright [www.botech.dev](https://www.botech.dev) © 2024 All Rights Reserved.
+We reserve the right to change the license without notice and without justification. If this happens, the MIT license may be restricted or the license may be changed entirely. All previous versions are licensed under the license defined here, regardless of which license they were previously licensed under. The current version is also licensed under the license defined here.
