@@ -2,15 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor"
              x:Class="BoTech.DesignerForAvalonia.Views.Editor.TopNavigationView"
              x:DataType="vm:TopNavigationViewModel">
     <StackPanel Orientation="Vertical" >
-        <Border Theme="{StaticResource CardBorder}" IsVisible="{Binding IsProjectLoaded}">
+        <Border Theme="{StaticResource CardBorder}" IsVisible="{Binding IsProjectLoaded, Mode=OneWay}">
             <StackPanel Orientation="Horizontal">
                 <StackPanel>
-                    <Label Classes="Red" Theme="{StaticResource TagLabel}" IsVisible="{Binding  LoadedProject.DisplayableProjectInfo.Red}" Content="{Binding LoadedProject.ShortName}"/>
-                    <Label Classes="Pink" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Pink}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Red" Theme="{StaticResource TagLabel}" IsVisible="{Binding  LoadedProject.DisplayableProjectInfo.Red, Mode=OneWay}" Content="{Binding LoadedProject.ShortName}"/>
+                    <Label Classes="Pink" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Pink, Mode=OneWay}" Content="{Binding LoadedProject.ShortName}"/>
                     <Label Classes="Purple" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Purple}" Content="{Binding LoadedProject.ShortName}"/>
                     <Label Classes="Violet" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Violet}" Content="{Binding LoadedProject.ShortName}"/>
                     <Label Classes="Indigo" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.Indigo}" Content="{Binding LoadedProject.ShortName}"/>
@@ -28,6 +29,21 @@
                     <Label Classes="White" Theme="{StaticResource TagLabel}" IsVisible="{Binding LoadedProject.DisplayableProjectInfo.White}" Content="{Binding LoadedProject.ShortName}"/>
                 </StackPanel>
                 <TextBlock VerticalAlignment="Center" Text="{Binding LoadedProject.Name}" FontWeight="Bold"/>
+                <Button >
+                    <Button.Content>
+                        <materialIcons:MaterialIcon Kind="DotsVertical"></materialIcons:MaterialIcon>
+                    </Button.Content>
+                    <Button.Flyout>
+                        <Flyout>
+                            <MenuItem Header="Change Color"
+                                      Command="{Binding ChangeProjectLabelColorCommand}">
+                                <MenuItem.Icon>
+                                    <materialIcons:MaterialIcon Kind="PaletteOutline"></materialIcons:MaterialIcon>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
             </StackPanel>
         </Border>
         <Menu>

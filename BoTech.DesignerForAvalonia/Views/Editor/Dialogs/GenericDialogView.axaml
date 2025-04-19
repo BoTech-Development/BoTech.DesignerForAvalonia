@@ -1,0 +1,27 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor.Dialogs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.DesignerForAvalonia.Views.Editor.Dialogs.GenericDialogView"
+             x:DataType="vm:GenericDialogViewModel">
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal">
+            <materialIcons:MaterialIcon Kind="{Binding Icon}" Foreground="{Binding IconColor}"></materialIcons:MaterialIcon>
+            <ContentControl Content="{Binding Content}"></ContentControl>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Command="{Binding HelpCommand}">
+                <materialIcons:MaterialIcon Kind="HelpCircleOutline"/>
+            </Button>
+            <Button Command="{Binding SaveCommand}">
+                <materialIcons:MaterialIcon Kind="CloseBoxOutline"/>
+            </Button>
+            <Button Command="{Binding CloseCommand}">
+                <materialIcons:MaterialIcon Kind="CloseBoxOutline" />
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

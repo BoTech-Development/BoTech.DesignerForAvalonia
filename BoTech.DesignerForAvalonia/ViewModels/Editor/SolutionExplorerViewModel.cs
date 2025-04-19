@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -98,10 +99,20 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
         UpdateTreeView(project.SolutionFile, project.SolutionFilePath);
         SyncProjectByUsingTheFileTree(project, _fileSystemTreeViewNode);
         project.OutputPath = ExtractPathToAssemblyFromNodes(project.SolutionFilePath, Path.GetFileNameWithoutExtension(project.SolutionFilePath));
+        try
+        {
+            project.Assembly = Assembly.LoadFile(path: project.OutputPath);
+        }
+        catch (Exception e)
+        {
+            // TODO: Better Error handling...
+            Console.WriteLine("Error by loading the Project Assembly: " + e.ToString());
+        }
+        
 
       
-       // ProjectViews.Clear();
-        //ProjectViews = new ObservableCollection<DisplayableProjectView>(){ (IEnumerable<DisplayableProjectView>)ProjectViews.Concat(_project.ProjectViews) };
+       // Views.Clear();
+        //Views = new ObservableCollection<DisplayableProjectView>(){ (IEnumerable<DisplayableProjectView>)Views.Concat(_project.Views) };
 
     }
 
@@ -365,7 +376,7 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
                     {
                         // It is a View
                         case ".axaml":
-                            view = project.ProjectViews.Where(view =>
+                            view = project.Views.Where(view =>
                                     view.Name.Equals(rootFileNode.File.Name.Replace("View", "").Replace(".axaml", "")))
                                 .FirstOrDefault();
                             if (view != null)
@@ -374,7 +385,7 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
                             }
                             else
                             {
-                                project.ProjectViews.Add(new ProjectView()
+                                project.Views.Add(new ProjectView()
                                 {
                                     Name = rootFileNode.File.Name.Replace("View", "").Replace(".axaml", ""),
                                     PathToView = rootFileNode.File.FullName
@@ -384,7 +395,7 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
                             break;
                         // It is the Code Behind
                         case ".axaml.cs":
-                            view = project.ProjectViews.Where(view =>
+                            view = project.Views.Where(view =>
                                     view.Name.Equals(rootFileNode.File.Name.Replace("View", "").Replace(".axaml.cs", "")))
                                 .FirstOrDefault();
                             if (view != null)
@@ -393,7 +404,7 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
                             }
                             else
                             {
-                                project.ProjectViews.Add(new ProjectView()
+                                project.Views.Add(new ProjectView()
                                 {
                                     Name = rootFileNode.File.Name.Replace("View", "").Replace(".axaml.cs", ""),
                                     PathToCodeBehind = rootFileNode.File.FullName
@@ -405,22 +416,32 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
                         case ".cs":
                             if (rootFileNode.File.Name.Contains("ViewModel"))
                             {
-                                view = project.ProjectViews.Where(view =>
+                                view = project.Views.Where(view =>
                                     view.Name.Equals(rootFileNode.File.Name.Replace("ViewModel.cs", ""))).FirstOrDefault();
                                 if (view != null)
                                 {
-                                    view.PathToViewModel = rootFileNode.File.FullName;
+                                    view.ViewModel = new ProjectViewModel
+                                    {
+                                        Path = rootFileNode.File.FullName,
+                                        Name = "" // ADDED TO DEBUG
+                                    };
+                                    project.ViewModels.Add(view.ViewModel);
                                 }
                                 else
                                 {
-                                    project.ProjectViews.Add(new ProjectView()
+                                    ProjectViewModel viewModel = new ProjectViewModel
+                                    {
+                                        Path = rootFileNode.File.FullName,
+                                        Name = null
+                                    };
+                                    project.Views.Add(new ProjectView()
                                     {
                                         Name = rootFileNode.File.Name.Replace("ViewModel.cs", ""),
-                                        PathToViewModel = rootFileNode.File.FullName
+                                        ViewModel = viewModel
                                     });
+                                    project.ViewModels.Add(viewModel);
                                 }
                             }
-
                             break;
                     }
                 }

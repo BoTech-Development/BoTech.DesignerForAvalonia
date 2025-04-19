@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.Build.Construction;
 
@@ -40,10 +41,23 @@ public class Project
     /// Saves the Path to the prebuilt assemblies, which contains all Classes and Views of the Project, so that they can be instantiated.
     /// </summary>
     public string OutputPath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The Library which contains all compiled classes of the solution.
+    /// </summary>
+    [JsonIgnore]
+    public Assembly Assembly { get; set; } = null;
     /// <summary>
     /// All Views that the Project contains. By default, this will be the MainView and the MainWindow.
     /// </summary>
-    public List<ProjectView> ProjectViews { get; set; } = new List<ProjectView>();
+    public List<ProjectView> Views { get; set; } = new List<ProjectView>();
+    /// <summary>
+    /// All Views that the Project contains. By default, this will be the MainViewModel.
+    /// </summary>
+    public List<ProjectViewModel> ViewModels { get; set; } = new List<ProjectViewModel>();
+    /// <summary>
+    /// A simple Model which provides Information about the Label Color
+    /// </summary>
     public DisplayableProjectInfo DisplayableProjectInfo { get; set; } = new DisplayableProjectInfo();
     
 }

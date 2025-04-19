@@ -2,16 +2,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels"
              x:DataType="vm:LoadingViewModel"
              x:Class="BoTech.DesignerForAvalonia.Views.LoadingView">
+    <UserControl.Styles>
+       
+    </UserControl.Styles>
     <Design.DataContext>
         <vm:LoadingViewModel/>
     </Design.DataContext> 
-    <StackPanel>
-        <TextBlock FontSize="26">Please wait while Loading...</TextBlock>
-        <TextBlock FontSize="22" Text="{Binding StatusText}"></TextBlock>
-        <TextBlock FontSize="20" Text="{Binding SubStatusText}"></TextBlock>
-        <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding Current}" Maximum="{Binding Maximum}"></ProgressBar>
+    <StackPanel Orientation="Horizontal">
+        <materialIcons:MaterialIcon  Foreground="#0077FA" Kind="Cached" Height="128" Width="128">
+            <materialIcons:MaterialIcon.Styles>
+                <Style Selector="">
+                    <Style.Animations>
+                        <Animation Duration="0:0:3" IterationCount="INFINITE">
+                            <KeyFrame Cue="0%">
+                                <Setter Property="RotateTransform.Angle" Value="360"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%"> 
+                                <Setter Property="RotateTransform.Angle" Value="0"/>
+                            </KeyFrame>
+                        </Animation> 
+                    </Style.Animations>
+                </Style>
+            </materialIcons:MaterialIcon.Styles>
+        </materialIcons:MaterialIcon>
+        <StackPanel Margin="20,5,5,5">
+            <TextBlock FontSize="26">Please wait while Loading...</TextBlock>
+            <TextBlock FontSize="22" Text="{Binding StatusText}"></TextBlock>
+            <TextBlock FontSize="20" Text="{Binding SubStatusText}"></TextBlock>
+            <ProgressBar IsIndeterminate="{Binding IsIndeterminate}" Value="{Binding Current}" Maximum="{Binding Maximum}"></ProgressBar>
+        </StackPanel>
     </StackPanel>
 </UserControl>

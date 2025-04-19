@@ -1,0 +1,96 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:BoTech.DesignerForAvalonia.ViewModels.Editor.Dialogs"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="BoTech.DesignerForAvalonia.Views.Editor.Dialogs.ProjectColorDialogView"
+             x:DataType="vm:ProjectColorDialogViewModel">
+    <WrapPanel>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Red" 
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Red}">
+            <Label Classes="Red" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Pink"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Pink}">
+            <Label Classes="Pink" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Purple"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Purple}">
+            <Label Classes="Purple" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Violet"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Violet}">
+            <Label Classes="Violet" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Indigo"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Indigo}">
+            <Label Classes="Indigo" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Blue"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Blue}">
+            <Label Classes="Blue" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="LightBlue"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.LightBlue}">
+            <Label Classes="LightBlue" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Cyan"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Cyan}">
+            <Label Classes="Cyan" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Teal"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Teal}">
+            <Label Classes="Teal" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Green"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Green}">
+            <Label Classes="Green" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="LightGreen"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.LightGreen}">
+            <Label Classes="LightGreen" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Lime"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Lime}">
+            <Label Classes="Lime" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Yellow"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Yellow}">
+            <Label Classes="Yellow" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Amber"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Amber}">
+            <Label Classes="Amber" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Orange"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Orange}">
+            <Label Classes="Orange" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="Grey"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.Grey}">
+            <Label Classes="Grey" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+        <RadioButton Command="{Binding ChangeColorCommand}"
+                     CommandParameter="White"
+                     IsChecked="{Binding Project.DisplayableProjectInfo.White}">
+            <Label Classes="White" Theme="{StaticResource TagLabel}" Content="{Binding ShortName}"></Label>
+        </RadioButton>
+    </WrapPanel>
+</UserControl>

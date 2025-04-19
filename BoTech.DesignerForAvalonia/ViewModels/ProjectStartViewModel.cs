@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Reactive;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using BoTech.DesignerForAvalonia.Controller.Editor;
 using BoTech.DesignerForAvalonia.Models.Project;
-using BoTech.DesignerForAvalonia.Services.PropertiesView;
-using BoTech.DesignerForAvalonia.ViewModels.Editor;
-using BoTech.DesignerForAvalonia.Views;
-using Microsoft.Build.Construction;
+
 
 using ReactiveUI;
 
@@ -46,30 +37,37 @@ public class ProjectStartViewModel : ViewModelBase
     
     private bool _openFilePickerSuccess = false;
     private IStorageFile? currentSolutionFile = null;
-    
-    
+
+
     public ProjectStartViewModel(MainViewModel mainViewModel)
     {
         _projectController = new ProjectController(mainViewModel);
         _projectController.Initialize();
-        
-        LoadProjectCommand = ReactiveCommand.Create(()=>
+
+        LoadProjectCommand = ReactiveCommand.Create(() =>
         {
-            if (_openFilePickerSuccess && currentSolutionFile != null)_projectController.LoadProject(currentSolutionFile.Path.LocalPath, currentSolutionFile.Path.AbsolutePath, currentSolutionFile.Name);
+            if (_openFilePickerSuccess && currentSolutionFile != null)
+                _projectController.LoadProject(currentSolutionFile.Path.LocalPath,
+                    currentSolutionFile.Path.AbsolutePath, currentSolutionFile.Name);
         });
         OpenProjectCommand = ReactiveCommand.CreateRunInBackground(OpenProject);
-       
+
         // Save the Loaded List of recent Porjects in the DisplayedProjects Collection, so that they appear on the Screen
-        foreach (Project recentProject in _projectController.RecentProjects)
+        if (_projectController.RecentProjects.Count > 0)
         {
-            DisplayedProjects.Add(new OpenableProject(this, recentProject));
+            foreach (Project recentProject in _projectController.RecentProjects)
+            {
+                DisplayedProjects.Add(new OpenableProject(this, recentProject));
+            }
         }
-       
-
-
+        else
+        {
+            DisplayedProjects.Add(new OpenableProject(this, new Project(){Name = "Welcome to the BoTech.DesignerForAvalonia.", SolutionFilePath = " Please select a project."}, true));
+        }
     }
+
     /// <summary>
-    /// Loads an Project from the Recent Project List.
+    /// Loads a Project from the Recent Project List.
     /// </summary>
     /// <param name="openableProject"></param>
     public void LoadOpenableProject(OpenableProject openableProject) => _projectController.LoadProject((Project)openableProject);

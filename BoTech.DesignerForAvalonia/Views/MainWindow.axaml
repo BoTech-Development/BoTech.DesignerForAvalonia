@@ -10,7 +10,8 @@
         Title="BoTech.DesignerForAvalonia">
     <dialogHostAvalonia:DialogHost Identifier="MainDialogHost"
                                    DialogMargin="16"
-                                   dialogHostAvalonia:DialogHostStyle.CornerRadius="8">
+                                   dialogHostAvalonia:DialogHostStyle.CornerRadius="8" 
+                                   Background="White">
         <views:MainView />
     </dialogHostAvalonia:DialogHost>
 </Window>

@@ -3,21 +3,21 @@
     <OutputType>WinExe</OutputType>
     <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
     One for Windows with net8.0-windows TFM, one for MacOS with net8.0-macos and one with net8.0 TFM for Linux.-->
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
     <PackageReference Include="Avalonia.Labs.Controls" Version="11.2.0" />
-    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.2.7" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
-    <PackageReference Include="Microsoft.Build" Version="17.11.4" />
-    <PackageReference Include="Microsoft.Build.Framework" Version="17.11.4" />
-    <PackageReference Include="Semi.Avalonia" Version="11.2.1.5" />
+    <PackageReference Include="Microsoft.Build" Version="17.13.9" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.13.9" />
+    <PackageReference Include="Semi.Avalonia" Version="11.2.1.6" />
   </ItemGroup>
 
   <ItemGroup>

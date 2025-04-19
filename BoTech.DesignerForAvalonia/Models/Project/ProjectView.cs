@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using BindingTest.Models;
 
 namespace BoTech.DesignerForAvalonia.Models.Project;
 
@@ -17,7 +19,12 @@ public class ProjectView
     /// </summary>
     public string PathToCodeBehind { get; set; }
     /// <summary>
-    /// Complete Path to the {...}ViewModel.cs File
+    /// The ViewModel which is selected in the .axaml file.
     /// </summary>
-    public string PathToViewModel { get; set; }
+    public ProjectViewModel ViewModel { get; set; } = null;
+    /// <summary>
+    /// All Bindings defined in this View.
+    /// </summary>
+    public List<Binding> Bindings { get; set; } = new List<Binding>();
+
 }

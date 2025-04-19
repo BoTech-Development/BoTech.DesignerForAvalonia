@@ -4,11 +4,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Controls;
 using BoTech.DesignerForAvalonia.Models.Project;
+using BoTech.DesignerForAvalonia.Services.CSharp;
 using BoTech.DesignerForAvalonia.Services.PropertiesView;
 using BoTech.DesignerForAvalonia.ViewModels;
 using BoTech.DesignerForAvalonia.ViewModels.Editor;
+using BoTech.DesignerForAvalonia.Views;
+using DialogHostAvalonia;
 using Microsoft.Build.Construction;
 
 namespace BoTech.DesignerForAvalonia.Controller.Editor;
@@ -31,8 +37,16 @@ public class ProjectController
     /// Should be available for all classes.
     /// </summary>
     public Project LoadedProject { get; private set; }
+    
+    private LoadingViewModel _loadingViewModel;
+    private LoadingView _loadingView;
     public ProjectController(MainViewModel mainViewModel)
     {
+        _loadingViewModel = new LoadingViewModel();
+        _loadingView = new LoadingView()
+        {
+            DataContext = _loadingViewModel,
+        };
         _mainViewModel = mainViewModel;
        
     }
@@ -56,7 +70,7 @@ public class ProjectController
             RecentProjects = JsonSerializer.Deserialize<List<Project>>(File.ReadAllText(Environment.CurrentDirectory + "\\RecentProjects.json"));
             if (RecentProjects != null)
             {
-                RecentProjects.Sort((x,y) => x.LastUsed.CompareTo(y.LastUsed));
+                RecentProjects.Sort((x, y) => x.LastUsed.CompareTo(y.LastUsed));
                 //DisplayedProjects = new ObservableCollection<OpenableProject>();
                 List<Project> projectsToDelete = new List<Project>();
                 // Transfer Model to the ItemsControl and loading the SolutionFile.
@@ -70,7 +84,7 @@ public class ProjectController
                     else
                     {
                         recentProject.SolutionFile = SolutionFile.Parse(recentProject.SolutionFilePath);
-                       // DisplayedProjects.Add(new OpenableProject(this, recentProject));
+                        // DisplayedProjects.Add(new OpenableProject(this, recentProject));
                     }
                 }
                 // Deleting all Projects which aren't exists
@@ -83,6 +97,7 @@ public class ProjectController
         }
         else
         {
+            // Create and Save File if it does not exist.
             StreamWriter writer = new StreamWriter(Environment.CurrentDirectory + "\\RecentProjects.json");
             RecentProjects = new List<Project>();
             //DisplayedProjects = new ObservableCollection<OpenableProject>();
@@ -107,7 +122,11 @@ public class ProjectController
     /// </summary>
     public void LoadProject(string path, string absolutePath, string name)
     {
-   
+        _loadingViewModel.StatusText = "Loading Solution...";
+        _loadingViewModel.SubStatusText = "Parsing Solution file: " + absolutePath;
+        DialogHost.Show(_loadingView, "MainDialogHost");
+        
+        
         SolutionFile solutionFile = SolutionFile.Parse(path);
         Project? project = RecentProjects.Find(p => p.SolutionFilePath == path);
         if (project == null)
@@ -115,14 +134,21 @@ public class ProjectController
             // Important (for the old and new Project):
             // The ViewModelPath, the ViewPath and all Views in the Project will be added by the SolutionExplorerViewModel,
             // because he knows all the files and folders in the project.
+          
+            _loadingViewModel.SubStatusText = "Creating new Project...";
             project = new Models.Project.Project()
             {
                 Name = name,
-                ShortName = name.Where(c => Char.IsUpper(c) || !Char.IsLetterOrDigit(c)).ToString(),
                 LastUsed = DateTime.Now,
                 SolutionFilePath = absolutePath,
                 SolutionFile = solutionFile,
             };
+            string shortName = "";
+            foreach (char letter in name.Where(c => Char.IsUpper(c) || !Char.IsLetterOrDigit(c)))
+            {
+                if(letter != '.')shortName += letter;
+            }
+            project.ShortName = shortName;
             project.DisplayableProjectInfo.SetColorByName("Blue");
             RecentProjects.Add(project);
             //DisplayedProjects.Add(new OpenableProject(this, project));
@@ -135,18 +161,34 @@ public class ProjectController
     /// The ViewModelPath, the ViewPath and all Views in the Project will be added by the SolutionExplorerViewModel,
     /// because he knows all the files and folders in the project.
     /// </summary>
-    /// <param name="project">The Project which should be loaded</param>
+    /// <param name="project">The project, which should be loaded</param>
     public void LoadProject(Project project)
     {
+        DialogHost.Show(_loadingView, "MainDialogHost");
+        _loadingViewModel.SubStatusText = "Final loading steps...";
         LoadedProject = project;
+        // The Editor Controller initialize all Views of the Editor.
+        // Through the SolutionViewModel the project will add all Views and ViewModels to the Project Model. 
         EditorController = new EditorController();
         _mainViewModel.Content = EditorController.Init(project);
         ControlsCreator.EditorController = EditorController;
+        
+        // Now it is necessary to load all properties of all founded ViewModels.
+
+        foreach (ProjectViewModel viewModel in project.ViewModels)
+        {
+            viewModel.ClassInfoFromFile = CSharpParser.GetClassesInfoFromFile(viewModel.Path);
+        }
+
+        
+        
         // Saving the Editor Controller in the Top Navigation View to open views again.
-        if (_mainViewModel.TopNavigationView.DataContext is TopNavigationViewModel viewModel)
-            viewModel.OnProjectLoaded(this);
+        if (_mainViewModel.TopNavigationView.DataContext is TopNavigationViewModel topNavigationViewModel)
+            topNavigationViewModel.OnProjectLoaded(this);
         
-        
+        _loadingViewModel.SubStatusText = "Saving Settings...";
         SaveRecentProjectsToFile();
+        DialogHost.Close("MainDialogHost");
     }
+    
 }

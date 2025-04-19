@@ -6,26 +6,26 @@ namespace BoTech.DesignerForAvalonia.Models.Project;
 /// <summary>
 /// This class can be used to show the Project label on the first view.
 /// </summary>
-public class DisplayableProjectInfo 
+public class DisplayableProjectInfo
 {
-   
-    public bool Red { get;  set; }
-    public bool Pink { get;  set; }
-    public bool Purple { get;  set; }
-    public bool Violet { get;  set; }
-    public bool Indigo { get;  set; }
-    public bool Blue { get;  set; }
-    public bool LightBlue { get;  set; }
-    public bool Cyan { get;  set; }
-    public bool Teal { get;  set; }
-    public bool Green { get;  set; }
-    public bool LightGreen { get;  set; }
-    public bool Lime { get;  set; }
-    public bool Yellow { get;  set; }
-    public bool Amber { get;  set; }
-    public bool Orange { get;  set; }
-    public bool Grey { get;  set; }
-    public bool White { get;  set; }
+
+    public bool Red { get; set; } = true;
+    public bool Pink { get;  set; } = false;
+    public bool Purple { get;  set; } = false;
+    public bool Violet { get;  set; } = false;
+    public bool Indigo { get;  set; } = false;
+    public bool Blue { get;  set; } = false;
+    public bool LightBlue { get;  set; } = false;
+    public bool Cyan { get;  set; } = false;
+    public bool Teal { get;  set; } = false;
+    public bool Green { get;  set; } = false;
+    public bool LightGreen { get;  set; } = false;
+    public bool Lime { get;  set; } = false;
+    public bool Yellow { get;  set; } = false;
+    public bool Amber { get;  set; } = false;
+    public bool Orange { get;  set; } = false;
+    public bool Grey { get;  set; } = false;
+    public bool White { get;  set; } = false;
     
     public void SetColorByName(string colorName)
     {

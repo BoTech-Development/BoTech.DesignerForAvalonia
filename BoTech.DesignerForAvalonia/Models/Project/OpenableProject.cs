@@ -13,21 +13,22 @@ public class OpenableProject : Project
     /// </summary>
     public ReactiveCommand<Unit, Unit> LoadRecentProjectCommand { get; set; }
 
-    public OpenableProject(ProjectStartViewModel viewModel, Project project)
+    public OpenableProject(ProjectStartViewModel viewModel, Project project, bool disable = false)
     {
         // Copy all Properties of base class
         this.SolutionFilePath = project.SolutionFilePath;
         this.OutputPath = project.OutputPath;
         this.LastUsed = project.LastUsed;
         this.Name = project.Name;
-        this.ProjectViews = project.ProjectViews;
+        this.Views = project.Views;
         this.ViewModelPath = project.ViewModelPath;
         this.SolutionFile = project.SolutionFile;
         this.ViewPath = project.ViewPath;
         this.ShortName = project.ShortName;
-        LoadRecentProjectCommand = ReactiveCommand.Create(() =>
+        this.DisplayableProjectInfo = project.DisplayableProjectInfo;
+        if (!disable)
         {
-            viewModel.LoadOpenableProject(this);
-        });
+            LoadRecentProjectCommand = ReactiveCommand.Create(() => { viewModel.LoadOpenableProject(this); });
+        }
     }
 }

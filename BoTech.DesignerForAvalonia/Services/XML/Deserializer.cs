@@ -81,12 +81,12 @@ public class Deserializer
         AddPropertiesToControl(currentNode, control);
      
         PropertyInfo? propertyInfo = null;
-        // There only be can one Child for the Child Property
+        // When the Control has the Property Child, the Content which can be written in the Xml-Node (For instance <TextBlock>Hellord</TextBlock>), must be added to the Control.
         if ((propertyInfo = control.GetType().GetProperty("Child")) != null)
         {
             SetChildOrTextAsContent(propertyInfo, currentNode, control, currentXmlControl);
         }
-
+        // When the Control has more than one Child, all children must be added to the Control
         if ((propertyInfo = control.GetType().GetProperty("Children")) != null)
         {
             if (currentNode.ChildNodes.Count >= 1)
@@ -109,10 +109,10 @@ public class Deserializer
                 });
             }
         }
-
+        // The Control has the Content Property, so the Content mus be set
         if ((propertyInfo = control.GetType().GetProperty("Content")) != null)
         {
-            // Beacuse User Controls may have the Design.DataContext Property Set, it is necessary to find the Layout Control in the ChildNodes.
+            // Because User Controls may have the Design.DataContext Property Set, it is necessary to find the Layout Control in the ChildNodes.
             //  The Layout Control is the correct Control to work with
             if (control.GetType().Name == "UserControl")
             {
