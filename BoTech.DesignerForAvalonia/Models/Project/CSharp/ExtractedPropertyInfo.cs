@@ -1,4 +1,6 @@
 ﻿
+using System.Text.Json.Serialization;
+
 namespace BoTech.DesignerForAvalonia.Models.Project.CSharp;
 
 public class ExtractedPropertyInfo
@@ -43,5 +45,10 @@ public class ExtractedPropertyInfo
     /// When a Setter is defined in the brackets => <c>{set;}</c>
     /// </summary>
     public bool HasSetter { get; set; } = false;
+    /// <summary>
+    /// If an exception is thrown during the parsing process, the error text can be stored here.
+    /// </summary>
+    [JsonIgnore]
+    public string ParseError { get; set; } = string.Empty;
 
 }

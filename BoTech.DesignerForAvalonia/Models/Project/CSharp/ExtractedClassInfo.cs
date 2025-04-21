@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BoTech.DesignerForAvalonia.Models.Project.CSharp;
 
@@ -28,4 +29,9 @@ public class ExtractedClassInfo
     /// All Classes that are defined within this Class.
     /// </summary>
     public List<ExtractedClassInfo> SubClasses { get; set; } = new List<ExtractedClassInfo>();
+    /// <summary>
+    /// If an exception is thrown during the parsing process, the error text can be stored here.
+    /// </summary>
+    [JsonIgnore]
+    public string ParseError { get; set; } = string.Empty;
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BoTech.DesignerForAvalonia.Models.Project.CSharp;
 
@@ -20,6 +21,11 @@ public class ExtractedMethodInfo
     /// All Parameters of the Method
     /// </summary>
     public List<ExtractedParamInfo> Parameters { get; set; } = new List<ExtractedParamInfo>();
+    /// <summary>
+    /// If an exception is thrown during the parsing process, the error text can be stored here.
+    /// </summary>
+    [JsonIgnore]
+    public string ParseError { get; set; } = string.Empty;
 }
 
 public class ExtractedParamInfo
@@ -40,4 +46,9 @@ public class ExtractedParamInfo
     /// extracted Documentation of the Method documentation
     /// </summary>
     public required string Documentation { get; set; }
+    /// <summary>
+    /// If an exception is thrown during the parsing process, the error text can be stored here.
+    /// </summary>
+    [JsonIgnore]
+    public string ParseError { get; set; } = string.Empty;
 }
