@@ -15,19 +15,80 @@ namespace BoTech.DesignerForAvalonia.Services.CSharp;
 
 public class CSharpParser
 {
-    public static ExtractedClassInfo? GetClassInfoFromAssembly(Assembly assembly, string fullClassName)
+    /// <summary>
+    /// Determines if a class described by an ExtractedClassInfo object is completely implemented in a given assembly.
+    /// This Method does not check if the documentation is correct.
+    /// </summary>
+    /// <param name="assembly">The Assembly to search for the class implementation.</param>
+    /// <param name="extractedClassInfo">Represents the extracted class information, including its properties, methods, and namespace.</param>
+    /// <returns>True if the class and its related members are fully implemented in the given assembly; otherwise, false.</returns>
+    public static bool IsClassInfoCompletelyImplementedInAssembly(Assembly assembly, ExtractedClassInfo extractedClassInfo)
     {
-        Type? loadedClass = assembly.GetType(fullClassName);
-        if (loadedClass != null)
+        // Try to find the main class in assembly
+        Type? classInAssembly = assembly.GetType(extractedClassInfo.Namespace + "." + extractedClassInfo.ClassName);
+        if (classInAssembly == null)
         {
-            ExtractedClassInfo extractedClassInfo = new ExtractedClassInfo();
-            extractedClassInfo.ClassName = loadedClass.Name;
-            extractedClassInfo.Namespace = loadedClass.Namespace ?? string.Empty;
-            
-            //extractedClassInfo.Documentation = loadedClass.
+            classInAssembly = assembly.GetTypes().FirstOrDefault(t => t.Name == extractedClassInfo.ClassName);
+            if (classInAssembly == null) return false;
         }
-
-        return null;
+    
+        // Verify all properties exist and match
+        foreach (ExtractedPropertyInfo property in extractedClassInfo.Properties)
+        {
+            var propertyInAssembly = classInAssembly.GetProperty(property.Name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            
+            if (propertyInAssembly == null) return false;
+            
+            // Check property details
+            if (property.Type != propertyInAssembly.PropertyType.ToString()) return false;
+            if (property.HasGetter != (propertyInAssembly.GetGetMethod() != null)) return false;
+            if (property.HasSetter != (propertyInAssembly.GetSetMethod() != null)) return false;
+            
+            // Check access modifier
+            bool isPublic = propertyInAssembly.GetAccessors()[0].IsPublic;
+            bool isPrivate = propertyInAssembly.GetAccessors()[0].IsPrivate;
+            bool isProtected = propertyInAssembly.GetAccessors()[0].IsFamily;
+            bool isInternal = propertyInAssembly.GetAccessors()[0].IsAssembly;
+            bool isStatic = propertyInAssembly.GetAccessors()[0].IsStatic;
+            
+            if ((isPublic && property.AccessModifier != Modifier.Public) ||
+                (isPrivate && property.AccessModifier != Modifier.Private) ||
+                (isProtected && property.AccessModifier != Modifier.Protected) ||
+                (isInternal && property.AccessModifier != Modifier.Internal) || 
+                isStatic != property.IsStatic) return false;
+        }
+    
+        // Verify all methods exist and match
+        foreach (ExtractedMethodInfo method in extractedClassInfo.Methods)
+        {
+            var methodInAssembly = classInAssembly.GetMethod(method.Name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            
+            if (methodInAssembly == null) return false;
+            
+            // Check return type
+            if (method.ReturnType != methodInAssembly.ReturnType.ToString()) return false;
+            
+            // Check parameters
+            var parameters = methodInAssembly.GetParameters();
+            if (parameters.Length != method.Parameters.Count) return false;
+            // Important => The params must be in the same order too.
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i].ParameterType.ToString() != method.Parameters[i].Type) return false;
+                if (parameters[i].Name != method.Parameters[i].Name) return false;
+                if (parameters[i].DefaultValue?.ToString() != method.Parameters[i].DefaultValue) return false;
+            }
+        }
+    
+        // Verify all subclasses exist recursively
+        foreach (ExtractedClassInfo subclass in extractedClassInfo.SubClasses)
+        {
+            if (!IsClassInfoCompletelyImplementedInAssembly(assembly, subclass))
+                return false;
+        }
+        return true;
     }
     /// <summary>
     /// Parses the complete given .cs File and extract all necessary information to fill the Models ExtractedClassInfo, ExtractedPropertyInfo and ExtractedMethodInfo.

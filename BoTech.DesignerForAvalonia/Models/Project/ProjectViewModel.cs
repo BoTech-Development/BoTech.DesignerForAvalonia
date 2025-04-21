@@ -22,18 +22,15 @@ public class ProjectViewModel
     /// The full namespace of the class with the same Name as the File. The classname is included.
     /// </summary>
     public string Namespace { get; set; } = string.Empty;
+    /// <summary>
+    /// The parsed information from the .cs source File. 
+    /// </summary>
     [JsonIgnore]
     public ExtractedClassInfo? ClassInfoFromFile { get; set; }
+    /// <summary>
+    /// Is true when all members, functions that are located in the Source File are also defined in the Assembly.
+    /// </summary>
     [JsonIgnore]
-    public ExtractedClassInfo? ClassInfoFromDLL { get; set; }
+    public bool IsAssemblyEqualsToSource { get; set; }
     
-    /// <summary>
-    /// All Properties which are defined in the ViewModel .cs File. => When the project is loaded, the system searches the .cs file for properties and adds them to this list. 
-    /// </summary>
-  //  public List<ExtractedPropertyInfo> Properties { get; set; } = new List<ExtractedPropertyInfo>();
-    /// <summary>
-    /// Subset of the Properties Collection. Here all Properties which are present in the compiled class (.dll-File) are stored.
-    /// </summary>
-    //public List<ExtractedPropertyInfo> PropertiesDefinedInDLL { get; set; } = new List<ExtractedPropertyInfo>();
-
 }

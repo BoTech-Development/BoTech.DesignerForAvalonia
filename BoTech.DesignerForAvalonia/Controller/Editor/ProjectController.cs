@@ -173,11 +173,20 @@ public class ProjectController
         _mainViewModel.Content = EditorController.Init(project);
         ControlsCreator.EditorController = EditorController;
         
-        // Now it is necessary to load all properties of all founded ViewModels.
+        // Now it is necessary to parse all ViewModels
 
         foreach (ProjectViewModel viewModel in project.ViewModels)
         {
             viewModel.ClassInfoFromFile = CSharpParser.GetClassesInfoFromFile(viewModel.Path);
+            if (viewModel.ClassInfoFromFile == null) { viewModel.IsAssemblyEqualsToSource = false; continue; }
+            viewModel.IsAssemblyEqualsToSource = CSharpParser.IsClassInfoCompletelyImplementedInAssembly(project.Assembly, viewModel.ClassInfoFromFile);
+        }
+        // Now it is necessary to parse all Views (Code Behinds)
+        foreach (ProjectView view in project.Views)
+        {
+            view.ClassInfoFromFile = CSharpParser.GetClassesInfoFromFile(view.PathToCodeBehind);
+            if (view.ClassInfoFromFile == null) { view.IsAssemblyEqualsToSource = false; continue; }
+            view.IsAssemblyEqualsToSource = CSharpParser.IsClassInfoCompletelyImplementedInAssembly(project.Assembly, view.ClassInfoFromFile);
         }
 
         

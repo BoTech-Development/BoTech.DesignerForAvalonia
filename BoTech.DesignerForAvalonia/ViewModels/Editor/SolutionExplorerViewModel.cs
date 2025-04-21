@@ -269,9 +269,10 @@ public class SolutionExplorerViewModel : CloseablePageViewModel<SolutionExplorer
         FileInfo fileInfo = new FileInfo(selectedSolutionFile);
        
         string[] possibleFiles = Directory.GetFiles(fileInfo.Directory.FullName, projectName + ".dll", SearchOption.AllDirectories);
+        
         foreach (string filePath in possibleFiles)
         {
-            if(filePath.Contains(projectName + "\\bin\\Debug\\net8.0\\")) return filePath;
+            if(filePath.Contains(projectName + "\\bin\\Debug\\net9.0\\")) return filePath;
         }
         return null;
     }
