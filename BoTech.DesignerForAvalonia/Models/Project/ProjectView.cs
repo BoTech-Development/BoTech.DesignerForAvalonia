@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using BindingTest.Models;
 using BoTech.DesignerForAvalonia.Models.Project.CSharp;
 
 namespace BoTech.DesignerForAvalonia.Models.Project;

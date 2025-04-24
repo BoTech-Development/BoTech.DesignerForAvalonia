@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using Avalonia.Data;
 
-namespace BindingTest.Models;
+namespace BoTech.DesignerForAvalonia.Models.Project;
 
 public class Binding
 {

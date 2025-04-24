@@ -51,6 +51,9 @@ public class Deserializer
         XmlControl currentXmlControl;
         Control control;
         TypeInfo? type = null;
+        
+        // Create an instance of the Selected Control. When the Type cannot be found, a default TextBlock will be created.
+        
         if ((type = AllControlTypes.Find(t => t.Name == currentNode.Name)) != null)
         {
             if ((control = (Control)Activator.CreateInstance(type)) == null)
@@ -76,10 +79,13 @@ public class Deserializer
             Node = currentNode,
         };
         parentXmlControl.Children.Add(currentXmlControl);
-       
+        
+        // Adding all Defined Properties to the Control
 
         AddPropertiesToControl(currentNode, control);
      
+        // populating properties like Child, Children or Content.
+        
         PropertyInfo? propertyInfo = null;
         // When the Control has the Property Child, the Content which can be written in the Xml-Node (For instance <TextBlock>Hellord</TextBlock>), must be added to the Control.
         if ((propertyInfo = control.GetType().GetProperty("Child")) != null)
@@ -134,7 +140,7 @@ public class Deserializer
                 SetChildOrTextAsContent(propertyInfo, currentNode, control, currentXmlControl);
             }
         }
-
+        // Adding the Text Property from the inner Text of a XML Node.
         if ((propertyInfo = control.GetType().GetProperty("Text")) != null)
         {
             if (currentNode.InnerText != string.Empty)
@@ -145,15 +151,18 @@ public class Deserializer
         
         return control;
     }
-
-    private void SetChildOrTextAsContent(PropertyInfo propertyInfo, XmlNode current, Control control, XmlControl currentXmlControl)
+    
+    private void SetChildOrTextAsContent(PropertyInfo propertyInfo, XmlNode current, Control control,
+        XmlControl currentXmlControl)
     {
+        // When there is only one child between the brackets of the parent node => <Button><TextBlock>Hello</TextBlock></Button>
         if (current.ChildNodes.Count == 1)
         {
             propertyInfo.SetValue(control, TranslateToControls(current.ChildNodes[0], currentXmlControl));
         }
         else if(current.InnerText != string.Empty)
         {
+            // If there is only one Inner Text between the brackets of the parent node => <Button>Hello</Button>   
             propertyInfo.SetValue(control, new TextBlock()
             {
                 Text = current.InnerText,
@@ -161,7 +170,7 @@ public class Deserializer
         }
     }
     /// <summary>
-    /// Adds all Properties but no Bindings to the Control, that the Parser has read before.
+    /// Adds all Properties and Bindings to the Control
     /// </summary>
     /// <param name="current"></param>
     /// <param name="control"></param>
@@ -182,11 +191,16 @@ public class Deserializer
                     }
                     else
                     {
-                        propertyInfo.SetValue(control, Convert.ChangeType(property.Value, propertyInfo.PropertyType));    
+                        if (property.Value.Contains("{") && property.Value.Contains("}"))
+                        {
+                            // Handle to Property as a Binding
+                            
+                            
+                            
+                        }else propertyInfo.SetValue(control, Convert.ChangeType(property.Value, propertyInfo.PropertyType));    
                     }
                 }
             }
         }
     }
-    
 }
