@@ -1,3 +1,10 @@
+> [!WARNING]  
+> ## This application is out of support. The Successor will be [BoTech.SharpStudio](https://github.com/BoTech-Development/BoTech.SharpStudio) some day...
+> That means that this application **no longer receive feature updates or bug fixes.**
+> For more info visit: [Discussion in BoTech.DesignerForAvalonia](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/discussions/39) or [Discussion in BoTech.SharpStudio](https://github.com/BoTech-Development/BoTech.SharpStudio/discussions/5)
+> Thanks to all that submitted a issue or starred this repo.
+
+
 ![Logo](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/BoTech.DesignerForAvalonia/Assets/BoTech_DesignerForAvalonia_WithText_NoBG.png)
 
 ### Design Preview and Style your Avalonia App in the BoTech.DesignerForAvalonia.
@@ -13,7 +20,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/BoTech-Development/BoTech.DesignerForAvalonia)
 
 ### Current Version: [V1.1.3](https://github.com/users/BoTech-Development/projects/1)
-**This project is still in development. [You are welcome to help us further develop the project.](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/Contributing.md)
+This project is still in development. [You are welcome to help us further develop the project.](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/Contributing.md)
 ## Current Status:
 + I have published the first Release Version 🎉**V1.1.0**🎉
 + We are currently working on V1.2.0
@@ -32,5 +39,3 @@
 + 😊 Happy developing and create cool Designs.
 ## ©️License 
 This Repository is licensed under the MIT License: [Go To the MIT License](https://github.com/BoTech-Development/BoTech.DesignerForAvalonia/blob/master/LICENSE)
-
-We reserve the right to change the license without notice and without justification. If this happens, the MIT license may be restricted or the license may be changed entirely. All previous versions are licensed under the license defined here, regardless of which license they were previously licensed under. The current version is also licensed under the license defined here.
